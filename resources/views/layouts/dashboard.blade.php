@@ -7,17 +7,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') - Kestore.id</title>
 
-    <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-
-    <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
-    <!-- Custom Styles -->
     <style>
         body {
             background-color: #1a1a1a;
@@ -30,9 +24,15 @@
             border-bottom: 1px solid #333;
         }
 
-        .navbar-brand, .nav-link, .navbar-text {
+        .navbar-brand,
+        .nav-link,
+        .navbar-text {
             color: #d4af37 !important;
             font-weight: 600;
+        }
+
+        .navbar-brand img {
+            border-radius: 4px;
         }
 
         .sidebar {
@@ -73,15 +73,18 @@
 
         .sidebar .nav-dropdown {
             padding-left: 20px;
+            background-color: rgba(0, 0, 0, 0.2);
         }
 
         .sidebar .nav-dropdown .nav-link {
-            padding-left: 2.5rem;
+            padding-left: 1.5rem;
+            /* Disesuaikan agar ikon sejajar */
         }
 
         main {
             padding: 2rem;
         }
+
         .logout-form .btn-logout {
             background: none;
             border: none;
@@ -91,9 +94,8 @@
             text-align: left;
         }
 
-        /* --- STYLE BARU UNTUK NOTIFIKASI --- */
         .notification-dropdown .dropdown-toggle::after {
-            display: none; /* Sembunyikan panah default */
+            display: none;
         }
 
         .notification-icon {
@@ -168,68 +170,45 @@
             font-size: 0.75rem;
             color: #aaa;
         }
-        /* --- AKHIR STYLE NOTIFIKASI --- */
-
     </style>
+    @stack('styles')
 </head>
 
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-dark navbar-top shadow-sm">
             <div class="container-fluid">
-                <a class="navbar-brand d-flex align-items:center" href="{{ url('/') }}">
-                    <img src="{{ asset('images/kestore-logo.png') }}" alt="Kestore.id Logo" style="height: 30px; margin-right: 10px;">
+                <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
+                    <img src="{{ asset('images/kestore-logo.png') }}" alt="Kestore.id Logo"
+                        style="height: 30px; margin-right: 10px;">
                     KESTORE.ID
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto align-items-center">
-
-                        <!-- PERUBAHAN: Menambahkan Dropdown Notifikasi -->
                         <li class="nav-item dropdown notification-dropdown me-3">
-                            <a class="nav-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
                                 <span class="notification-icon">
                                     <i class="fas fa-bell"></i>
-                                    <span class="notification-badge">3</span> <!-- Angka ini bisa dinamis -->
+                                    <span class="notification-badge">3</span>
                                 </span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <div class="dropdown-header">
-                                    Notifikasi (3 Pesanan Baru)
-                                </div>
+                                <div class="dropdown-header">Notifikasi (3 Pesanan Baru)</div>
                                 <div class="notification-item">
                                     <a href="#" class="d-flex">
                                         <div class="icon"><i class="fas fa-receipt"></i></div>
                                         <div>
-                                            <div class="message">Pesanan baru <strong>#KESTORE-001</strong> dari Andi.</div>
+                                            <div class="message">Pesanan baru <strong>#KESTORE-001</strong> dari Andi.
+                                            </div>
                                             <div class="time">5 menit yang lalu</div>
                                         </div>
                                     </a>
                                 </div>
-                                <div class="notification-item">
-                                    <a href="#" class="d-flex">
-                                        <div class="icon"><i class="fas fa-receipt"></i></div>
-                                        <div>
-                                            <div class="message">Pesanan baru <strong>#KESTORE-002</strong> dari Citra.</div>
-                                            <div class="time">15 menit yang lalu</div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="notification-item">
-                                    <a href="#" class="d-flex">
-                                        <div class="icon"><i class="fas fa-receipt"></i></div>
-                                        <div>
-                                            <div class="message">Pesanan baru <strong>#KESTORE-003</strong> dari Doni.</div>
-                                            <div class="time">1 jam yang lalu</div>
-                                        </div>
-                                    </a>
-                                </div>
-                                 <a class="dropdown-item text-center small text-muted" href="#">Lihat semua notifikasi</a>
+                                <a class="dropdown-item text-center small text-muted" href="#">Lihat semua
+                                    notifikasi</a>
                             </div>
                         </li>
-
                         @auth
                             <li class="nav-item">
                                 <span class="navbar-text">Halo, {{ Auth::user()->name }}</span>
@@ -253,34 +232,93 @@
                     <div class="position-sticky pt-3">
                         <ul class="nav flex-column">
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
-                                    <i class="fas fa-home nav-icon"></i> Home
+                                <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
+                                    href="{{ route('admin.dashboard') }}">
+                                    <i class="fas fa-tachometer-alt nav-icon"></i> Dashboard
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <i class="fas fa-box-open nav-icon"></i> Product
+                                <a class="nav-link dropdown-toggle {{ request()->routeIs('admin.products.*') ? 'active' : '' }}"
+                                    href="#products-submenu" data-bs-toggle="collapse" role="button"
+                                    aria-expanded="{{ request()->routeIs('admin.products.*') ? 'true' : 'false' }}"
+                                    aria-controls="products-submenu">
+                                    <i class="fas fa-box-open nav-icon"></i> Produk
                                 </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link dropdown-toggle" href="#orders-submenu" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="orders-submenu">
-                                    <i class="fas fa-shopping-cart nav-icon"></i> Pesanan
-                                </a>
-                                <div class="collapse nav-dropdown" id="orders-submenu">
+                                <div class="collapse nav-dropdown {{ request()->routeIs('admin.products.*') ? 'show' : '' }}"
+                                    id="products-submenu">
                                     <ul class="nav flex-column">
                                         <li class="nav-item">
-                                            <a class="nav-link" href="#">Pesanan Satuan</a>
+                                            <a class="nav-link" href="{{ route('admin.products.index') }}"><i
+                                                    class="fas fa-boxes-stacked nav-icon"></i> Semua Produk</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="#">Pesanan Lusinan</a>
+                                            <a class="nav-link" href="{{ route('admin.products.create') }}"><i
+                                                    class="fas fa-plus-square nav-icon"></i> Tambah Produk</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#"><i class="fas fa-tags nav-icon"></i>
+                                                Kategori</a>
                                         </li>
                                     </ul>
                                 </div>
                             </li>
-                             <li class="nav-item">
+                            <li class="nav-item">
                                 <a class="nav-link" href="#">
-                                    <i class="fas fa-address-book nav-icon"></i> Contact
+                                    <i class="fas fa-shopping-cart nav-icon"></i> Pesanan
                                 </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    <i class="fas fa-users nav-icon"></i> Data Pembeli
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link dropdown-toggle" href="#reports-submenu" data-bs-toggle="collapse"
+                                    role="button" aria-expanded="false" aria-controls="reports-submenu">
+                                    <i class="fas fa-chart-pie nav-icon"></i> Laporan
+                                </a>
+                                <div class="collapse nav-dropdown" id="reports-submenu">
+                                    <ul class="nav flex-column">
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#"><i class="fas fa-chart-bar nav-icon"></i>
+                                                Laporan Penjualan</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#"><i class="fas fa-users-line nav-icon"></i>
+                                                Laporan Pelanggan</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="nav-item mt-3 border-top pt-3 border-secondary">
+                                <a class="nav-link dropdown-toggle" href="#settings-submenu" data-bs-toggle="collapse"
+                                    role="button" aria-expanded="false" aria-controls="settings-submenu">
+                                    <i class="fas fa-cog nav-icon"></i> Pengaturan
+                                </a>
+                                <div class="collapse nav-dropdown" id="settings-submenu">
+                                    <ul class="nav flex-column">
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#"><i class="fas fa-user-shield nav-icon"></i>
+                                                Profil Admin</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#"><i class="fas fa-store nav-icon"></i>
+                                                Pengaturan Toko</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#"><i class="fas fa-credit-card nav-icon"></i>
+                                                Pembayaran</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#"><i class="fas fa-shipping-fast nav-icon"></i>
+                                                Pengiriman</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#"><i class="fas fa-users-cog nav-icon"></i>
+                                                Manajemen Akun</a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </li>
                         </ul>
                     </div>
@@ -293,7 +331,8 @@
             </div>
         </div>
     </div>
+    @yield('scripts')
+    @stack('scripts')
 </body>
 
 </html>
-

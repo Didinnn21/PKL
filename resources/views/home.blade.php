@@ -29,19 +29,15 @@
 
         .carousel-item {
             height: 80vh;
-            /* Mengatur tinggi carousel, 80% dari tinggi layar */
             min-height: 400px;
             background-color: #000;
-            /* Warna latar belakang untuk mengisi area kosong */
         }
 
         .carousel-item img {
             height: 100%;
             width: 100%;
             object-fit: contain;
-            /* <-- DIUBAH DARI 'cover' MENJADI 'contain' */
             filter: brightness(60%);
-            /* Sedikit meredupkan gambar agar teks lebih mudah dibaca */
         }
 
         .carousel-caption {
@@ -49,20 +45,16 @@
             right: 15%;
             left: 15%;
             bottom: 1.25rem;
-            /* Menyesuaikan posisi jika 'contain' digunakan */
             padding-top: 1.25rem;
             padding-bottom: 1.25rem;
             color: #fff;
             text-align: center;
             width: 70%;
-            /* Batasi lebar caption */
             margin: 0 auto;
-            /* Pusatkan caption */
         }
 
         .carousel-caption h5 {
             font-size: 2.5rem;
-            /* Sedikit sesuaikan ukuran font jika perlu */
             font-weight: 700;
             bottom: 40%;
             margin: 0 auto;
@@ -115,7 +107,14 @@
                     <a href="{{ route('login') }}" class="btn btn-outline-gold me-2">Login</a>
                     <a href="{{ route('register') }}" class="btn btn-light">Register</a>
                 @else
-                    <a href="{{ route('dashboard') }}" class="btn btn-outline-gold">My Dashboard</a>
+                    <div class="d-flex align-items-center">
+                        <a href="{{ route('dashboard') }}" class="btn btn-outline-gold me-3">My Dashboard</a>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-link text-decoration-none"
+                                style="color: #d4af37 !important; font-weight: 600;">Logout</button>
+                        </form>
+                    </div>
                 @endguest
             </div>
         </div>
@@ -175,12 +174,15 @@
             @forelse($products as $product)
                 <div class="col-md-4 col-lg-3">
                     <div class="card product-card text-white">
-                        <img src="{{ $product->image_url ?? 'https://via.placeholder.com/300' }}" class="card-img-top"
-                            alt="{{ $product->name }}">
+                        <img src="{{ $product->image_url ?? 'https://placehold.co/300x300/252525/FFFFFF/png?text=Gambar+Produk' }}"
+                            class="card-img-top" alt="{{ $product->name }}">
                         <div class="card-body">
                             <h5 class="card-title">{{ $product->name }}</h5>
                             <p class="card-text fw-bold">Rp {{ number_format($product->price) }}</p>
-                            <a href="#" class="btn btn-outline-gold w-100">View Details</a>
+
+                            {{-- PERUBAHAN DI SINI --}}
+                            <a href="{{ route('product.detail', $product->id) }}" class="btn btn-outline-gold w-100">View
+                                Details</a>
                         </div>
                     </div>
                 </div>

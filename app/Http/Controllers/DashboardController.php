@@ -4,77 +4,77 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon; // Import Carbon untuk manipulasi tanggal
+use Carbon\Carbon;
+use App\Models\Order;
 
 class DashboardController extends Controller
 {
-    /**
-     * Method ini akan menjadi "gerbang" setelah login.
-     * Ia akan memeriksa peran pengguna dan mengarahkan ke dashboard yang sesuai.
-     */
     public function index()
     {
         if (Auth::user()->role === 'admin') {
             return redirect()->route('admin.dashboard');
         }
-
         return redirect()->route('member.dashboard');
     }
 
-    /**
-     * Menampilkan dashboard untuk Admin dengan data lengkap.
-     */
-    public function admin()
+    public function admin(Request $request)
     {
-        // --- LOGIKA BARU UNTUK GRAFIK PENJUALAN ---
-        $salesChartData = [];
+        $filter = $request->query('filter', 'weekly'); // Default filter adalah mingguan
         $salesLabels = [];
         $salesValues = [];
 
-        // Loop untuk 7 hari terakhir
-        for ($i = 6; $i >= 0; $i--) {
-            $date = Carbon::now()->subDays($i);
-            $salesLabels[] = $date->translatedFormat('l'); // Format hari (e.g., Senin)
+        switch ($filter) {
+            case 'yearly':
+                // Data 12 bulan terakhir
+                for ($i = 11; $i >= 0; $i--) {
+                    $date = Carbon::now()->subMonths($i);
+                    $salesLabels[] = $date->translatedFormat('F'); // Nama bulan, e.g., Januari
+                    $salesValues[] = rand(20000000, 50000000); // Simulasi data bulanan
+                }
+                break;
 
-            // NANTINYA, GANTI INI DENGAN QUERY ASLI KE DATABASE ANDA
-            // Contoh query asli:
-            // $dailySale = Order::whereDate('created_at', $date)->sum('total_price');
-            // $salesValues[] = $dailySale;
+            case 'monthly':
+                // Data 30 hari terakhir
+                for ($i = 29; $i >= 0; $i--) {
+                    $date = Carbon::now()->subDays($i);
+                    $salesLabels[] = $date->format('d M'); // Tanggal & bulan, e.g., 20 Sep
+                    $salesValues[] = rand(500000, 2500000); // Simulasi data harian
+                }
+                break;
 
-            // Untuk saat ini, kita gunakan angka acak sebagai simulasi
-            $salesValues[] = rand(500000, 2000000);
+            default: // weekly
+                // Data 7 hari terakhir
+                for ($i = 6; $i >= 0; $i--) {
+                    $date = Carbon::now()->subDays($i);
+                    $salesLabels[] = $date->translatedFormat('l'); // Nama hari, e.g., Senin
+                    $salesValues[] = rand(500000, 2000000);
+                }
+                break;
         }
 
         $salesChartData = [
             'labels' => $salesLabels,
             'data' => $salesValues,
         ];
-        // --- AKHIR LOGIKA GRAFIK ---
 
-        // Data dummy untuk kartu statistik
         $stats = [
-            'pendapatan_hari_ini' => end($salesValues), // Ambil data penjualan terakhir sebagai pendapatan hari ini
+            'pendapatan_hari_ini' => end($salesValues),
             'pesanan_baru' => 15,
             'pelanggan_baru' => 8,
             'total_produk' => 54,
         ];
 
-        // Data dummy untuk tabel pesanan terbaru
         $pesanan_terbaru = [
             ['id' => 'KESTORE-001', 'pelanggan' => 'Andi Budianto', 'total' => 150000, 'status' => 'Sedang Diproses'],
             ['id' => 'KESTORE-002', 'pelanggan' => 'Citra Lestari', 'total' => 275000, 'status' => 'Menunggu Pembayaran'],
-            ['id' => 'KESTORE-003', 'pelanggan' => 'Doni Saputra', 'total' => 85000, 'status' => 'Telah Dikirim'],
-            ['id' => 'KESTORE-004', 'pelanggan' => 'Eka Wulandari', 'total' => 320000, 'status' => 'Selesai'],
         ];
 
-        return view('Admin.dashboard', compact('stats', 'pesanan_terbaru', 'salesChartData'));
+        return view('Admin.dashboard', compact('stats', 'pesanan_terbaru', 'salesChartData', 'filter'));
     }
 
-    /**
-     * Menampilkan dashboard untuk Member.
-     */
     public function member()
     {
-        return view('Member.dashboard');
+        $orders = Order::where('user_id', Auth::id())->with('product')->latest()->paginate(10);
+        return view('Member.dashboard', compact('orders'));
     }
 }
