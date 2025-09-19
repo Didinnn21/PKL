@@ -3,71 +3,78 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon; // Import Carbon untuk manipulasi tanggal
 
 class DashboardController extends Controller
 {
     /**
-     * Halaman landing page publik.
-     */
-    public function landing()
-    {
-        return view('landing');
-    }
-
-    /**
-     * Menampilkan halaman dashboard utama SETELAH login.
+     * Method ini akan menjadi "gerbang" setelah login.
+     * Ia akan memeriksa peran pengguna dan mengarahkan ke dashboard yang sesuai.
      */
     public function index()
     {
-        // 1. DATA PRODUK (DIISI DENGAN PRODUK ASLI DARI KESTORE.ID)
-        $top_products = [
-            [
-                'name' => 'KAOS CUSTOM AESTHETIC',
-                'sold' => 1000, // Menggunakan '1RB+' dari screenshot
-                'revenue' => 75000 * 1000,
-                'icon' => 'fa-tshirt' // Font Awesome icon
-            ],
-            [
-                'name' => 'CREWNECK CUSTOM AESTHETIC',
-                'sold' => 108,
-                'revenue' => 171000 * 108,
-                'icon' => 'fa-tshirt'
-            ],
-            [
-                'name' => 'KAOS PILPRES 2024 COMBAD 24S',
-                'sold' => 47,
-                'revenue' => 104500 * 47,
-                'icon' => 'fa-tshirt'
-            ],
-            [
-                'name' => 'HOODIE CUSTOM AESTHETIC',
-                'sold' => 36,
-                'revenue' => 185250 * 36,
-                'icon' => 'fa-user-secret' // Contoh ikon untuk hoodie
-            ],
-        ];
+        if (Auth::user()->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
 
-        // 2. DATA STATISTIK
-        // Kita update 'total_products' berdasarkan kategori dari screenshot
+        return redirect()->route('member.dashboard');
+    }
+
+    /**
+     * Menampilkan dashboard untuk Admin dengan data lengkap.
+     */
+    public function admin()
+    {
+        // --- LOGIKA BARU UNTUK GRAFIK PENJUALAN ---
+        $salesChartData = [];
+        $salesLabels = [];
+        $salesValues = [];
+
+        // Loop untuk 7 hari terakhir
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i);
+            $salesLabels[] = $date->translatedFormat('l'); // Format hari (e.g., Senin)
+
+            // NANTINYA, GANTI INI DENGAN QUERY ASLI KE DATABASE ANDA
+            // Contoh query asli:
+            // $dailySale = Order::whereDate('created_at', $date)->sum('total_price');
+            // $salesValues[] = $dailySale;
+
+            // Untuk saat ini, kita gunakan angka acak sebagai simulasi
+            $salesValues[] = rand(500000, 2000000);
+        }
+
+        $salesChartData = [
+            'labels' => $salesLabels,
+            'data' => $salesValues,
+        ];
+        // --- AKHIR LOGIKA GRAFIK ---
+
+        // Data dummy untuk kartu statistik
         $stats = [
-            'total_products' => 12, // Dari screenshot kategori "Produk (12)"
-            'total_orders' => 85, // Data ini masih dummy
-            'total_customers' => 234, // Data ini masih dummy
-            'total_revenue' => 45000000, // Data ini masih dummy
+            'pendapatan_hari_ini' => end($salesValues), // Ambil data penjualan terakhir sebagai pendapatan hari ini
+            'pesanan_baru' => 15,
+            'pelanggan_baru' => 8,
+            'total_produk' => 54,
         ];
 
-        // 3. DATA AKTIVITAS TERBARU (Masih menggunakan data dummy)
-        $recent_activities = [
-            ['type' => 'order', 'message' => 'Pesanan baru #1234 diterima', 'time' => '15 menit lalu'],
-            ['type' => 'product', 'message' => 'Produk "KAOS CUSTOM" diupdate', 'time' => '1 jam lalu'],
-            ['type' => 'customer', 'message' => 'Pengguna Budi mendaftar', 'time' => '3 jam lalu'],
+        // Data dummy untuk tabel pesanan terbaru
+        $pesanan_terbaru = [
+            ['id' => 'KESTORE-001', 'pelanggan' => 'Andi Budianto', 'total' => 150000, 'status' => 'Sedang Diproses'],
+            ['id' => 'KESTORE-002', 'pelanggan' => 'Citra Lestari', 'total' => 275000, 'status' => 'Menunggu Pembayaran'],
+            ['id' => 'KESTORE-003', 'pelanggan' => 'Doni Saputra', 'total' => 85000, 'status' => 'Telah Dikirim'],
+            ['id' => 'KESTORE-004', 'pelanggan' => 'Eka Wulandari', 'total' => 320000, 'status' => 'Selesai'],
         ];
 
-        // 4. KIRIM SEMUA DATA KE VIEW
-        return view('dashboard.index', [
-            'stats' => $stats,
-            'recent_activities' => $recent_activities,
-            'top_products' => $top_products,
-        ]);
+        return view('Admin.dashboard', compact('stats', 'pesanan_terbaru', 'salesChartData'));
+    }
+
+    /**
+     * Menampilkan dashboard untuk Member.
+     */
+    public function member()
+    {
+        return view('Member.dashboard');
     }
 }

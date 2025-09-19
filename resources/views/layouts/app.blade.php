@@ -14,6 +14,9 @@
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
@@ -100,21 +103,20 @@
             color: #fff;
         }
 
-        .form-control::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+        .form-control::placeholder {
             color: #888;
-            opacity: 1; /* Firefox */
+            opacity: 1;
         }
 
-        .form-control:-ms-input-placeholder { /* Internet Explorer 10-11 */
+        .form-control:-ms-input-placeholder {
             color: #888;
         }
 
-        .form-control::-ms-input-placeholder { /* Microsoft Edge */
+        .form-control::-ms-input-placeholder {
             color: #888;
         }
-        
     </style>
-    <!-- ===== AKHIR DARI GAYA CUSTOM ===== -->
+    @yield('styles')
 </head>
 
 <body>
@@ -132,13 +134,7 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav me-auto">
-                    </ul>
-
-                    <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
-                        <!-- Authentication Links -->
                         @guest
                             @if (Route::has('login'))
                                 <li class="nav-item">
@@ -152,22 +148,20 @@
                                 </li>
                             @endif
                         @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
-                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
+                            <li class="nav-item">
+                                <span class="nav-link">Halo, {{ Auth::user()->name }}</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('logout') }}"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    Logout
                                 </a>
-
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
-                                                         document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    @csrf
+                                </form>
                             </li>
                         @endguest
                     </ul>
@@ -179,6 +173,7 @@
             @yield('content')
         </main>
     </div>
+    @yield('scripts')
 </body>
 
 </html>

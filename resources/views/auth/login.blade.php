@@ -13,13 +13,11 @@
 
                             <div class="row mb-3">
                                 <label for="email"
-                                    class="col-md-4 col-form-label text-md-end">{{ __('Alamat Email') }}</label>
+                                    class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
 
                                 <div class="col-md-6">
-                                    {{-- Menambahkan placeholder untuk petunjuk --}}
                                     <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"
-                                        name="email" value="{{ old('email') }}" required autocomplete="email" autofocus
-                                        placeholder="Masukkan email Anda">
+                                        name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
 
                                     @error('email')
                                         <span class="invalid-feedback" role="alert">
@@ -34,10 +32,14 @@
                                     class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
 
                                 <div class="col-md-6">
-                                    {{-- Menambahkan placeholder untuk petunjuk --}}
-                                    <input id="password" type="password"
-                                        class="form-control @error('password') is-invalid @enderror" name="password"
-                                        required autocomplete="current-password" placeholder="Masukkan password Anda">
+                                    <div class="input-group">
+                                        <input id="password" type="password"
+                                            class="form-control @error('password') is-invalid @enderror" name="password"
+                                            required autocomplete="current-password">
+                                        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
 
                                     @error('password')
                                         <span class="invalid-feedback" role="alert">
@@ -47,13 +49,14 @@
                                 </div>
                             </div>
 
+
                             <div class="row mb-3">
                                 <div class="col-md-6 offset-md-4">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
 
                                         <label class="form-check-label" for="remember">
-                                            {{ __('Ingat Saya') }}
+                                            {{ __('Remember Me') }}
                                         </label>
                                     </div>
                                 </div>
@@ -67,7 +70,7 @@
 
                                     @if (Route::has('password.request'))
                                         <a class="btn btn-link" href="{{ route('password.request') }}">
-                                            {{ __('Lupa Password?') }}
+                                            {{ __('Forgot Your Password?') }}
                                         </a>
                                     @endif
                                 </div>
@@ -78,4 +81,40 @@
             </div>
         </div>
     </div>
+@endsection
+
+{{-- PERUBAHAN: Mengganti @push menjadi @section --}}
+@section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const togglePassword = document.querySelector('#togglePassword');
+            const password = document.querySelector('#password');
+            const icon = togglePassword.querySelector('i');
+
+            togglePassword.addEventListener('click', function (e) {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            });
+        });
+    </script>
+@endsection
+
+{{-- PERUBAHAN: Mengganti @push menjadi @section --}}
+@section('styles')
+    <style>
+        .input-group .btn {
+            border-color: #555;
+        }
+
+        .input-group .btn:hover {
+            background-color: #444;
+        }
+
+        .input-group .btn i {
+            color: #ccc;
+        }
+    </style>
 @endsection

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers; // <-- Pastikan namespace-nya ini
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
@@ -36,14 +36,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // 🔹 Cek role user setelah login
-        $user = Auth::user();
-
-        if ($user->role === 'admin') {
-            return redirect()->route('dashboard.admin');
-        }
-
-        return redirect()->route('dashboard.member');
+        return redirect()->intended(route('dashboard'));
     }
 
     /**
@@ -56,6 +49,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('landing');
+        return redirect('/');
     }
 }

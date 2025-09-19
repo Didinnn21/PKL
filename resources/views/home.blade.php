@@ -28,33 +28,41 @@
         }
 
         .carousel-item {
-        height: 80vh; /* Mengatur tinggi carousel, 80% dari tinggi layar */
-        min-height: 400px;
-        background-color: #000; /* Warna latar belakang untuk mengisi area kosong */
+            height: 80vh;
+            /* Mengatur tinggi carousel, 80% dari tinggi layar */
+            min-height: 400px;
+            background-color: #000;
+            /* Warna latar belakang untuk mengisi area kosong */
         }
 
         .carousel-item img {
             height: 100%;
             width: 100%;
-            object-fit: contain; /* <-- DIUBAH DARI 'cover' MENJADI 'contain' */
-            filter: brightness(60%); /* Sedikit meredupkan gambar agar teks lebih mudah dibaca */
+            object-fit: contain;
+            /* <-- DIUBAH DARI 'cover' MENJADI 'contain' */
+            filter: brightness(60%);
+            /* Sedikit meredupkan gambar agar teks lebih mudah dibaca */
         }
 
         .carousel-caption {
             position: absolute;
             right: 15%;
             left: 15%;
-            bottom: 1.25rem; /* Menyesuaikan posisi jika 'contain' digunakan */
+            bottom: 1.25rem;
+            /* Menyesuaikan posisi jika 'contain' digunakan */
             padding-top: 1.25rem;
             padding-bottom: 1.25rem;
             color: #fff;
             text-align: center;
-            width: 70%; /* Batasi lebar caption */
-            margin: 0 auto; /* Pusatkan caption */
+            width: 70%;
+            /* Batasi lebar caption */
+            margin: 0 auto;
+            /* Pusatkan caption */
         }
 
         .carousel-caption h5 {
-            font-size: 2.5rem; /* Sedikit sesuaikan ukuran font jika perlu */
+            font-size: 2.5rem;
+            /* Sedikit sesuaikan ukuran font jika perlu */
             font-weight: 700;
             bottom: 40%;
             margin: 0 auto;
@@ -97,8 +105,9 @@
 <body>
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
-                <img src="{{ asset('images/kestore-logo.png') }}" alt="Kestore.id Logo" style="height: 30px; margin-right: 8px;">
+            <a class="navbar-brand d-flex align-items-center" href="{{ route('landing') }}">
+                <img src="{{ asset('images/kestore-logo.png') }}" alt="Kestore.id Logo"
+                    style="height: 30px; margin-right: 8px;">
                 KESTORE.ID
             </a>
             <div class="ms-auto">
@@ -106,7 +115,7 @@
                     <a href="{{ route('login') }}" class="btn btn-outline-gold me-2">Login</a>
                     <a href="{{ route('register') }}" class="btn btn-light">Register</a>
                 @else
-                    <a href="{{ route('dashboard.index') }}" class="btn btn-outline-gold">My Dashboard</a>
+                    <a href="{{ route('dashboard') }}" class="btn btn-outline-gold">My Dashboard</a>
                 @endguest
             </div>
         </div>
@@ -115,8 +124,8 @@
     <header>
         <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-indicators">
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true"
-                    aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"
+                    aria-current="true" aria-label="Slide 1"></button>
                 <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
                 <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
             </div>
@@ -171,8 +180,7 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ $product->name }}</h5>
                             <p class="card-text fw-bold">Rp {{ number_format($product->price) }}</p>
-                            <a href="{{ route('product.show', $product->id) }}" class="btn btn-outline-gold w-100">View
-                                Details</a>
+                            <a href="#" class="btn btn-outline-gold w-100">View Details</a>
                         </div>
                     </div>
                 </div>

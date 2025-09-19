@@ -5,185 +5,295 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Dashboard') - Kestore.id</title>
 
-    <title>@yield('title') - {{ config('app.name', 'Laravel') }}</title>
+    <!-- Scripts -->
+    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Fonts -->
+    <link rel="dns-prefetch" href="//fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
+    <!-- Custom Styles -->
     <style>
+        body {
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .navbar-top {
+            background-color: #252525;
+            border-bottom: 1px solid #333;
+        }
+
+        .navbar-brand, .nav-link, .navbar-text {
+            color: #d4af37 !important;
+            font-weight: 600;
+        }
+
         .sidebar {
+            background-color: #252525;
             min-height: 100vh;
-            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            border-right: 1px solid #333;
         }
 
         .sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.8);
-            padding: 1rem 1.5rem;
-            border-radius: 0;
+            color: #ccc;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar .nav-link i.nav-icon {
+            width: 20px;
+            margin-right: 10px;
+            text-align: center;
         }
 
         .sidebar .nav-link:hover,
         .sidebar .nav-link.active {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            background-color: #333;
+            border-radius: 5px;
         }
 
-        .main-content {
-            background-color: #f8f9fa;
-            min-height: 100vh;
+        .sidebar .dropdown-toggle::after {
+            margin-left: auto;
+            transition: transform 0.3s ease;
         }
 
-        .card {
+        .sidebar .dropdown-toggle[aria-expanded="true"]::after {
+            transform: rotate(90deg);
+        }
+
+        .sidebar .nav-dropdown {
+            padding-left: 20px;
+        }
+
+        .sidebar .nav-dropdown .nav-link {
+            padding-left: 2.5rem;
+        }
+
+        main {
+            padding: 2rem;
+        }
+        .logout-form .btn-logout {
+            background: none;
             border: none;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-            transition: box-shadow 0.15s ease-in-out;
+            color: #d4af37 !important;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            text-align: left;
         }
 
-        .card:hover {
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        /* --- STYLE BARU UNTUK NOTIFIKASI --- */
+        .notification-dropdown .dropdown-toggle::after {
+            display: none; /* Sembunyikan panah default */
         }
 
-        .stats-card {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
+        .notification-icon {
+            position: relative;
+            font-size: 1.5rem;
+            color: #ccc;
         }
 
-        .stats-card-success {
-            background: linear-gradient(45deg, #56ab2f, #a8e6cf);
+        .notification-icon:hover {
+            color: #fff;
         }
 
-        .stats-card-warning {
-            background: linear-gradient(45deg, #f093fb, #f5576c);
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            padding: 0.2em 0.4em;
+            font-size: 0.7rem;
+            font-weight: bold;
+            line-height: 1;
+            color: #fff;
+            background-color: #dc3545;
+            border-radius: 50%;
         }
 
-        .stats-card-info {
-            background: linear-gradient(45deg, #4facfe, #00f2fe);
+        .notification-dropdown .dropdown-menu {
+            width: 350px;
+            background-color: #333;
+            border-color: #444;
+            color: #f0f0f0;
         }
+
+        .notification-dropdown .dropdown-header {
+            background-color: #252525;
+            color: #d4af37;
+            font-weight: 600;
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #444;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-item a {
+            text-decoration: none;
+            color: #f0f0f0;
+        }
+
+        .notification-item:hover {
+            background-color: #444;
+        }
+
+        .notification-item .icon {
+            font-size: 1.2rem;
+            color: #d4af37;
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .notification-item .message {
+            font-size: 0.9rem;
+        }
+
+        .notification-item .time {
+            font-size: 0.75rem;
+            color: #aaa;
+        }
+        /* --- AKHIR STYLE NOTIFIKASI --- */
+
     </style>
-
-    @stack('styles')
 </head>
 
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <div class="text-center mb-4">
-                        <h4 class="text-white">
-                            <i class="fas fa-store me-2"></i>E-Commerce
-                        </h4>
-                    </div>
+    <div id="app">
+        <nav class="navbar navbar-expand-md navbar-dark navbar-top shadow-sm">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items:center" href="{{ url('/') }}">
+                    <img src="{{ asset('images/kestore-logo.png') }}" alt="Kestore.id Logo" style="height: 30px; margin-right: 10px;">
+                    KESTORE.ID
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto align-items-center">
 
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                                href="{{ route('dashboard') }}">
-                                <i class="fas fa-tachometer-alt me-2"></i>
-                                Dashboard
+                        <!-- PERUBAHAN: Menambahkan Dropdown Notifikasi -->
+                        <li class="nav-item dropdown notification-dropdown me-3">
+                            <a class="nav-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="notification-icon">
+                                    <i class="fas fa-bell"></i>
+                                    <span class="notification-badge">3</span> <!-- Angka ini bisa dinamis -->
+                                </span>
                             </a>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <div class="dropdown-header">
+                                    Notifikasi (3 Pesanan Baru)
+                                </div>
+                                <div class="notification-item">
+                                    <a href="#" class="d-flex">
+                                        <div class="icon"><i class="fas fa-receipt"></i></div>
+                                        <div>
+                                            <div class="message">Pesanan baru <strong>#KESTORE-001</strong> dari Andi.</div>
+                                            <div class="time">5 menit yang lalu</div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="notification-item">
+                                    <a href="#" class="d-flex">
+                                        <div class="icon"><i class="fas fa-receipt"></i></div>
+                                        <div>
+                                            <div class="message">Pesanan baru <strong>#KESTORE-002</strong> dari Citra.</div>
+                                            <div class="time">15 menit yang lalu</div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="notification-item">
+                                    <a href="#" class="d-flex">
+                                        <div class="icon"><i class="fas fa-receipt"></i></div>
+                                        <div>
+                                            <div class="message">Pesanan baru <strong>#KESTORE-003</strong> dari Doni.</div>
+                                            <div class="time">1 jam yang lalu</div>
+                                        </div>
+                                    </a>
+                                </div>
+                                 <a class="dropdown-item text-center small text-muted" href="#">Lihat semua notifikasi</a>
+                            </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#products">
-                                <i class="fas fa-box me-2"></i>
-                                Products
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#orders">
-                                <i class="fas fa-shopping-cart me-2"></i>
-                                Orders
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#customers">
-                                <i class="fas fa-users me-2"></i>
-                                Customers
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#reports">
-                                <i class="fas fa-chart-bar me-2"></i>
-                                Reports
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#settings">
-                                <i class="fas fa-cog me-2"></i>
-                                Settings
-                            </a>
-                        </li>
-                        <li class="nav-item mt-4">
-                            <a class="nav-link" href="{{ route('logout') }}"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="fas fa-sign-out-alt me-2"></i>
-                                Logout
-                            </a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                @csrf
-                            </form>
-                        </li>
+
+                        @auth
+                            <li class="nav-item">
+                                <span class="navbar-text">Halo, {{ Auth::user()->name }}</span>
+                            </li>
+                            <li class="nav-item ms-3">
+                                <form id="logout-form" class="logout-form" action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn-logout">Logout</button>
+                                </form>
+                            </li>
+                        @endauth
                     </ul>
                 </div>
-            </nav>
+            </div>
+        </nav>
 
-            <!-- Main content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
-                <div
-                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">@yield('page-title', 'Dashboard')</h1>
-                    <div class="btn-toolbar mb-2 mb-md-0">
-                        <div class="dropdown">
-                            <button class="btn btn-outline-secondary dropdown-toggle" type="button"
-                                id="dropdownMenuButton" data-bs-toggle="dropdown">
-                                <i class="fas fa-user me-1"></i>
-                                {{ Auth::user()->name }}
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#profile">Profile</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                        Logout
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                    <div class="position-sticky pt-3">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
+                                    <i class="fas fa-home nav-icon"></i> Home
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    <i class="fas fa-box-open nav-icon"></i> Product
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link dropdown-toggle" href="#orders-submenu" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="orders-submenu">
+                                    <i class="fas fa-shopping-cart nav-icon"></i> Pesanan
+                                </a>
+                                <div class="collapse nav-dropdown" id="orders-submenu">
+                                    <ul class="nav flex-column">
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#">Pesanan Satuan</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#">Pesanan Lusinan</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                             <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    <i class="fas fa-address-book nav-icon"></i> Contact
+                                </a>
+                            </li>
+                        </ul>
                     </div>
-                </div>
+                </nav>
 
-                @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
-
-                @if(session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
-
-                @yield('content')
-            </main>
+                <!-- Main content -->
+                <main class="col-md-9 ms-sm-auto col-lg-10">
+                    @yield('content')
+                </main>
+            </div>
         </div>
     </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    @stack('scripts')
 </body>
 
 </html>
+

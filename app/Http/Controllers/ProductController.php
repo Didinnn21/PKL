@@ -9,12 +9,12 @@ use Illuminate\Http\Request;
 class ProductController extends Controller
 {
     /**
-     * Menampilkan daftar semua produk.
+     * Menampilkan halaman daftar produk.
      */
     public function index()
     {
-        $products = Product::latest()->paginate(10);
-        return view('dashboard.products.index', compact('products'));
+        $products = Product::latest()->paginate(10); // Ambil 10 produk terbaru per halaman
+        return view('Admin.products.index', compact('products'));
     }
 
     /**
@@ -22,60 +22,54 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('dashboard.products.create');
+        return view('Admin.products.create');
     }
 
     /**
-     * Menyimpan produk baru ke database.
+     * Menyimpan produk baru ke dalam database.
      */
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
-            'price' => 'required|integer|min:0',
+            'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image_url' => 'nullable|url'
+            'image_url' => 'nullable|string|max:255', // Anda bisa ganti validasi ke 'url' jika perlu
         ]);
 
         Product::create($request->all());
 
-        return redirect()->route('dashboard.products.index')
-            ->with('success', 'Produk berhasil ditambahkan!');
+        return redirect()->route('admin.products.index')
+            ->with('success', 'Produk baru berhasil ditambahkan!');
     }
 
     /**
-     * Menampilkan form untuk mengedit produk yang ada.
+     * Menampilkan form untuk mengedit produk.
      */
     public function edit(Product $product)
     {
-        // Laravel secara otomatis akan menemukan produk berdasarkan ID dari URL
-        // lalu mengirimkannya sebagai variabel $product ke view.
-        return view('dashboard.products.edit', compact('product'));
+        return view('Admin.products.edit', compact('product'));
     }
 
     /**
-     * Memperbarui produk di database.
+     * Memperbarui data produk di database.
      */
     public function update(Request $request, Product $product)
     {
-        // Lakukan validasi yang sama seperti saat membuat
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
-            'price' => 'required|integer|min:0',
+            'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image_url' => 'nullable|url'
+            'image_url' => 'nullable|string|max:255',
         ]);
 
-        // Update data produk dengan data baru dari form
         $product->update($request->all());
 
-        // Arahkan kembali ke daftar produk dengan pesan sukses
-        return redirect()->route('dashboard.products.index')
+        return redirect()->route('admin.products.index')
             ->with('success', 'Produk berhasil diperbarui!');
     }
-
 
     /**
      * Menghapus produk dari database.
@@ -84,7 +78,7 @@ class ProductController extends Controller
     {
         $product->delete();
 
-        return redirect()->route('dashboard.products.index')
+        return redirect()->route('admin.products.index')
             ->with('success', 'Produk berhasil dihapus!');
     }
 }

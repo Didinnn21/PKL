@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\RegisterController; // Pastikan ini ada
 use Illuminate\Support\Facades\Artisan;
 
 /*
@@ -13,68 +15,61 @@ use Illuminate\Support\Facades\Artisan;
 */
 
 Route::get('/', [HomeController::class, 'index'])->name('landing');
-Route::get('/products', [HomeController::class, 'products'])->name('products.all');
-Route::get('/product/{id}', [HomeController::class, 'show'])->name('product.show');
-Route::get('/search', [HomeController::class, 'search'])->name('search');
 
 /*
 |--------------------------------------------------------------------------
-| 2. Autentikasi (Login, Register, Logout)
+| 2. Rute Autentikasi (Didefinisikan Manual untuk Menghindari Error)
 |--------------------------------------------------------------------------
 */
-// Auth::routes(); → jangan pakai default, karena kita sudah override AuthenticatedSessionController
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
-Route::get('login', [AuthenticatedSessionController::class, 'create'])
-    ->name('login');
-Route::post('login', [AuthenticatedSessionController::class, 'store']);
-Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
-    ->name('logout');
+// Rute untuk pengguna yang belum login (guest)
+Route::middleware('guest')->group(function () {
+    // Registrasi
+    Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('register', [RegisterController::class, 'register']);
+
+    // Login
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+});
+
+// Rute untuk pengguna yang sudah login
+Route::middleware('auth')->group(function () {
+    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+});
+
 
 /*
 |--------------------------------------------------------------------------
-| 3. Rute Transaksional (Wajib Login)
+| 3. Rute Dashboard Universal (Wajib Login)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth'])->group(function () {
-    Route::post('/cart/add', [HomeController::class, 'addToCart'])->name('cart.add');
-    Route::get('/cart', [HomeController::class, 'viewCart'])->name('cart.view');
-    Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
-    Route::get('/wishlist', [HomeController::class, 'wishlist'])->name('wishlist');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware('auth')->name('dashboard');
+
+/*
+|--------------------------------------------------------------------------
+| 4. Rute Spesifik Admin (Wajib Login & Role Admin)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'is_admin'])->prefix('admin')->as('admin.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
+    // Tambahkan rute-rute admin lainnya di sini
 });
 
 /*
 |--------------------------------------------------------------------------
-| 4. Dashboard
+| 5. Rute Spesifik Member (Wajib Login)
 |--------------------------------------------------------------------------
 */
-
-// == DASHBOARD ADMIN ==
-Route::prefix('admin')->middleware(['auth', 'is_admin'])->name('dashboard.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'admin'])->name('admin');
-
-    Route::prefix('products')->name('products.')->group(function () {
-        Route::get('/', fn() => view('dashboard.products.index'))->name('index');
-        Route::get('/create', fn() => view('dashboard.products.create'))->name('create');
-    });
-
-    Route::prefix('orders')->name('orders.')->group(function () {
-        Route::get('/', fn() => view('dashboard.orders.index'))->name('index');
-    });
-
-    Route::prefix('customers')->name('customers.')->group(function () {
-        Route::get('/', fn() => view('dashboard.customers.index'))->name('index');
-    });
-});
-
-// == DASHBOARD MEMBER ==
-Route::prefix('member')->middleware(['auth'])->name('dashboard.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'member'])->name('member');
+Route::middleware(['auth'])->prefix('member')->as('member.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'member'])->name('dashboard');
+    // Tambahkan rute-rute member lainnya di sini
 });
 
 /*
 |--------------------------------------------------------------------------
-| 5. Rute Utilitas (Opsional)
+| 6. Rute Utilitas (Opsional)
 |--------------------------------------------------------------------------
 */
 Route::get('/clear-cache', function () {

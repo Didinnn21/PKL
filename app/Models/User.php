@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role', // Ditambahkan agar bisa diisi saat registrasi
         'is_admin',
     ];
 
@@ -42,5 +43,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'is_admin' => 'boolean', // Pastikan is_admin di-cast sebagai boolean
     ];
 }
