@@ -6,7 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Admin\ProductController; // Pastikan ini ada
+use App\Http\Controllers\ProductController; // Pastikan ini ada
 use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Artisan;
 

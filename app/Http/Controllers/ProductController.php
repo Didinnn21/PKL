@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+// Pastikan namespace adalah ini, tanpa subfolder "Admin"
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
@@ -13,7 +14,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::latest()->paginate(10); // Ambil 10 produk terbaru per halaman
+        $products = Product::latest()->paginate(10);
         return view('Admin.products.index', compact('products'));
     }
 
@@ -35,7 +36,7 @@ class ProductController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image_url' => 'nullable|string|max:255', // Anda bisa ganti validasi ke 'url' jika perlu
+            'image_url' => 'nullable|string|max:255',
         ]);
 
         Product::create($request->all());

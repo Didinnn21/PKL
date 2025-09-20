@@ -22,6 +22,10 @@ class DatabaseSeeder extends Seeder
             'is_admin' => true,
         ]);
 
+        $this->call([
+            AdminUserSeeder::class,
+            ProductSeeder::class, // TAMBAHKAN BARIS INI
+        ]);
         // Atau jika ingin menggunakan seeder terpisah, uncomment baris berikut:
         // $this->call([
         //     UserSeeder::class,

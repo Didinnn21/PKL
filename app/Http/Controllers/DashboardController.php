@@ -6,12 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\Order;
+use App\Models\Product; // Tambahkan ini
+use App\Models\User;    // Tambahkan ini
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        if (Auth::user()->role === 'admin') {
+        if (Auth::user()->is_admin) {
             return redirect()->route('admin.dashboard');
         }
         return redirect()->route('member.dashboard');
@@ -19,35 +21,42 @@ class DashboardController extends Controller
 
     public function admin(Request $request)
     {
-        $filter = $request->query('filter', 'weekly'); // Default filter adalah mingguan
+        // === PENGAMBILAN DATA DINAMIS DARI DATABASE ===
+        $stats = [
+            'pendapatan_hari_ini' => Order::whereDate('created_at', Carbon::today())->sum('total_price'),
+            'pesanan_baru' => Order::where('status', 'Menunggu Pembayaran')->count(),
+            'pelanggan_baru' => User::where('role', 'member')->whereDate('created_at', Carbon::today())->count(),
+            'total_produk' => Product::count(),
+        ];
+
+        $pesanan_terbaru = Order::with('user')->latest()->take(5)->get();
+        // ===============================================
+
+        // Logika Chart (bisa dibiarkan dulu, sudah dinamis)
+        $filter = $request->query('filter', 'weekly');
         $salesLabels = [];
         $salesValues = [];
 
         switch ($filter) {
             case 'yearly':
-                // Data 12 bulan terakhir
                 for ($i = 11; $i >= 0; $i--) {
                     $date = Carbon::now()->subMonths($i);
-                    $salesLabels[] = $date->translatedFormat('F'); // Nama bulan, e.g., Januari
-                    $salesValues[] = rand(20000000, 50000000); // Simulasi data bulanan
+                    $salesLabels[] = $date->translatedFormat('F');
+                    $salesValues[] = Order::whereYear('created_at', $date->year)->whereMonth('created_at', $date->month)->sum('total_price');
                 }
                 break;
-
             case 'monthly':
-                // Data 30 hari terakhir
                 for ($i = 29; $i >= 0; $i--) {
                     $date = Carbon::now()->subDays($i);
-                    $salesLabels[] = $date->format('d M'); // Tanggal & bulan, e.g., 20 Sep
-                    $salesValues[] = rand(500000, 2500000); // Simulasi data harian
+                    $salesLabels[] = $date->format('d M');
+                    $salesValues[] = Order::whereDate('created_at', $date)->sum('total_price');
                 }
                 break;
-
             default: // weekly
-                // Data 7 hari terakhir
                 for ($i = 6; $i >= 0; $i--) {
                     $date = Carbon::now()->subDays($i);
-                    $salesLabels[] = $date->translatedFormat('l'); // Nama hari, e.g., Senin
-                    $salesValues[] = rand(500000, 2000000);
+                    $salesLabels[] = $date->translatedFormat('l');
+                    $salesValues[] = Order::whereDate('created_at', $date)->sum('total_price');
                 }
                 break;
         }
@@ -55,18 +64,6 @@ class DashboardController extends Controller
         $salesChartData = [
             'labels' => $salesLabels,
             'data' => $salesValues,
-        ];
-
-        $stats = [
-            'pendapatan_hari_ini' => end($salesValues),
-            'pesanan_baru' => 15,
-            'pelanggan_baru' => 8,
-            'total_produk' => 54,
-        ];
-
-        $pesanan_terbaru = [
-            ['id' => 'KESTORE-001', 'pelanggan' => 'Andi Budianto', 'total' => 150000, 'status' => 'Sedang Diproses'],
-            ['id' => 'KESTORE-002', 'pelanggan' => 'Citra Lestari', 'total' => 275000, 'status' => 'Menunggu Pembayaran'],
         ];
 
         return view('Admin.dashboard', compact('stats', 'pesanan_terbaru', 'salesChartData', 'filter'));
