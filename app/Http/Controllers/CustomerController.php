@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers; // <- Namespace utama
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Order;
 
 class CustomerController extends Controller
 {
@@ -15,8 +14,8 @@ class CustomerController extends Controller
     public function index()
     {
         $customers = User::where('role', 'member')
-            ->withCount('orders') // Menghitung jumlah pesanan
-            ->withSum('orders', 'total_price') // Menjumlahkan total belanja
+            ->withCount('orders')
+            ->withSum('orders', 'total_price')
             ->paginate(15);
 
         return view('admin.customers.index', compact('customers'));
