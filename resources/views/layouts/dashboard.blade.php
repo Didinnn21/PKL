@@ -78,7 +78,6 @@
 
         .sidebar .nav-dropdown .nav-link {
             padding-left: 1.5rem;
-            /* Disesuaikan agar ikon sejajar */
         }
 
         main {
@@ -169,6 +168,22 @@
         .notification-item .time {
             font-size: 0.75rem;
             color: #aaa;
+        }
+
+        /* PERBAIKAN WARNA TOMBOL DETAIL PADA TABEL */
+        .table .btn-outline-light {
+            color: #f8f9fa;
+            /* Teks putih */
+            border-color: #6c757d;
+            /* Border abu-abu */
+        }
+
+        .table .btn-outline-light:hover {
+            color: #1a1a1a;
+            /* Teks hitam saat hover */
+            background-color: #f8f9fa;
+            /* Latar putih saat hover */
+            border-color: #f8f9fa;
         }
     </style>
     @stack('styles')
