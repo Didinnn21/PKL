@@ -9,7 +9,7 @@
             <h1 class="h2">Edit Produk: {{ $product->name }}</h1>
         </div>
 
-        <div class="card" style="background-color: #2c2c2c; border: 1px solid #444;">
+        <div class="card">
             <div class="card-body">
                 <form action="{{ route('admin.products.update', $product->id) }}" method="POST">
                     @csrf
@@ -21,7 +21,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="description" class="form-label">Deskripsi</label>
-                        <textarea class="form-control" id="description" name="description" rows="3"
+                        <textarea class="form-control" id="description" name="description" rows="4"
                             required>{{ old('description', $product->description) }}</textarea>
                     </div>
                     <div class="row">
@@ -42,8 +42,10 @@
                             value="{{ old('image_url', $product->image_url) }}">
                     </div>
 
-                    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Batal</a>
-                    <button type="submit" class="btn btn-warning">Update Produk</button>
+                    <div class="d-flex justify-content-end">
+                        <a href="{{ route('admin.products.index') }}" class="btn btn-secondary me-2">Batal</a>
+                        <button type="submit" class="btn btn-warning">Update Produk</button>
+                    </div>
                 </form>
             </div>
         </div>
