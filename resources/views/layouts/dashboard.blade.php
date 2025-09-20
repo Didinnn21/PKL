@@ -93,97 +93,29 @@
             text-align: left;
         }
 
-        .notification-dropdown .dropdown-toggle::after {
-            display: none;
+        .card {
+            background-color: #2c2c2c;
+            border: 1px solid #444;
         }
 
-        .notification-icon {
-            position: relative;
-            font-size: 1.5rem;
-            color: #ccc;
-        }
-
-        .notification-icon:hover {
-            color: #fff;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -8px;
-            padding: 0.2em 0.4em;
-            font-size: 0.7rem;
-            font-weight: bold;
-            line-height: 1;
-            color: #fff;
-            background-color: #dc3545;
-            border-radius: 50%;
-        }
-
-        .notification-dropdown .dropdown-menu {
-            width: 350px;
+        .card-header {
             background-color: #333;
-            border-color: #444;
-            color: #f0f0f0;
-        }
-
-        .notification-dropdown .dropdown-header {
-            background-color: #252525;
-            color: #d4af37;
-            font-weight: 600;
-        }
-
-        .notification-item {
-            display: flex;
-            align-items: flex-start;
-            padding: 0.75rem 1rem;
             border-bottom: 1px solid #444;
         }
 
-        .notification-item:last-child {
-            border-bottom: none;
-        }
-
-        .notification-item a {
-            text-decoration: none;
+        .table-dark-custom {
+            background-color: #2c2c2c;
             color: #f0f0f0;
         }
 
-        .notification-item:hover {
-            background-color: #444;
+        .table-dark-custom th {
+            background-color: #333;
+            border-color: #444 !important;
         }
 
-        .notification-item .icon {
-            font-size: 1.2rem;
-            color: #d4af37;
-            margin-right: 15px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .notification-item .message {
-            font-size: 0.9rem;
-        }
-
-        .notification-item .time {
-            font-size: 0.75rem;
-            color: #aaa;
-        }
-
-        /* PERBAIKAN WARNA TOMBOL DETAIL PADA TABEL */
-        .table .btn-outline-light {
-            color: #f8f9fa;
-            /* Teks putih */
-            border-color: #6c757d;
-            /* Border abu-abu */
-        }
-
-        .table .btn-outline-light:hover {
-            color: #1a1a1a;
-            /* Teks hitam saat hover */
-            background-color: #f8f9fa;
-            /* Latar putih saat hover */
-            border-color: #f8f9fa;
+        .table-dark-custom td,
+        .table-dark-custom th {
+            border-color: #444 !important;
         }
     </style>
     @stack('styles')
@@ -193,37 +125,13 @@
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-dark navbar-top shadow-sm">
             <div class="container-fluid">
-                <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
+                <a class="navbar-brand d-flex align-items-center" href="{{ url('/admin/dashboard') }}">
                     <img src="{{ asset('images/kestore-logo.png') }}" alt="Kestore.id Logo"
                         style="height: 30px; margin-right: 10px;">
                     KESTORE.ID
                 </a>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto align-items-center">
-                        <li class="nav-item dropdown notification-dropdown me-3">
-                            <a class="nav-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                <span class="notification-icon">
-                                    <i class="fas fa-bell"></i>
-                                    <span class="notification-badge">3</span>
-                                </span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <div class="dropdown-header">Notifikasi (3 Pesanan Baru)</div>
-                                <div class="notification-item">
-                                    <a href="#" class="d-flex">
-                                        <div class="icon"><i class="fas fa-receipt"></i></div>
-                                        <div>
-                                            <div class="message">Pesanan baru <strong>#KESTORE-001</strong> dari Andi.
-                                            </div>
-                                            <div class="time">5 menit yang lalu</div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <a class="dropdown-item text-center small text-muted" href="#">Lihat semua
-                                    notifikasi</a>
-                            </div>
-                        </li>
                         @auth
                             <li class="nav-item">
                                 <span class="navbar-text">Halo, {{ Auth::user()->name }}</span>
@@ -242,7 +150,6 @@
 
         <div class="container-fluid">
             <div class="row">
-                <!-- Sidebar -->
                 <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
                     <div class="position-sticky pt-3">
                         <ul class="nav flex-column">
@@ -255,98 +162,58 @@
                             <li class="nav-item">
                                 <a class="nav-link dropdown-toggle {{ request()->routeIs('admin.products.*') ? 'active' : '' }}"
                                     href="#products-submenu" data-bs-toggle="collapse" role="button"
-                                    aria-expanded="{{ request()->routeIs('admin.products.*') ? 'true' : 'false' }}"
-                                    aria-controls="products-submenu">
+                                    aria-expanded="{{ request()->routeIs('admin.products.*') ? 'true' : 'false' }}">
                                     <i class="fas fa-box-open nav-icon"></i> Produk
                                 </a>
                                 <div class="collapse nav-dropdown {{ request()->routeIs('admin.products.*') ? 'show' : '' }}"
                                     id="products-submenu">
                                     <ul class="nav flex-column">
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('admin.products.index') }}"><i
-                                                    class="fas fa-boxes-stacked nav-icon"></i> Semua Produk</a>
+                                            <a class="nav-link" href="{{ route('admin.products.index') }}">Semua
+                                                Produk</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('admin.products.create') }}"><i
-                                                    class="fas fa-plus-square nav-icon"></i> Tambah Produk</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#"><i class="fas fa-tags nav-icon"></i>
-                                                Kategori</a>
+                                            <a class="nav-link" href="{{ route('admin.products.create') }}">Tambah
+                                                Produk</a>
                                         </li>
                                     </ul>
                                 </div>
                             </li>
+                            {{-- PERBARUI BAGIAN INI --}}
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}"
+                                    href="{{ route('admin.orders.index') }}">
                                     <i class="fas fa-shopping-cart nav-icon"></i> Pesanan
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}"
+                                    href="{{ route('admin.customers.index') }}">
                                     <i class="fas fa-users nav-icon"></i> Data Pembeli
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link dropdown-toggle" href="#reports-submenu" data-bs-toggle="collapse"
-                                    role="button" aria-expanded="false" aria-controls="reports-submenu">
+                                <a class="nav-link {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}"
+                                    href="{{ route('admin.laporan.penjualan') }}">
                                     <i class="fas fa-chart-pie nav-icon"></i> Laporan
                                 </a>
-                                <div class="collapse nav-dropdown" id="reports-submenu">
-                                    <ul class="nav flex-column">
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#"><i class="fas fa-chart-bar nav-icon"></i>
-                                                Laporan Penjualan</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#"><i class="fas fa-users-line nav-icon"></i>
-                                                Laporan Pelanggan</a>
-                                        </li>
-                                    </ul>
-                                </div>
                             </li>
+                            {{-- AKHIR PERUBAHAN --}}
                             <li class="nav-item mt-3 border-top pt-3 border-secondary">
-                                <a class="nav-link dropdown-toggle" href="#settings-submenu" data-bs-toggle="collapse"
-                                    role="button" aria-expanded="false" aria-controls="settings-submenu">
+                                <a class="nav-link" href="#">
                                     <i class="fas fa-cog nav-icon"></i> Pengaturan
                                 </a>
-                                <div class="collapse nav-dropdown" id="settings-submenu">
-                                    <ul class="nav flex-column">
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#"><i class="fas fa-user-shield nav-icon"></i>
-                                                Profil Admin</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#"><i class="fas fa-store nav-icon"></i>
-                                                Pengaturan Toko</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#"><i class="fas fa-credit-card nav-icon"></i>
-                                                Pembayaran</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#"><i class="fas fa-shipping-fast nav-icon"></i>
-                                                Pengiriman</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#"><i class="fas fa-users-cog nav-icon"></i>
-                                                Manajemen Akun</a>
-                                        </li>
-                                    </ul>
-                                </div>
                             </li>
                         </ul>
                     </div>
                 </nav>
 
-                <!-- Main content -->
                 <main class="col-md-9 ms-sm-auto col-lg-10">
                     @yield('content')
                 </main>
             </div>
         </div>
     </div>
-    @yield('scripts')
     @stack('scripts')
 </body>
 

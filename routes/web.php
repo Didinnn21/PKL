@@ -1,29 +1,24 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\ProductController; // Pastikan ini ada
-use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\OrderController as MemberOrderController;
+
+// TAMBAHKAN CONTROLLER BARU UNTUK ADMIN
+use App\Http\Controllers\OrderController as AdminOrderController;
+use App\Http\Controllers\CustomerController;
 use Illuminate\Support\Facades\Artisan;
 
-/*
-|--------------------------------------------------------------------------
-| 1. Rute Publik (Storefront)
-|--------------------------------------------------------------------------
-*/
 
 Route::get('/', [HomeController::class, 'index'])->name('landing');
-Route::get('/product/{product}', [OrderController::class, 'show'])->name('product.detail');
+Route::get('/product/{product}', [MemberOrderController::class, 'show'])->name('product.detail');
 
-/*
-|--------------------------------------------------------------------------
-| 2. Rute Autentikasi
-|--------------------------------------------------------------------------
-*/
+
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('register', [RegisterController::class, 'register']);
@@ -35,42 +30,32 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
 
-/*
-|--------------------------------------------------------------------------
-| 3. Rute Dashboard & Pemesanan (Wajib Login)
-|--------------------------------------------------------------------------
-*/
+
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::post('/order', [OrderController::class, 'store'])->name('order.store');
+    Route::post('/order', [MemberOrderController::class, 'store'])->name('order.store');
 });
 
-/*
-|--------------------------------------------------------------------------
-| 4. Rute Spesifik Admin (Wajib Login & Role Admin)
-|--------------------------------------------------------------------------
-*/
+
 Route::middleware(['auth', 'is_admin'])->prefix('admin')->as('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
-
-    // Rute untuk mengelola produk
     Route::resource('products', ProductController::class);
+
+    // RUTE BARU: PESANAN & PEMBELI
+    Route::resource('orders', AdminOrderController::class)->only(['index', 'show']);
+    Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
+
+    Route::prefix('laporan')->as('laporan.')->group(function () {
+        Route::get('/penjualan', [LaporanController::class, 'penjualan'])->name('penjualan');
+    });
 });
 
-/*
-|--------------------------------------------------------------------------
-| 5. Rute Spesifik Member (Wajib Login)
-|--------------------------------------------------------------------------
-*/
+
 Route::middleware(['auth'])->prefix('member')->as('member.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'member'])->name('dashboard');
 });
 
-/*
-|--------------------------------------------------------------------------
-| 6. Rute Utilitas (Opsional)
-|--------------------------------------------------------------------------
-*/
+
 Route::get('/clear-cache', function () {
     Artisan::call('cache:clear');
     Artisan::call('config:clear');

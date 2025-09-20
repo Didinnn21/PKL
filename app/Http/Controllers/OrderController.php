@@ -1,53 +1,29 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Models\Order;
-use App\Models\Product;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Order;
 
 class OrderController extends Controller
 {
     /**
-     * Menampilkan halaman detail produk untuk dipesan.
+     * Menampilkan daftar semua pesanan.
      */
-    public function show(Product $product)
+    public function index()
     {
-        return view('product_detail', compact('product'));
+        $orders = Order::with('user', 'product')->latest()->paginate(15);
+        return view('admin.orders.index', compact('orders'));
     }
 
     /**
-     * Menyimpan pesanan baru.
+     * Menampilkan detail satu pesanan.
      */
-    public function store(Request $request)
+    public function show(Order $order)
     {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
-            'design_file' => 'nullable|file|mimes:jpg,png,jpeg,cdr,ai,psd|max:10240', // Max 10MB
-            'notes' => 'nullable|string',
-        ]);
-
-        $product = Product::find($request->product_id);
-
-        $designFilePath = null;
-        if ($request->hasFile('design_file')) {
-            // Simpan file ke storage/app/public/designs
-            // Nama file dibuat unik untuk menghindari konflik
-            $fileName = time() . '_' . $request->file('design_file')->getClientOriginalName();
-            $designFilePath = $request->file('design_file')->storeAs('designs', $fileName, 'public');
-        }
-
-        Order::create([
-            'user_id' => Auth::id(),
-            'product_id' => $product->id,
-            'quantity' => $request->quantity,
-            'total_price' => $product->price * $request->quantity,
-            'notes' => $request->notes,
-            'design_file' => $designFilePath,
-        ]);
-
-        return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
+        // Memuat relasi user dan product untuk ditampilkan di detail
+        $order->load('user', 'product');
+        return view('admin.orders.show', compact('order'));
     }
 }

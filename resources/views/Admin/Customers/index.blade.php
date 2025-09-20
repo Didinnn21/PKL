@@ -16,40 +16,28 @@
                                 <th>Email</th>
                                 <th>Total Pesanan</th>
                                 <th>Total Belanja</th>
-                                <th class="text-center">Aksi</th>
+                                <th>Tanggal Bergabung</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- Contoh Data --}}
-                            <tr>
-                                <td>Andi Budianto</td>
-                                <td>andi.b@example.com</td>
-                                <td>5 Pesanan</td>
-                                <td>Rp 1.250.000</td>
-                                <td class="text-center">
-                                    <a href="#" class="btn btn-sm btn-outline-light">Lihat Riwayat</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Citra Lestari</td>
-                                <td>citra.l@example.com</td>
-                                <td>8 Pesanan</td>
-                                <td>Rp 3.450.000</td>
-                                <td class="text-center">
-                                    <a href="#" class="btn btn-sm btn-outline-light">Lihat Riwayat</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Doni Setiawan</td>
-                                <td>doni.s@example.com</td>
-                                <td>2 Pesanan</td>
-                                <td>Rp 750.000</td>
-                                <td class="text-center">
-                                    <a href="#" class="btn btn-sm btn-outline-light">Lihat Riwayat</a>
-                                </td>
-                            </tr>
+                            @forelse ($customers as $customer)
+                                <tr>
+                                    <td>{{ $customer->name }}</td>
+                                    <td>{{ $customer->email }}</td>
+                                    <td>{{ $customer->orders_count }} Pesanan</td>
+                                    <td>Rp {{ number_format($customer->orders_sum_total_price, 0, ',', '.') }}</td>
+                                    <td>{{ $customer->created_at->format('d M Y') }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">Belum ada pembeli yang terdaftar.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
+                </div>
+                <div class="mt-3">
+                    {{ $customers->links() }}
                 </div>
             </div>
         </div>
