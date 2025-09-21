@@ -17,9 +17,9 @@
                         <ul class="list-group list-group-flush">
                             @forelse($top_products as $product)
                                 <li class="list-group-item d-flex justify-content-between align-items-center"
-                                    style="background:none; color: #fff;">
-                                    {{ $product->name }} <span class="badge bg-warning rounded-pill">{{ $product->sold }}
-                                        Terjual</span>
+                                    style="background:none; color: #fff; border-color: #444;">
+                                    {{ $product->name }} <span
+                                        class="badge bg-warning text-dark rounded-pill">{{ $product->sold }} Terjual</span>
                                 </li>
                             @empty
                                 <li class="list-group-item" style="background:none; color: #fff;">Belum ada data penjualan.</li>
@@ -32,29 +32,27 @@
     </div>
 @endsection
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const salesCtx = document.getElementById('salesReportChart').getContext('2d');
-            new Chart(salesCtx, {
-                type: 'bar',
-                data: {
-                    labels: @json($salesChartData['labels']),
-                    datasets: [{
-                        label: 'Pendapatan (Juta Rp)',
-                        data: @json($salesChartData['data']),
-                        backgroundColor: '#d4af37',
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { labels: { color: '#fff' } } },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { color: '#ccc' }, grid: { color: 'rgba(255,255,255,0.1)' } },
-                        x: { ticks: { color: '#ccc' }, grid: { display: false } }
-                    }
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const salesCtx = document.getElementById('salesReportChart').getContext('2d');
+        new Chart(salesCtx, {
+            type: 'bar', data: {
+                labels: @json($salesChartData['labels']),
+                datasets: [{
+                    label: 'Pendapatan (Juta Rp)',
+                    data: @json($salesChartData['data']),
+                    backgroundColor: '#d4af37',
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { labels: { color: '#fff' } } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: '#ccc' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                    x: { ticks: { color: '#ccc' }, grid: { display: false } }
                 }
-            });
+            }
         });
-    </script>
-@endpush
+    });
+</script>

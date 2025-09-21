@@ -21,8 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role', // Ditambahkan agar bisa diisi saat registrasi
-        'is_admin',
+        'role', // Tambahkan 'role' agar bisa diisi saat registrasi
     ];
 
     /**
@@ -43,6 +42,24 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'is_admin' => 'boolean', // Pastikan is_admin di-cast sebagai boolean
     ];
+
+    /**
+     * TAMBAHKAN RELASI INI
+     * Mendefinisikan bahwa satu User bisa memiliki banyak Order.
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Accessor untuk mengecek apakah user adalah admin.
+     *
+     * @return bool
+     */
+    public function getIsAdminAttribute()
+    {
+        return $this->role === 'admin';
+    }
 }

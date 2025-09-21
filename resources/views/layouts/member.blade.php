@@ -9,19 +9,17 @@
 
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     <link rel="dns-prefetch" href="//fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.bunny.net/css?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
 
     <style>
         /* =================================== */
-        /* == PERBAIKAN STRUKTUR & SCROLL == */
+        /* == PERBAIKAN DESAIN & SCROLL == */
         /* =================================== */
-
         html,
         body {
             height: 100%;
             overflow: hidden;
-            /* Mencegah scroll di body utama */
         }
 
         body {
@@ -34,38 +32,28 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            /* Memastikan app mengisi seluruh tinggi layar */
         }
 
         .main-wrapper {
             display: flex;
             flex-grow: 1;
             overflow: hidden;
-            /* Area di bawah navbar tidak bisa di-scroll */
         }
 
         .sidebar {
             background-color: #252525;
             flex-shrink: 0;
-            /* Mencegah sidebar menyusut */
             width: 280px;
-            /* Beri lebar tetap */
             height: 100%;
-            /* Tinggi penuh */
             overflow-y: auto;
-            /* Scroll hanya jika konten sidebar panjang */
+            border-right: 1px solid #333;
         }
 
         main {
             overflow-y: auto;
-            /* HANYA area konten utama yang bisa di-scroll */
             flex-grow: 1;
             padding: 2rem;
         }
-
-        /* =================================== */
-        /* ====== GAYA KOMPONEN LAINNYA ====== */
-        /* =================================== */
 
         .navbar-top {
             background-color: #252525;
@@ -82,23 +70,29 @@
 
         .sidebar .nav-link {
             color: #ccc;
-            padding: 0.75rem 1.5rem;
+            padding: 0.85rem 1.5rem;
             font-size: 0.9rem;
             display: flex;
             align-items: center;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease-in-out;
         }
 
         .sidebar .nav-link i.nav-icon {
             width: 20px;
-            margin-right: 10px;
+            margin-right: 12px;
             text-align: center;
         }
 
-        .sidebar .nav-link:hover,
-        .sidebar .nav-link.active {
+        .sidebar .nav-link:hover {
             color: #fff;
             background-color: #333;
-            border-radius: 5px;
+        }
+
+        .sidebar .nav-link.active {
+            color: #fff;
+            background-color: #1a1a1a;
+            border-left-color: #d4af37;
         }
 
         .logout-form .btn-logout {
@@ -144,9 +138,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto align-items-center">
                         @auth
-                            <li class="nav-item">
-                                <span class="navbar-text">Halo, {{ Auth::user()->name }}</span>
-                            </li>
+                            <li class="nav-item"><span class="navbar-text">Halo, {{ Auth::user()->name }}</span></li>
                             <li class="nav-item ms-3">
                                 <form id="logout-form" class="logout-form" action="{{ route('logout') }}" method="POST">
                                     @csrf
@@ -158,9 +150,7 @@
                 </div>
             </div>
         </nav>
-
         <div class="main-wrapper">
-            <!-- Sidebar -->
             <nav id="sidebarMenu" class="d-md-block sidebar collapse">
                 <div class="pt-3">
                     <ul class="nav flex-column">
@@ -171,23 +161,14 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('landing') }}">
-                                <i class="fas fa-box-open nav-icon"></i> Product
+                            <a class="nav-link" href="{{ route('landing') }}#koleksi">
+                                <i class="fas fa-box-open nav-icon"></i> Produk
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-shopping-cart nav-icon"></i> Pesanan
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-credit-card nav-icon"></i> Pembayaran
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-history nav-icon"></i> Riwayat Transaksi
+                            <a class="nav-link {{ request()->routeIs('member.orders.*') ? 'active' : '' }}"
+                                href="{{ route('member.orders.index') }}">
+                                <i class="fas fa-shopping-cart nav-icon"></i> Pesanan Saya
                             </a>
                         </li>
                         <li class="nav-item mt-3 border-top pt-3 border-secondary">
@@ -197,14 +178,12 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">
-                                <i class="fas fa-address-book nav-icon"></i> Contact
+                                <i class="fas fa-address-book nav-icon"></i> Kontak
                             </a>
                         </li>
                     </ul>
                 </div>
             </nav>
-
-            <!-- Main content -->
             <main>
                 @yield('content')
             </main>
