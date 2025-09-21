@@ -1,14 +1,8 @@
 @extends('layouts.dashboard')
-
 @section('title', 'Kelola Pesanan')
-
 @section('content')
     <div class="container-fluid">
-        <div
-            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom border-secondary">
-            <h1 class="h2">Manajemen Pesanan</h1>
-        </div>
-
+        <h1 class="h2 pt-3 pb-2 mb-3 border-bottom border-secondary">Manajemen Pesanan</h1>
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
@@ -34,9 +28,7 @@
                                             style="background-color:#ffc107; color:#1a1a1a;">{{ $order->status }}</span></td>
                                     <td class="text-center">
                                         <a href="{{ route('admin.orders.show', $order->id) }}"
-                                            class="btn btn-sm btn-outline-light">
-                                            <i class="fas fa-eye me-1"></i> Detail
-                                        </a>
+                                            class="btn btn-sm btn-outline-light"><i class="fas fa-eye me-1"></i> Detail</a>
                                     </td>
                                 </tr>
                             @empty
@@ -47,9 +39,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-3">
-                    {{ $orders->links() }}
-                </div>
+                <div class="mt-3">{{ $orders->links() }}</div>
             </div>
         </div>
     </div>

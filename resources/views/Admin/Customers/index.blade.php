@@ -1,11 +1,8 @@
 @extends('layouts.dashboard')
-
 @section('title', 'Data Pembeli')
-
 @section('content')
     <div class="container-fluid">
         <h1 class="h2 pt-3 pb-2 mb-3 border-bottom border-secondary">Data Pembeli</h1>
-
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
@@ -36,9 +33,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-3">
-                    {{ $customers->links() }}
-                </div>
+                <div class="mt-3">{{ $customers->links() }}</div>
             </div>
         </div>
     </div>
