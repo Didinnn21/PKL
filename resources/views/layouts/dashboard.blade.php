@@ -13,11 +13,67 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <style>
+        /* =================================== */
+        /* == PERBAIKAN DESAIN & FONT COLOR == */
+        /* =================================== */
+
+        /* Warna Latar Utama */
         body {
             background-color: #1a1a1a;
             color: #f0f0f0;
             font-family: 'Poppins', sans-serif;
         }
+
+        /* Label Formulir (misal: "Nama Produk") */
+        .form-label {
+            color: #ccc;
+            /* Dibuat lebih terang agar mudah dibaca */
+            font-weight: 500;
+        }
+
+        /* Input, Textarea, Select */
+        .form-control,
+        .form-select {
+            background-color: #333;
+            /* Latar input sedikit lebih terang */
+            border: 1px solid #555;
+            color: #fff;
+            /* Teks yang diketik menjadi putih */
+        }
+
+        /* Efek saat input diklik (focus) */
+        .form-control:focus,
+        .form-select:focus {
+            background-color: #333;
+            border-color: #d4af37;
+            /* Border menjadi warna emas */
+            box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
+            color: #fff;
+        }
+
+        /* Warna teks placeholder (Contoh: ...) */
+        .form-control::placeholder {
+            color: #888;
+            opacity: 1;
+        }
+
+        /* Tombol Utama (Simpan, Update) */
+        .btn-warning {
+            background-color: #d4af37;
+            border-color: #d4af37;
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        .btn-warning:hover {
+            background-color: #b39330;
+            border-color: #b39330;
+            color: #1a1a1a;
+        }
+
+        /* =================================== */
+        /* ====== GAYA LAYOUT LAINNYA ====== */
+        /* =================================== */
 
         .navbar-top {
             background-color: #252525;
@@ -103,6 +159,18 @@
             border-bottom: 1px solid #444;
         }
 
+        .nav-tabs .nav-link {
+            color: #ccc;
+            background: none;
+            border-color: #333 #333 #444;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #fff;
+            background-color: #2c2c2c;
+            border-color: #444 #444 #2c2c2c;
+        }
+
         .table-dark-custom {
             background-color: #2c2c2c;
             color: #f0f0f0;
@@ -150,13 +218,14 @@
 
         <div class="container-fluid">
             <div class="row">
+                <!-- Sidebar -->
                 <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
                     <div class="position-sticky pt-3">
                         <ul class="nav flex-column">
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
                                     href="{{ route('admin.dashboard') }}">
-                                    <i class="fas fa-tachometer-alt nav-icon"></i> Dashboard
+                                    <i class="fas fa-tachometer-alt nav-icon"></i> Beranda
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -179,7 +248,6 @@
                                     </ul>
                                 </div>
                             </li>
-                            {{-- PERBARUI BAGIAN INI --}}
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}"
                                     href="{{ route('admin.orders.index') }}">
@@ -198,9 +266,9 @@
                                     <i class="fas fa-chart-pie nav-icon"></i> Laporan
                                 </a>
                             </li>
-                            {{-- AKHIR PERUBAHAN --}}
                             <li class="nav-item mt-3 border-top pt-3 border-secondary">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}"
+                                    href="{{ route('admin.settings.index') }}">
                                     <i class="fas fa-cog nav-icon"></i> Pengaturan
                                 </a>
                             </li>
@@ -208,6 +276,7 @@
                     </div>
                 </nav>
 
+                <!-- Main content -->
                 <main class="col-md-9 ms-sm-auto col-lg-10">
                     @yield('content')
                 </main>

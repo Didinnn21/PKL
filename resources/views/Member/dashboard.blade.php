@@ -164,7 +164,7 @@
         <div id="memberDashboardCarousel" class="carousel slide dashboard-carousel" data-bs-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <img src="{{ asset('images/Slide-1.jpg') }}" class="d-block w-100" alt="Promo">
+                    <img src="{{ asset('images/HOODIE.png') }}" class="d-block w-100" alt="Promo">
                     <div class="carousel-caption d-none d-md-block">
                         <h5>Promo Spesial Untuk Anda</h5>
                         <p>Cek halaman produk untuk melihat penawaran terbaru kami.</p>
