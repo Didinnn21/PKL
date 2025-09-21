@@ -1,64 +1,70 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Artisan;
-
-// Controller untuk halaman publik, autentikasi, & member
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\MemberOrderController; 
-
-// Controller yang digunakan khusus untuk Admin
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\AdminOrderController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\AdminOrderController;
+use App\Http\Controllers\MemberOrderController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PengaturanController;
+use App\Http\Controllers\RedirectController;
+use App\Http\Controllers\MemberProductController; // Jangan lupa import controller baru
 
-/* Rute Publik */
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
 
-Route::get('/', [HomeController::class, 'index'])->name('landing');
-Route::get('/product/{product}', [OrderController::class, 'show'])->name('product.detail');
+// Rute untuk Landing Page (Publik)
+Route::get('/', [HomeController::class, 'index'])->name('landing.index');
+Route::get('/product/{id}', [HomeController::class, 'showProductDetail'])->name('product.detail');
 
-/* Rute Autentikasi */
-Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-    Route::post('register', [RegisterController::class, 'register']);
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
-});
-Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout')->middleware('auth');
+// Rute Otentikasi (Login, Register, dll.)
+Auth::routes();
 
-/* Rute Umum Pengguna Terautentikasi */
-Route::middleware('auth')->group(function () {
+// Rute Redirect setelah Login
+Route::get('/redirect', [RedirectController::class, 'cek']);
+
+// Rute untuk Admin
+Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::post('/order', [OrderController::class, 'store'])->name('order.store');
-});
 
-/* Rute Spesifik Admin */
-Route::middleware(['auth', 'is_admin'])->prefix('admin')->as('admin.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
+    // Rute untuk mengelola produk (Admin)
     Route::resource('products', ProductController::class);
-    Route::resource('orders', AdminOrderController::class)->only(['index', 'show']);
-    Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
-    Route::get('settings', [PengaturanController::class, 'index'])->name('settings.index');
-    Route::put('settings/profile', [PengaturanController::class, 'updateProfile'])->name('settings.profile.update');
-    Route::get('laporan/penjualan', [LaporanController::class, 'penjualan'])->name('laporan.penjualan');
+
+    // Rute untuk mengelola pesanan (Admin)
+    Route::resource('orders', AdminOrderController::class);
+
+    // Rute untuk mengelola pelanggan (Admin)
+    Route::resource('customers', CustomerController::class);
+
+    // Rute Laporan
+    Route::get('/laporan/penjualan', [LaporanController::class, 'penjualan'])->name('laporan.penjualan');
+
+    // Rute Pengaturan
+    Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
 });
 
-/* Rute Spesifik Member */
-Route::middleware(['auth'])->prefix('member')->as('member.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'member'])->name('dashboard');
-    // RUTE BARU UNTUK PESANAN MEMBER
-    Route::get('/orders', [MemberOrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/{order}', [MemberOrderController::class, 'show'])->name('orders.show');
+// Rute untuk Member yang sudah login
+Route::middleware(['auth'])->prefix('member')->name('member.')->group(function () {
+    Route::get('/dashboard', [HomeController::class, 'memberDashboard'])->name('dashboard');
+
+    // ===============================================================
+    // == RUTE BARU UNTUK HALAMAN PRODUK KHUSUS MEMBER ==
+    // ===============================================================
+    Route::get('/products', [MemberProductController::class, 'index'])->name('products.index');
+
+    // Rute untuk mengelola pesanan (Member)
+    Route::resource('orders', MemberOrderController::class);
 });
 
-/* Rute Utilitas */
-Route::get('/clear-cache', function () {
-    Artisan::call('optimize:clear');
-    return redirect()->back()->with('success', 'Cache cleared successfully!');
-})->name('clear-cache')->middleware(['auth', 'is_admin']);
+// Fallback jika user mencoba akses /home, arahkan sesuai role
+Route::get('/home', [HomeController::class, 'index']);

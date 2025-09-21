@@ -6,9 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
@@ -16,17 +14,16 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->integer('quantity');
-            $table->bigInteger('total_price');
-            $table->string('status')->default('Menunggu Pembayaran'); // e.g., Menunggu Pembayaran, Diproses, Dikirim, Selesai
+            $table->decimal('total_price', 10, 2);
+            $table->string('status')->default('pending');
             $table->text('notes')->nullable();
-            $table->string('design_file')->nullable(); // Kolom untuk menyimpan path file desain
+            $table->string('design_file')->nullable();
+            $table->text('shipping_address')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+
     public function down(): void
     {
         Schema::dropIfExists('orders');

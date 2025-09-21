@@ -1,39 +1,34 @@
 @extends('layouts.dashboard')
-@section('title', 'Detail Pesanan #KESTORE-' . str_pad($order->id, 4, '0', STR_PAD_LEFT))
+
 @section('content')
     <div class="container-fluid">
-        <div
-            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom border-secondary">
-            <h1 class="h2">Detail Pesanan</h1>
-            <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-secondary"><i
-                    class="fas fa-arrow-left me-1"></i> Kembali</a>
-        </div>
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="card">
-                    <div class="card-header"><strong>ID: #KESTORE-{{ str_pad($order->id, 4, '0', STR_PAD_LEFT) }}</strong>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Detail Produk</h5>
-                        <p><strong>Nama:</strong> {{ $order->product->name ?? 'Produk Dihapus' }}</p>
-                        <p><strong>Jumlah:</strong> {{ $order->quantity }}</p>
-                        <p><strong>Total:</strong> Rp {{ number_format($order->total_price, 0, ',', '.') }}</p>
-                        <hr>
-                        <h5 class="card-title">Alamat Pengiriman</h5>
-                        <p>{{ $order->shipping_address }}</p>
-                    </div>
-                </div>
+        <h1 class="mt-4">Detail Pesanan #{{ $order->id }}</h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('admin.orders.index') }}">Pesanan</a></li>
+            <li class="breadcrumb-item active">Detail Pesanan</li>
+        </ol>
+        <div class="card">
+            <div class="card-header">
+                Informasi Pesanan
             </div>
-            <div class="col-lg-4">
-                <div class="card">
-                    <div class="card-header"><strong>Informasi Pembeli</strong></div>
-                    <div class="card-body">
-                        <p><strong>Nama:</strong> {{ $order->user->name ?? 'N/A' }}</p>
-                        <p><strong>Email:</strong> {{ $order->user->email ?? 'N/A' }}</p>
-                        <p><strong>Status:</strong> <span class="badge"
-                                style="background-color:#ffc107; color:#1a1a1a;">{{ $order->status }}</span></p>
-                    </div>
-                </div>
+            <div class="card-body">
+                <p><strong>Nama Pelanggan:</strong> {{ $order->user->name }}</p>
+                <p><strong>Email:</strong> {{ $order->user->email }}</p>
+                <p><strong>Produk:</strong> {{ $order->product->name }}</p>
+                <p><strong>Jumlah:</strong> {{ $order->quantity }}</p>
+                <p><strong>Total Harga:</strong> Rp {{ number_format($order->total_price, 0, ',', '.') }}</p>
+                <p><strong>Status:</strong> {{ $order->status }}</p>
+                <p><strong>Catatan:</strong> {{ $order->notes ?? '-' }}</p>
+                <p><strong>Alamat Pengiriman:</strong> {{ $order->shipping_address ?? 'Alamat belum diisi.' }}</p>
+
+                @if($order->design_file)
+                    <p><strong>File Desain:</strong>
+                        <a href="{{ asset('storage/' . $order->design_file) }}" download>Unduh Desain</a>
+                    </p>
+                @endif
+                <hr>
+                <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary">Kembali</a>
             </div>
         </div>
     </div>
