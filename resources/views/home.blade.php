@@ -1,311 +1,337 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kestore.id - Your Style, Indescribable</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Kestore.id</title>
+    {{-- Tailwind CSS --}}
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="//unpkg.com/alpinejs" defer></script>
+    {{-- Alphine JS --}}
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    {{-- Lucide Icons --}}
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://unpkg.com/scrollreveal"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
-
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #111111;
-            color: #e0e0e0;
+        .reveal-card {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
         }
 
-        .gold-gradient-text {
-            background: linear-gradient(45deg, #d4af37, #a08153);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .btn-gold {
-            background: linear-gradient(45deg, #d4af37, #b39330);
-            transition: all 0.3s ease;
-        }
-
-        .btn-gold:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
-        }
-
-        .glass-card {
-            background: rgba(26, 26, 26, 0.6);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .hero-bg {
-            background-image: linear-gradient(to top, #111111 20%, rgba(17, 17, 17, 0.5)), url('{{ asset('images/Slide-1.jpg') }}');
-            background-size: cover;
-            background-position: center;
+        .reveal-card.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
+
 </head>
 
-<body x-data="{ activeCategory: 'all', mobileMenuOpen: false }">
+<body class="bg-black">
+    {{-- Tombol Navigation --}}
+    <div x-data="{
+        navOpen: false,
+        scrolled: false,
+        atTop: true,
+        init() {
+            window.addEventListener('scroll', () => {
+                this.scrolled = window.scrollY > 50;
+                this.atTop = window.scrollY <= 50;
+            });
+        }
+    }" :class="{ 'bg-black bg-opacity-70 backdrop-blur-md': scrolled, 'bg-transparent': atTop }"
+        class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-20">
+                {{-- Logo --}}
+                <a href="/">
+                    <img src="{{ asset('images/kestore-logo.png') }}" alt="Kestore.id Logo" class="h-12 w-auto">
+                </a>
 
-    <header class="sticky top-0 z-50">
-        <nav class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center glass-card rounded-b-2xl">
-            <a href="{{ route('landing') }}" class="flex items-center space-x-2">
-                <img src="{{ asset('images/kestore-logo.png') }}" alt="Kestore.id Logo" class="h-8 w-8 rounded-md">
-                <span class="text-xl font-bold text-white">KESTORE.ID</span>
-            </a>
-            <div class="hidden md:flex items-center space-x-6">
-                <a href="#koleksi" class="text-gray-300 hover:text-white transition">Koleksi</a>
-                <a href="#proses" class="text-gray-300 hover:text-white transition">Proses</a>
-                <a href="#testimoni" class="text-gray-300 hover:text-white transition">Testimoni</a>
-            </div>
-            <div class="hidden md:flex items-center space-x-3">
-                @guest
-                    <a href="{{ route('login') }}"
-                        class="text-gray-300 hover:text-white transition hidden sm:block">Login</a>
-                    <a href="{{ route('register') }}"
-                        class="text-gray-800 font-semibold px-5 py-2 rounded-full btn-gold">Register</a>
-                @else
-                    <a href="{{ route('admin.dashboard') }}"
-                        class="text-gray-800 font-semibold px-5 py-2 rounded-full btn-gold">My Dashboard</a>
-                @endguest
-            </div>
-            <div class="md:hidden">
-                <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-white focus:outline-none">
-                    <i data-lucide="menu" class="h-6 w-6"></i>
-                </button>
-            </div>
-        </nav>
-    </header>
+                {{-- Navigasi Desktop --}}
+                <nav class="hidden sm:flex items-center space-x-8">
+                    <a href="#koleksi" class="text-gray-300 hover:text-white transition font-medium text-sm">KOLEKSI</a>
+                    <a href="/register" class="text-gray-300 hover:text-white transition font-medium text-sm">CUSTOM
+                        ORDER</a>
+                    <a href="#tentang-kami"
+                        class="text-gray-300 hover:text-white transition font-medium text-sm">TENTANG KAMI</a>
+                    <a href="#faq" class="text-gray-300 hover:text-white transition font-medium text-sm">FAQ</a>
+                </nav>
 
-    <div x-show="mobileMenuOpen" @click.away="mobileMenuOpen = false"
-        class="md:hidden fixed inset-0 bg-black bg-opacity-90 z-40"
-        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-        <div class="flex flex-col items-center justify-center h-full space-y-6 text-xl">
-            <a @click="mobileMenuOpen = false" href="#koleksi"
-                class="text-gray-300 hover:text-white transition">Koleksi</a>
-            <a @click="mobileMenuOpen = false" href="#proses"
-                class="text-gray-300 hover:text-white transition">Proses</a>
-            <a @click="mobileMenuOpen = false" href="#testimoni"
-                class="text-gray-300 hover:text-white transition">Testimoni</a>
-            <div class="pt-6 flex flex-col items-center space-y-4">
-                @guest
-                    <a href="{{ route('login') }}" class="text-gray-300 hover:text-white transition">Login</a>
-                    <a href="{{ route('register') }}"
-                        class="text-gray-800 font-semibold px-6 py-3 rounded-full btn-gold">Register</a>
-                @else
-                    <a href="{{ route('admin.dashboard') }}"
-                        class="text-gray-800 font-semibold px-6 py-3 rounded-full btn-gold">My Dashboard</a>
-                @endguest
+                {{-- Tombol Login dan Burger Menu --}}
+                <div class="flex items-center">
+                    <a href="/login"
+                        class="hidden sm:inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 transition">
+                        Login
+                    </a>
+
+                    <button @click="navOpen = !navOpen" class="sm:hidden text-white ml-4">
+                        <i x-show="!navOpen" data-lucide="menu" class="h-6 w-6"></i>
+                        <i x-show="navOpen" data-lucide="x" class="h-6 w-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {{-- Navigasi Mobile --}}
+        <div x-show="navOpen" @click.away="navOpen = false" x-transition class="sm:hidden bg-black bg-opacity-90">
+            <div class="flex flex-col items-center space-y-4 py-6">
+                <a href="#koleksi" @click="navOpen = false"
+                    class="text-gray-300 hover:text-white transition">KOLEKSI</a>
+                <a href="/register" @click="navOpen = false" class="text-gray-300 hover:text-white transition">CUSTOM
+                    ORDER</a>
+                <a href="#tentang-kami" @click="navOpen = false"
+                    class="text-gray-300 hover:text-white transition">TENTANG
+                    KAMI</a>
+                <a href="#faq" @click="navOpen = false" class="text-gray-300 hover:text-white transition">FAQ</a>
+                <a href="/login"
+                    class="inline-flex items-center justify-center px-6 py-2 text-sm font-semibold text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 transition">
+                    Login
+                </a>
             </div>
         </div>
     </div>
 
-
     <main>
-        <section class="relative min-h-screen flex items-center justify-center text-center hero-bg py-24">
-            <div class="px-4 sm:px-6">
-                <h1
-                    class="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight animate-fade-in-up">
-                    YOUR STYLE, <br> <span class="gold-gradient-text">INDESCRIBABLE.</span>
+        {{-- Section Hero --}}
+        <section class="relative h-screen flex items-center justify-center overflow-hidden">
+            <div class="absolute inset-0 z-0">
+                <img src="{{ asset('images/Slide-1.jpg') }}" alt="Hero Background"
+                    class="w-full h-full object-cover opacity-40">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black"></div>
+            </div>
+            <div class="relative z-10 text-center text-white px-4">
+                <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold mb-4 leading-tight">
+                    Kestore.id
                 </h1>
-                <p class="mt-6 text-base sm:text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
-                    Ekspresikan dirimu tanpa batas. Kami wujudkan setiap desain streetwear impianmu menjadi kenyataan
-                    dengan kualitas premium.
+                <p class="text-lg sm:text-xl max-w-2xl mx-auto text-gray-300">
+                    Spesialis Custom Apparel Satuan & Lusinan
                 </p>
-                <div class="mt-10">
-                    <a href="#koleksi"
-                        class="text-gray-800 font-bold text-base sm:text-lg px-6 py-3 sm:px-8 sm:py-4 rounded-full btn-gold">
-                        Lihat Koleksi Kami
+            </div>
+        </section>
+
+        {{-- Bagian Tentang Kami --}}
+        <section id="tentang-kami" class="py-20 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div class="reveal-card">
+                        <img src="{{ asset('images/Slide-2.png') }}" alt="Tentang Kestore.id"
+                            class="rounded-2xl shadow-lg w-full h-auto object-cover">
+                    </div>
+                    <div class="reveal-card">
+                        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-6">Tentang Kestore.id</h2>
+                        <p class="text-gray-400 mb-4">
+                            Kestore.id adalah spesialis custom apparel yang lahir dari semangat untuk mengekspresikan
+                            diri. Kami percaya bahwa setiap orang berhak tampil beda dengan gaya yang unik dan
+                            personal.
+                        </p>
+                        <p class="text-gray-400">
+                            Dengan bahan berkualitas premium dan teknologi sablon terbaik, kami siap mewujudkan setiap
+                            desain impian Anda menjadi kenyataan, baik untuk pesanan satuan maupun dalam jumlah besar.
+                            Bergabunglah bersama kami dan tunjukkan gayamu yang sesungguhnya.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- Seksi Keunggulan Kami --}}
+        <section id="keunggulan" class="py-20 sm:py-24 bg-gray-900">
+            <div class="container mx-auto px-4 sm:px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-white">Kenapa Memilih Kami?</h2>
+                    <p class="mt-2 text-gray-400">Kualitas dan kepuasanmu adalah prioritas utama kami.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="reveal-card text-center p-8 bg-black rounded-2xl">
+                        <div class="inline-block p-4 bg-gray-800 rounded-full">
+                            <i data-lucide="gem" class="h-8 w-8 text-yellow-500"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-white mt-4">Bahan Premium</h3>
+                        <p class="text-gray-400 mt-2">Kami hanya menggunakan material terbaik seperti Cotton Fleece
+                            280gsm yang nyaman dan tahan lama.</p>
+                    </div>
+                    <div class="reveal-card text-center p-8 bg-black rounded-2xl">
+                        <div class="inline-block p-4 bg-gray-800 rounded-full">
+                            <i data-lucide="layers" class="h-8 w-8 text-yellow-500"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-white mt-4">Teknologi Sablon Modern</h3>
+                        <p class="text-gray-400 mt-2">Dari DTF hingga Plastisol, kami gunakan teknologi yang tepat
+                            untuk hasil detail dan warna yang maksimal.</p>
+                    </div>
+                    <div class="reveal-card text-center p-8 bg-black rounded-2xl">
+                        <div class="inline-block p-4 bg-gray-800 rounded-full">
+                            <i data-lucide="sparkles" class="h-8 w-8 text-yellow-500"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-white mt-4">Tanpa Minimum Order</h3>
+                        <p class="text-gray-400 mt-2">Pesan satuan untuk koleksi pribadi atau lusinan untuk
+                            komunitasmu. Kami siap melayani.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- Section Koleksi --}}
+        <section id="koleksi" class="py-20 sm:py-24">
+            <div class="container mx-auto px-4 sm:px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-white">KOLEKSI KAMI</h2>
+                    <p class="text-gray-400 mt-2">Temukan produk yang sesuai dengan gayamu.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    @foreach ($products as $product)
+                        <div
+                            class="reveal-card bg-gray-900 rounded-2xl overflow-hidden shadow-lg transform hover:-translate-y-2 transition-transform duration-300 group">
+                            <div class="relative overflow-hidden h-72">
+                                <img src="{{ asset('images/product/' . $product->image) }}" alt="{{ $product->name }}"
+                                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-semibold text-white mb-2">{{ $product->name }}</h3>
+                                <p class="text-gray-400 text-sm mb-4">{{ Str::limit($product->description, 100) }}</p>
+                                <div class="flex items-center justify-between">
+                                    <span
+                                        class="text-lg font-bold text-yellow-500">Rp{{ number_format($product->price, 0, ',', '.') }}</span>
+                                    <a href="{{ route('product.detail', $product->id) }}"
+                                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-black bg-yellow-500 rounded-lg hover:bg-white transition">
+                                        Lihat Detail
+                                        <i data-lucide="arrow-right" class="h-4 w-4 ml-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+
+        {{-- Seksi FAQ --}}
+        <section id="faq" class="py-20 sm:py-24 bg-gray-900">
+            <div class="container mx-auto px-4 sm:px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-white">Tanya Jawab</h2>
+                    <p class="mt-2 text-gray-400">Temukan jawaban dari pertanyaan yang sering diajukan.</p>
+                </div>
+                <div class="max-w-3xl mx-auto space-y-4" x-data="{ open: 1 }">
+                    <div class="reveal-card bg-black rounded-lg">
+                        <button @click="open = (open === 1 ? 0 : 1)" class="w-full text-left p-4">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold text-white">Apakah bisa memesan satuan?</span>
+                                <i data-lucide="chevron-down" class="transition-transform"
+                                    :class="{ 'rotate-180': open === 1 }"></i>
+                            </div>
+                        </button>
+                        <div x-show="open === 1" x-collapse class="px-4 pb-4 text-gray-400">
+                            <p>Tentu saja! Kami melayani pemesanan satuan tanpa minimum order. Sangat cocok untuk kamu
+                                yang ingin punya apparel eksklusif atau sebagai hadiah.</p>
+                        </div>
+                    </div>
+                    <div class="reveal-card bg-black rounded-lg">
+                        <button @click="open = (open === 2 ? 0 : 2)" class="w-full text-left p-4">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold text-white">Berapa lama proses pengerjaannya?</span>
+                                <i data-lucide="chevron-down" class="transition-transform"
+                                    :class="{ 'rotate-180': open === 2 }"></i>
+                            </div>
+                        </button>
+                        <div x-show="open === 2" x-collapse class="px-4 pb-4 text-gray-400">
+                            <p>Proses pengerjaan normalnya memakan waktu 3-7 hari kerja, tergantung pada kerumitan
+                                desain dan antrian produksi. Kami akan selalu memberikan estimasi waktu saat konfirmasi
+                                pesanan.</p>
+                        </div>
+                    </div>
+                    <div class="reveal-card bg-black rounded-lg">
+                        <button @click="open = (open === 3 ? 0 : 3)" class="w-full text-left p-4">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold text-white">Jenis sablon apa yang digunakan?</span>
+                                <i data-lucide="chevron-down" class="transition-transform"
+                                    :class="{ 'rotate-180': open === 3 }"></i>
+                            </div>
+                        </button>
+                        <div x-show="open === 3" x-collapse class="px-4 pb-4 text-gray-400">
+                            <p>Untuk pesanan satuan atau di bawah selusin, kami menggunakan sablon DTF (Direct to Film)
+                                yang menghasilkan warna cerah dan detail tajam. Untuk pesanan minimal 12 pcs dengan
+                                desain yang sama, kami menggunakan sablon Plastisol yang terkenal awet dan berkualitas
+                                tinggi.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    {{-- Footer --}}
+    <footer class="bg-black py-12">
+        <div class="container mx-auto px-6 text-gray-400">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left mb-8">
+                <div>
+                    <h3 class="font-bold text-white text-lg mb-3">KESTORE.ID</h3>
+                    <p class="text-sm">Spesialis custom apparel untuk gaya unikmu. Kualitas premium, desain tanpa
+                        batas.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-white text-lg mb-3">Lokasi Kami</h3>
+                    <p class="text-sm">
+                        Komplek Margaasih Permai, Jl. Sedap Malam No.22 blok U1, RT.04/RW.19, Margaasih, Kabupaten
+                        Bandung, Jawa Barat 40215
+                    </p>
+                    <a href="https://www.google.com/maps/search/?api=1&query=KESTOREID,Komplek+Margaasih+Permai"
+                        target="_blank"
+                        class="inline-flex items-center text-sm text-yellow-500 hover:text-white mt-2 transition">
+                        Lihat di Google Maps
+                        <i data-lucide="map-pin" class="h-4 w-4 ml-2"></i>
                     </a>
                 </div>
-            </div>
-        </section>
 
-        <section id="koleksi" class="py-20 sm:py-24 md:py-32">
-            <div class="container mx-auto px-4 sm:px-6">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white">Koleksi Unggulan</h2>
-                    <p class="mt-4 text-gray-400">Pilih kategori atau jelajahi semua produk custom terbaik kami.</p>
-                </div>
-
-                <div class="flex justify-center space-x-2 md:space-x-4 mb-10">
-                    <button @click="activeCategory = 'all'"
-                        :class="{ 'bg-yellow-500 text-black': activeCategory === 'all', 'bg-gray-800 text-gray-300': activeCategory !== 'all' }"
-                        class="px-5 py-2 rounded-full font-semibold transition">Semua</button>
-                    <button @click="activeCategory = 'hoodie'"
-                        :class="{ 'bg-yellow-500 text-black': activeCategory === 'hoodie', 'bg-gray-800 text-gray-300': activeCategory !== 'hoodie' }"
-                        class="px-5 py-2 rounded-full font-semibold transition">Hoodie</button>
-                    <button @click="activeCategory = 'crewneck'"
-                        :class="{ 'bg-yellow-500 text-black': activeCategory === 'crewneck', 'bg-gray-800 text-gray-300': activeCategory !== 'crewneck' }"
-                        class="px-5 py-2 rounded-full font-semibold transition">Crewneck</button>
-                    <button @click="activeCategory = 'kaos'"
-                        :class="{ 'bg-yellow-500 text-black': activeCategory === 'kaos', 'bg-gray-800 text-gray-300': activeCategory !== 'kaos' }"
-                        class="px-5 py-2 rounded-full font-semibold transition">Kaos</button>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    @php
-                        if (isset($products)) {
-                            $products->each(function ($product) {
-                                if (stripos($product->name, 'Hoodie') !== false)
-                                    $product->category = 'hoodie';
-                                elseif (stripos($product->name, 'Crewneck') !== false)
-                                    $product->category = 'crewneck';
-                                elseif (stripos($product->name, 'Kaos') !== false)
-                                    $product->category = 'kaos';
-                                else
-                                    $product->category = 'lainnya';
-                            });
-                        }
-                    @endphp
-
-                    @forelse($products ?? [] as $product)
-                        <div class="reveal-card"
-                            x-show="activeCategory === 'all' || activeCategory === '{{ $product->category }}'" x-transition>
-                            <a href="{{ route('product.detail', $product->id) }}" class="block group">
-                                <div class="overflow-hidden rounded-2xl">
-                                    <img src="{{ asset($product->image_url ?? 'https://placehold.co/600x600/111111/FFFFFF/png?text=KESTORE.ID') }}"
-                                        alt="{{ $product->name }}"
-                                        class="w-full h-96 object-cover transform group-hover:scale-105 transition-transform duration-300">
-                                </div>
-                                <div class="mt-4">
-                                    <h3 class="text-xl font-semibold text-white">{{ $product->name }}</h3>
-                                    <p class="text-lg font-bold gold-gradient-text mt-1">Rp
-                                        {{ number_format($product->price) }}</p>
-                                </div>
-                            </a>
-                        </div>
-                    @empty
-                        <p class="text-center text-gray-400 col-span-full">Belum ada produk untuk ditampilkan.</p>
-                    @endforelse
-                </div>
-            </div>
-        </section>
-
-        <section id="proses" class="py-20 sm:py-24 md:py-32 bg-black">
-            <div class="container mx-auto px-4 sm:px-6 text-center">
-                <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white">3 Langkah Mudah Menuju Gayamu</h2>
-                <p class="mt-4 text-gray-400 max-w-2xl mx-auto">Dari ide hingga menjadi nyata, prosesnya semudah ini.
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mt-16">
-                    <div class="reveal-card">
-                        <div
-                            class="mx-auto h-24 w-24 flex items-center justify-center rounded-full bg-gray-800 border-2 border-yellow-500 text-4xl font-bold gold-gradient-text">
-                            1</div>
-                        <h3 class="text-2xl font-semibold mt-6 text-white">Pilih & Desain</h3>
-                        <p class="text-gray-400 mt-2">Pilih produk favoritmu, lalu unggah desain keren yang sudah kamu
-                            siapkan.</p>
-                    </div>
-                    <div class="reveal-card">
-                        <div
-                            class="mx-auto h-24 w-24 flex items-center justify-center rounded-full bg-gray-800 border-2 border-yellow-500 text-4xl font-bold gold-gradient-text">
-                            2</div>
-                        <h3 class="text-2xl font-semibold mt-6 text-white">Konfirmasi & Bayar</h3>
-                        <p class="text-gray-400 mt-2">Selesaikan pembayaran dengan mudah dan aman. Tim kami akan segera
-                            memproses pesananmu.</p>
-                    </div>
-                    <div class="reveal-card">
-                        <div
-                            class="mx-auto h-24 w-24 flex items-center justify-center rounded-full bg-gray-800 border-2 border-yellow-500 text-4xl font-bold gold-gradient-text">
-                            3</div>
-                        <h3 class="text-2xl font-semibold mt-6 text-white">Terima & Pamerkan</h3>
-                        <p class="text-gray-400 mt-2">Produk custom impianmu akan tiba di depan pintu. Saatnya tampil
-                            beda!</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="testimoni" class="py-20 sm:py-24 md:py-32">
-            <div class="container mx-auto px-4 sm:px-6">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white">Kata Mereka Tentang Kami</h2>
-                    <p class="mt-4 text-gray-400">Kepuasan pelanggan adalah bukti kualitas kami.</p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div class="reveal-card glass-card p-8 rounded-2xl">
-                        <p class="text-gray-300">"Kualitas sablonnya juara! Warnanya tajam dan gak luntur. Bahannya juga
-                            adem banget. Pasti order lagi di sini."</p>
-                        <div class="flex items-center mt-6">
-                            <div class="font-semibold text-white">- Andi B., Jakarta</div>
-                        </div>
-                    </div>
-                    <div class="reveal-card glass-card p-8 rounded-2xl">
-                        <p class="text-gray-300">"Pelayanannya cepat dan ramah. Adminnya sangat membantu waktu
-                            konsultasi desain. Hasilnya persis seperti yang saya mau. Keren!"</p>
-                        <div class="flex items-center mt-6">
-                            <div class="font-semibold text-white">- Citra L., Bandung</div>
-                        </div>
-                    </div>
-                    <div class="reveal-card glass-card p-8 rounded-2xl">
-                        <p class="text-gray-300">"Akhirnya nemu tempat custom hoodie satuan yang kualitasnya gak
-                            main-main. Harganya juga bersahabat. Recommended!"</p>
-                        <div class="flex items-center mt-6">
-                            <div class="font-semibold text-white">- Doni S., Surabaya</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="py-20">
-            <div class="container mx-auto px-4 sm:px-6">
-                <div class="glass-card rounded-2xl p-10 md:p-16 text-center">
-                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white">Punya Ide Gila?</h2>
-                    <p class="mt-4 text-gray-300 max-w-2xl mx-auto">Jangan biarkan idemu hanya menjadi angan-angan.
-                        Wujudkan sekarang bersama kami dan ciptakan gayamu sendiri!</p>
-                    <div class="mt-8">
-                        <a href="{{ route('register') }}"
-                            class="text-gray-800 font-bold text-lg px-8 py-4 rounded-full btn-gold inline-block">
-                            Mulai Kreasikan Sekarang
+                <div>
+                    <h3 class="font-bold text-white text-lg mb-3">Temukan Kami Di</h3>
+                    <div class="flex justify-center md:justify-start space-x-4 mt-2">
+                        <a href="#" target="_blank" class="text-gray-400 hover:text-white transition" title="Instagram">
+                            <i data-lucide="instagram" class="h-6 w-6"></i>
+                        </a>
+                        <a href="#" target="_blank" class="text-gray-400 hover:text-white transition" title="TikTok">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-2.43.03-4.83-.95-6.46-2.9-1.6-1.92-2.3-4.43-1.8-6.83.47-2.31 1.98-4.25 3.98-5.46 2.02-1.2 4.54-1.42 6.74-1.02.01 2.38-.01 4.75.02 7.12-.52-.15-1.03-.3-1.52-.47-1.42-.48-2.9-.8-4.27-1.15.28-2.26.88-4.4 2.15-6.19C10.22 2.12 11.33.91 12.525.02z">
+                                </path>
+                            </svg>
+                        </a>
+                        <a href="#" target="_blank" class="text-gray-400 hover:text-white transition" title="Shopee">
+                            <i data-lucide="shopping-cart" class="h-6 w-6"></i>
+                        </a>
+                        <a href="#" target="_blank" class="text-gray-400 hover:text-white transition" title="Tokopedia">
+                            <i data-lucide="shopping-bag" class="h-6 w-6"></i>
                         </a>
                     </div>
                 </div>
             </div>
-        </section>
-    </main>
 
-    <footer class="bg-black py-10">
-        <div class="container mx-auto px-6 text-center text-gray-500">
-            <p>&copy; {{ date('Y') }} Kestore.id. All Rights Reserved.</p>
+            <div class="border-t border-gray-800 pt-8 text-center">
+                <p class="text-sm">© {{ date('Y') }} Kestore.id. All Rights Reserved.</p>
+            </div>
         </div>
     </footer>
+
 
     <script>
         lucide.createIcons();
 
-        const sr = ScrollReveal({
-            distance: '50px',
-            duration: 1500,
-            easing: 'cubic-bezier(0.5, 0, 0, 1)',
-            reset: false,
-        });
-
-        sr.reveal('.animate-fade-in-up', {
-            origin: 'bottom',
-            delay: 200,
-        });
-
-        sr.reveal('.reveal-card', {
-            origin: 'bottom',
-            interval: 200,
-        });
-
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
+        document.addEventListener('DOMContentLoaded', () => {
+            const intersectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
                 });
+            }, {
+                threshold: 0.1
+            });
+
+            document.querySelectorAll('.reveal-card').forEach(card => {
+                intersectionObserver.observe(card);
             });
         });
     </script>
