@@ -5,16 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kestore.id - Your Style, Indescribable</title>
-
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js for Interactivity -->
     <script src="//unpkg.com/alpinejs" defer></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- ScrollReveal for Animations -->
     <script src="https://unpkg.com/scrollreveal"></script>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
@@ -60,7 +54,6 @@
 
 <body x-data="{ activeCategory: 'all', mobileMenuOpen: false }">
 
-    <!-- Header -->
     <header class="sticky top-0 z-50">
         <nav class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center glass-card rounded-b-2xl">
             <a href="{{ route('landing') }}" class="flex items-center space-x-2">
@@ -79,11 +72,10 @@
                     <a href="{{ route('register') }}"
                         class="text-gray-800 font-semibold px-5 py-2 rounded-full btn-gold">Register</a>
                 @else
-                    <a href="{{ route('dashboard') }}"
+                    <a href="{{ route('admin.dashboard') }}"
                         class="text-gray-800 font-semibold px-5 py-2 rounded-full btn-gold">My Dashboard</a>
                 @endguest
             </div>
-            <!-- Mobile Menu Button -->
             <div class="md:hidden">
                 <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-white focus:outline-none">
                     <i data-lucide="menu" class="h-6 w-6"></i>
@@ -92,7 +84,6 @@
         </nav>
     </header>
 
-    <!-- Mobile Menu -->
     <div x-show="mobileMenuOpen" @click.away="mobileMenuOpen = false"
         class="md:hidden fixed inset-0 bg-black bg-opacity-90 z-40"
         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
@@ -111,7 +102,7 @@
                     <a href="{{ route('register') }}"
                         class="text-gray-800 font-semibold px-6 py-3 rounded-full btn-gold">Register</a>
                 @else
-                    <a href="{{ route('dashboard') }}"
+                    <a href="{{ route('admin.dashboard') }}"
                         class="text-gray-800 font-semibold px-6 py-3 rounded-full btn-gold">My Dashboard</a>
                 @endguest
             </div>
@@ -120,7 +111,6 @@
 
 
     <main>
-        <!-- Hero Section -->
         <section class="relative min-h-screen flex items-center justify-center text-center hero-bg py-24">
             <div class="px-4 sm:px-6">
                 <h1
@@ -140,7 +130,6 @@
             </div>
         </section>
 
-        <!-- Koleksi Produk Section -->
         <section id="koleksi" class="py-20 sm:py-24 md:py-32">
             <div class="container mx-auto px-4 sm:px-6">
                 <div class="text-center mb-12">
@@ -148,7 +137,6 @@
                     <p class="mt-4 text-gray-400">Pilih kategori atau jelajahi semua produk custom terbaik kami.</p>
                 </div>
 
-                <!-- Filters -->
                 <div class="flex justify-center space-x-2 md:space-x-4 mb-10">
                     <button @click="activeCategory = 'all'"
                         :class="{ 'bg-yellow-500 text-black': activeCategory === 'all', 'bg-gray-800 text-gray-300': activeCategory !== 'all' }"
@@ -164,7 +152,6 @@
                         class="px-5 py-2 rounded-full font-semibold transition">Kaos</button>
                 </div>
 
-                <!-- Product Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     @php
                         if (isset($products)) {
@@ -204,14 +191,12 @@
             </div>
         </section>
 
-        <!-- Proses Pemesanan Section -->
         <section id="proses" class="py-20 sm:py-24 md:py-32 bg-black">
             <div class="container mx-auto px-4 sm:px-6 text-center">
                 <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white">3 Langkah Mudah Menuju Gayamu</h2>
                 <p class="mt-4 text-gray-400 max-w-2xl mx-auto">Dari ide hingga menjadi nyata, prosesnya semudah ini.
                 </p>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mt-16">
-                    <!-- Step 1 -->
                     <div class="reveal-card">
                         <div
                             class="mx-auto h-24 w-24 flex items-center justify-center rounded-full bg-gray-800 border-2 border-yellow-500 text-4xl font-bold gold-gradient-text">
@@ -220,7 +205,6 @@
                         <p class="text-gray-400 mt-2">Pilih produk favoritmu, lalu unggah desain keren yang sudah kamu
                             siapkan.</p>
                     </div>
-                    <!-- Step 2 -->
                     <div class="reveal-card">
                         <div
                             class="mx-auto h-24 w-24 flex items-center justify-center rounded-full bg-gray-800 border-2 border-yellow-500 text-4xl font-bold gold-gradient-text">
@@ -229,7 +213,6 @@
                         <p class="text-gray-400 mt-2">Selesaikan pembayaran dengan mudah dan aman. Tim kami akan segera
                             memproses pesananmu.</p>
                     </div>
-                    <!-- Step 3 -->
                     <div class="reveal-card">
                         <div
                             class="mx-auto h-24 w-24 flex items-center justify-center rounded-full bg-gray-800 border-2 border-yellow-500 text-4xl font-bold gold-gradient-text">
@@ -242,7 +225,6 @@
             </div>
         </section>
 
-        <!-- Testimoni Section -->
         <section id="testimoni" class="py-20 sm:py-24 md:py-32">
             <div class="container mx-auto px-4 sm:px-6">
                 <div class="text-center mb-12">
@@ -275,7 +257,6 @@
             </div>
         </section>
 
-        <!-- CTA Section -->
         <section class="py-20">
             <div class="container mx-auto px-4 sm:px-6">
                 <div class="glass-card rounded-2xl p-10 md:p-16 text-center">
@@ -293,7 +274,6 @@
         </section>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-black py-10">
         <div class="container mx-auto px-6 text-center text-gray-500">
             <p>&copy; {{ date('Y') }} Kestore.id. All Rights Reserved.</p>
@@ -301,10 +281,8 @@
     </footer>
 
     <script>
-        // Initialize Lucide Icons
         lucide.createIcons();
 
-        // Initialize ScrollReveal
         const sr = ScrollReveal({
             distance: '50px',
             duration: 1500,
@@ -322,7 +300,6 @@
             interval: 200,
         });
 
-        // Add smooth scroll for navbar links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();

@@ -13,33 +13,36 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\MemberProductController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
-
-// --- RUTE PUBLIK ---
-// PERBAIKAN: Mengganti nama rute menjadi 'landing'
+// Rute Landing Page
 Route::get('/', [HomeController::class, 'index'])->name('landing');
 Route::get('/product/{id}', [HomeController::class, 'showProductDetail'])->name('product.detail');
 
-// --- RUTE OTENTIKASI ---
+// Rute Otentikasi
 Auth::routes();
 
-// --- RUTE REDIRECT SETELAH LOGIN ---
-Route::get('/redirect', [App\Http\Controllers\RedirectController::class, 'cek']);
+// Rute Redirect setelah Login
+Route::get('/redirect', function() {
+    if (Auth::user()->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+    return redirect()->route('member.dashboard');
+})->middleware('auth')->name('dashboard');
+
 
 // =====================================================================
 // --- GRUP RUTE KHUSUS ADMIN ---
 // =====================================================================
-Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
     Route::resource('products', ProductController::class);
     Route::resource('orders', AdminOrderController::class);
     Route::resource('customers', CustomerController::class);
     Route::get('/laporan/penjualan', [LaporanController::class, 'penjualan'])->name('laporan.penjualan');
-    Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
+    Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('settings.index');
+    Route::put('/pengaturan/profil', [PengaturanController::class, 'updateProfile'])->name('settings.profile.update');
+    Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('settings.index');
+    Route::put('/pengaturan/profil', [PengaturanController::class, 'updateProfile'])->name('settings.profile.update');
+    Route::put('/pengaturan/toko', [PengaturanController::class, 'updateStore'])->name('settings.store.update');
 });
 
 
@@ -47,7 +50,7 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
 // --- GRUP RUTE KHUSUS MEMBER ---
 // =====================================================================
 Route::middleware(['auth'])->prefix('member')->name('member.')->group(function () {
-    Route::get('/dashboard', [HomeController::class, 'memberDashboard'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'member'])->name('dashboard');
     Route::get('/products', [MemberProductController::class, 'index'])->name('products.index');
     Route::resource('orders', MemberOrderController::class);
 });

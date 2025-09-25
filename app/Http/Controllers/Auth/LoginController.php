@@ -3,28 +3,37 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
     use AuthenticatesUsers;
 
     /**
-     * Override redirect setelah login
+     * Mengarahkan pengguna setelah login berdasarkan rolenya.
+     *
+     * @return string
      */
-    protected function authenticated(Request $request, $user)
+    protected function redirectTo()
     {
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard'); // route admin
+        // Jika pengguna yang login adalah admin (is_admin == true atau 1)
+        if (Auth::user()->is_admin) {
+            return route('admin.dashboard');
         }
 
-        return redirect()->route('member.dashboard'); // route member
+        // Jika bukan admin, maka dia adalah member
+        return route('member.dashboard');
     }
 
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
-        $this->middleware('auth')->only('logout');
     }
 }

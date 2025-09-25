@@ -13,184 +13,128 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
 
     <style>
+        :root {
+            --dark-bg: #1a1a1a;
+            --dark-surface: #252525;
+            --dark-surface-2: #2c2c2c;
+            --dark-border: #444;
+            --primary-gold: #d4af37;
+            --primary-gold-hover: #b39330;
+            --text-light: #f0f0f0;
+            --text-muted: #a0a0a0;
+        }
 
         body {
-            background-color: #1a1a1a;
-            color: #f0f0f0;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
             font-family: 'Poppins', sans-serif;
         }
 
-        .form-label {
-            color: #ccc;
-            font-weight: 500;
-        }
-
-        .form-control,
-        .form-select {
-            background-color: #333;
-            border: 1px solid #555;
-            color: #fff;
-        }
-
-        .form-control:focus,
-        .form-select:focus {
-            background-color: #333;
-            border-color: #d4af37;
-            box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
-            color: #fff;
-        }
-
-        .form-control::placeholder {
-            color: #888;
-            opacity: 1;
-        }
-
-        .btn-warning {
-            background-color: #d4af37;
-            border-color: #d4af37;
-            color: #1a1a1a;
-            font-weight: 600;
-        }
-
-        .btn-warning:hover {
-            background-color: #b39330;
-            border-color: #b39330;
-            color: #1a1a1a;
-        }
-
+        /* Navbar Atas */
         .navbar-top {
-            background-color: #252525;
-            border-bottom: 1px solid #333;
+            background-color: var(--dark-surface);
+            border-bottom: 1px solid var(--dark-border);
         }
 
-        .navbar-brand,
-        .nav-link,
+        .navbar-brand {
+            color: var(--primary-gold) !important;
+            font-weight: 700;
+        }
+
         .navbar-text {
-            color: #d4af37 !important;
-            font-weight: 600;
-        }
-
-        .sidebar {
-            background-color: #252525;
-            min-height: 100vh;
-            border-right: 1px solid #333;
-        }
-
-        .sidebar .nav-link {
-            color: #ccc;
-            padding: 0.75rem 1.5rem;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            border-left: 3px solid transparent;
-        }
-
-        .sidebar .nav-link i.nav-icon {
-            width: 20px;
-            margin-right: 12px;
-            text-align: center;
-        }
-
-        .sidebar .nav-link:hover {
-            color: #fff;
-            background-color: #333;
-        }
-
-        .sidebar .nav-link.active {
-            color: #fff;
-            background-color: #1a1a1a;
-            border-left-color: #d4af37;
-        }
-
-        .sidebar .dropdown-toggle::after {
-            margin-left: auto;
-            transition: transform 0.3s ease;
-        }
-
-        .sidebar .dropdown-toggle[aria-expanded="true"]::after {
-            transform: rotate(90deg);
-        }
-
-        .sidebar .nav-dropdown {
-            padding-left: 20px;
-            background-color: rgba(0, 0, 0, 0.2);
-        }
-
-        .sidebar .nav-dropdown .nav-link {
-            padding-left: 1.5rem;
-            border-left: none;
-        }
-
-        .sidebar .nav-dropdown .nav-link.active {
-            background-color: #333;
-            border-radius: 5px;
-        }
-
-        main {
-            padding: 2rem;
+            color: var(--text-muted) !important;
         }
 
         .logout-form .btn-logout {
             background: none;
             border: none;
-            color: #d4af37 !important;
+            color: var(--primary-gold) !important;
             font-weight: 600;
             padding: 0.5rem 1rem;
-            text-align: left;
+            transition: color 0.2s ease;
         }
 
+        .logout-form .btn-logout:hover {
+            color: #fff !important;
+        }
+
+
+        /* Sidebar */
+        .sidebar {
+            background-color: var(--dark-surface);
+            min-height: 100vh;
+            border-right: 1px solid var(--dark-border);
+        }
+
+        .sidebar .nav-link {
+            color: var(--text-muted);
+            padding: 0.85rem 1.5rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            border-left: 4px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar .nav-link i.nav-icon {
+            width: 20px;
+            margin-right: 15px;
+            text-align: center;
+        }
+
+        .sidebar .nav-link:hover {
+            color: #fff;
+            background-color: var(--dark-surface-2);
+        }
+
+        .sidebar .nav-link.active {
+            color: #fff;
+            background-color: var(--dark-bg);
+            border-left-color: var(--primary-gold);
+            font-weight: 600;
+        }
+
+        /* Konten Utama */
+        main {
+            padding: 2rem;
+        }
+
+        .page-header {
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        /* Styling Umum untuk Komponen */
         .card {
-            background-color: #2c2c2c;
-            border: 1px solid #444;
+            background-color: var(--dark-surface-2);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
         }
 
         .card-header {
-            background-color: #d4af37;
-            border-bottom: 1px solid #faf6f6;
-        }
-
-        .nav-tabs .nav-link {
-            color: #ccc;
-            background: none;
-            border-color: #333 #333 #444;
-        }
-
-        .nav-tabs .nav-link.active {
-            color: #fff;
-            background-color: #2c2c2c;
-            border-color: #444 #444 #2c2c2c;
-        }
-
-        .table-dark-custom {
-            background-color: #2c2c2c;
-            color: #f0f0f0;
-        }
-
-        .table-dark-custom th {
-            background-color: #333;
-            border-color: #444 !important;
-            color: #ccc;
-        }
-
-        .table-dark-custom td,
-        .table-dark-custom th {
-            border-color: #444 !important;
-        }
-
-        .badge {
+            background-color: var(--dark-surface);
+            border-bottom: 1px solid var(--dark-border);
             font-weight: 600;
+            color: var(--text-light);
         }
 
-        /* PERBAIKAN KHUSUS UNTUK HALAMAN LAPORAN */
-        .list-group-item {
-            background-color: transparent !important;
-            color: #f0f0f0 !important;
-            border-color: #444 !important;
+        .table {
+            color: var(--text-light);
         }
 
-        .badge.bg-warning {
-            color: #f8f4f4 !important;
-            /* Memastikan teks pada badge kuning dapat dibaca */
+        .table-hover tbody tr:hover {
+            background-color: var(--dark-surface);
+            color: #fff;
+        }
+
+        thead th {
+            color: var(--text-muted);
+            border-bottom-width: 1px !important;
+            border-color: var(--dark-border) !important;
+        }
+
+        tbody td,
+        tbody th {
+            border-color: var(--dark-border) !important;
         }
     </style>
     @stack('styles')
@@ -198,21 +142,22 @@
 
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-dark navbar-top shadow-sm">
+        <nav class="navbar navbar-expand-md navbar-dark navbar-top shadow-sm sticky-top">
             <div class="container-fluid">
-                <a class="navbar-brand d-flex align-items-center" href="{{ url('/admin/dashboard') }}">
+                <a class="navbar-brand d-flex align-items-center" href="{{ route('admin.dashboard') }}">
                     <img src="{{ asset('images/kestore-logo.png') }}" alt="Kestore.id Logo"
                         style="height: 30px; margin-right: 10px;">
-                    KESTORE.ID
+                    ADMIN KESTORE.ID
                 </a>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto align-items-center">
                         @auth
-                            <li class="nav-item"><span class="navbar-text">Halo, {{ Auth::user()->name }}</span></li>
-                            <li class="nav-item ms-3">
+                            <li class="nav-item"><span class="navbar-text me-3">Halo, {{ Auth::user()->name }}</span></li>
+                            <li class="nav-item">
                                 <form id="logout-form" class="logout-form" action="{{ route('logout') }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="btn-logout">Logout</button>
+                                    <button type="submit" class="btn-logout"><i
+                                            class="fas fa-sign-out-alt me-2"></i>Logout</button>
                                 </form>
                             </li>
                         @endauth
@@ -232,26 +177,10 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link dropdown-toggle {{ request()->routeIs('admin.products.*') ? 'active' : '' }}"
-                                    href="#products-submenu" data-bs-toggle="collapse" role="button"
-                                    aria-expanded="{{ request()->routeIs('admin.products.*') ? 'true' : 'false' }}">
+                                <a class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}"
+                                    href="{{ route('admin.products.index') }}">
                                     <i class="fas fa-box-open nav-icon"></i> Produk
                                 </a>
-                                <div class="collapse nav-dropdown {{ request()->routeIs('admin.products.*') ? 'show' : '' }}"
-                                    id="products-submenu">
-                                    <ul class="nav flex-column">
-                                        <li class="nav-item">
-                                            <a class="nav-link {{ request()->routeIs('admin.products.index') ? 'active' : '' }}"
-                                                href="{{ route('admin.products.index') }}"><i
-                                                    class="fas fa-list nav-icon"></i> Semua Produk</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link {{ request()->routeIs('admin.products.create') ? 'active' : '' }}"
-                                                href="{{ route('admin.products.create') }}"><i
-                                                    class="fas fa-plus nav-icon"></i> Tambah Produk</a>
-                                        </li>
-                                    </ul>
-                                </div>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}"

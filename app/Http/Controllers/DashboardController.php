@@ -6,67 +6,63 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\Order;
-use App\Models\Product; // Tambahkan ini
-use App\Models\User;    // Tambahkan ini
+use App\Models\Product;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function admin()
     {
-        if (Auth::user()->is_admin) {
-            return redirect()->route('admin.dashboard');
-        }
-        return redirect()->route('member.dashboard');
-    }
-
-    public function admin(Request $request)
-    {
-        // === PENGAMBILAN DATA DINAMIS DARI DATABASE ===
+        // Data Statistik
         $stats = [
-            'pendapatan_hari_ini' => Order::whereDate('created_at', Carbon::today())->sum('total_price'),
-            'pesanan_baru' => Order::where('status', 'Menunggu Pembayaran')->count(),
-            'pelanggan_baru' => User::where('role', 'member')->whereDate('created_at', Carbon::today())->count(),
-            'total_produk' => Product::count(),
+            'total_products' => Product::count(),
+            'total_orders' => Order::count(),
+            'total_customers' => User::where('role', 'member')->count(),
+            'total_revenue' => Order::where('status', 'Completed')->sum('total_price'),
         ];
 
-        $pesanan_terbaru = Order::with('user')->latest()->take(5)->get();
-        // ===============================================
+        // Chart Data (Sales Overview) - Contoh data 8 bulan terakhir
+        $salesData = Order::select(
+            DB::raw('YEAR(created_at) as year'),
+            DB::raw('MONTH(created_at) as month'),
+            DB::raw('SUM(total_price) as total')
+        )
+            ->where('created_at', '>=', Carbon::now()->subMonths(7))
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc')
+            ->get();
 
-        // Logika Chart (bisa dibiarkan dulu, sudah dinamis)
-        $filter = $request->query('filter', 'weekly');
-        $salesLabels = [];
-        $salesValues = [];
-
-        switch ($filter) {
-            case 'yearly':
-                for ($i = 11; $i >= 0; $i--) {
-                    $date = Carbon::now()->subMonths($i);
-                    $salesLabels[] = $date->translatedFormat('F');
-                    $salesValues[] = Order::whereYear('created_at', $date->year)->whereMonth('created_at', $date->month)->sum('total_price');
-                }
-                break;
-            case 'monthly':
-                for ($i = 29; $i >= 0; $i--) {
-                    $date = Carbon::now()->subDays($i);
-                    $salesLabels[] = $date->format('d M');
-                    $salesValues[] = Order::whereDate('created_at', $date)->sum('total_price');
-                }
-                break;
-            default: // weekly
-                for ($i = 6; $i >= 0; $i--) {
-                    $date = Carbon::now()->subDays($i);
-                    $salesLabels[] = $date->translatedFormat('l');
-                    $salesValues[] = Order::whereDate('created_at', $date)->sum('total_price');
-                }
-                break;
-        }
+        $salesLabels = $salesData->map(fn($item) => Carbon::createFromDate($item->year, $item->month)->format('M'));
+        $salesValues = $salesData->map(fn($item) => $item->total / 1000000); // dalam jutaan
 
         $salesChartData = [
             'labels' => $salesLabels,
             'data' => $salesValues,
         ];
 
-        return view('Admin.dashboard', compact('stats', 'pesanan_terbaru', 'salesChartData', 'filter'));
+
+        // Top Selling Products
+        $top_products_data = Order::select('product_id', DB::raw('SUM(quantity) as total_sold'), DB::raw('SUM(total_price) as total_revenue'))
+            ->whereNotNull('product_id')
+            ->groupBy('product_id')
+            ->orderBy('total_sold', 'desc')
+            ->take(5)
+            ->with('product') // Eager load relasi produk
+            ->get();
+
+        $top_products = $top_products_data->map(function ($item) {
+            return [
+                'name' => $item->product->name ?? 'Produk Tidak Ditemukan',
+                'sold' => $item->total_sold,
+                'revenue' => $item->total_revenue,
+                'icon' => 'fa-box', // Ikon default
+            ];
+        });
+
+
+        return view('layouts.dashboard.index', compact('stats', 'salesChartData', 'top_products'));
     }
 
     public function member()
