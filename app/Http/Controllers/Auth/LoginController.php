@@ -5,26 +5,50 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth; // <-- Pastikan baris ini ada
 
 class LoginController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Login Controller
+    |--------------------------------------------------------------------------
+    |
+    | Controller ini menangani otentikasi pengguna untuk aplikasi dan
+    | mengarahkan mereka ke layar utama Anda. Controller menggunakan sebuah trait
+    | untuk menyediakan fungsionalitasnya dengan mudah ke aplikasi Anda.
+    |
+    */
+
     use AuthenticatesUsers;
 
     /**
-     * Mengarahkan pengguna setelah login berdasarkan rolenya.
+     * Ke mana pengguna akan diarahkan setelah login.
      *
-     * @return string
+     * @var string
      */
-    protected function redirectTo()
-    {
-        // Jika pengguna yang login adalah admin (is_admin == true atau 1)
-        if (Auth::user()->is_admin) {
-            return route('admin.dashboard');
-        }
+    // protected $redirectTo = RouteServiceProvider::HOME; // Baris ini tidak kita gunakan, kita ganti dengan method di bawah.
 
-        // Jika bukan admin, maka dia adalah member
-        return route('member.dashboard');
+    /**
+     * FUNGSI BARU DITAMBAHKAN
+     * Method ini akan dipanggil secara otomatis setelah pengguna berhasil login.
+     * Ia akan memeriksa role pengguna dan mengarahkannya ke dashboard yang sesuai.
+     */
+    public function redirectTo()
+    {
+        $role = Auth::user()->role;
+
+        switch ($role) {
+            case 'admin':
+                return route('admin.dashboard'); // Arahkan ke dashboard admin
+                break;
+            case 'member':
+                return route('member.dashboard'); // Arahkan ke dashboard member
+                break;
+            default:
+                return '/'; // Arahkan ke halaman utama jika role tidak dikenali
+                break;
+        }
     }
 
     /**

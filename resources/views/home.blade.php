@@ -156,16 +156,16 @@
                             <i data-lucide="layers" class="h-8 w-8 text-yellow-500"></i>
                         </div>
                         <h3 class="text-xl font-semibold text-white mt-4">Teknologi Sablon Modern</h3>
-                        <p class="text-gray-400 mt-2">Dari DTF hingga Plastisol, kami gunakan teknologi yang tepat
-                            untuk hasil detail dan warna yang maksimal.</p>
+                        <p class="text-gray-400 mt-2">Dari DTF hingga Plastisol, kami gunakan teknologi yang tepat untuk
+                            hasil detail dan warna yang maksimal.</p>
                     </div>
                     <div class="reveal-card text-center p-8 bg-black rounded-2xl">
                         <div class="inline-block p-4 bg-gray-800 rounded-full">
                             <i data-lucide="sparkles" class="h-8 w-8 text-yellow-500"></i>
                         </div>
                         <h3 class="text-xl font-semibold text-white mt-4">Tanpa Minimum Order</h3>
-                        <p class="text-gray-400 mt-2">Pesan satuan untuk koleksi pribadi atau lusinan untuk
-                            komunitasmu. Kami siap melayani.</p>
+                        <p class="text-gray-400 mt-2">Pesan satuan untuk koleksi pribadi atau lusinan untuk komunitasmu.
+                            Kami siap melayani.</p>
                     </div>
                 </div>
             </div>
@@ -219,7 +219,7 @@
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-white">Apakah bisa memesan satuan?</span>
                                 <i data-lucide="chevron-down" class="transition-transform"
-                                    :class="{ 'rotate-180': open === 1 }"></i>
+                                    :class="{'rotate-180': open === 1}"></i>
                             </div>
                         </button>
                         <div x-show="open === 1" x-collapse class="px-4 pb-4 text-gray-400">
@@ -232,7 +232,7 @@
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-white">Berapa lama proses pengerjaannya?</span>
                                 <i data-lucide="chevron-down" class="transition-transform"
-                                    :class="{ 'rotate-180': open === 2 }"></i>
+                                    :class="{'rotate-180': open === 2}"></i>
                             </div>
                         </button>
                         <div x-show="open === 2" x-collapse class="px-4 pb-4 text-gray-400">
@@ -246,7 +246,7 @@
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-white">Jenis sablon apa yang digunakan?</span>
                                 <i data-lucide="chevron-down" class="transition-transform"
-                                    :class="{ 'rotate-180': open === 3 }"></i>
+                                    :class="{'rotate-180': open === 3}"></i>
                             </div>
                         </button>
                         <div x-show="open === 3" x-collapse class="px-4 pb-4 text-gray-400">
