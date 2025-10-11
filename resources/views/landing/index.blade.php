@@ -90,14 +90,14 @@
             <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
         </div>
         <div class="carousel-inner">
-            <div class="carousel-item active" style="background-image: url('{{ asset('images/Slide-1.jpg') }}')">
+            <div class="carousel-item active" style="background-image: url('{{ asset('images/BG.jpg') }}')">
                 <div class="carousel-caption text-center">
                     <h1>Temukan Gaya Terbaikmu</h1>
                     <p class="lead">Koleksi pakaian premium yang dirancang untuk kenyamanan dan gaya.</p>
                     <a href="#products" class="btn btn-gold">Lihat Produk</a>
                 </div>
             </div>
-            <div class="carousel-item" style="background-image: url('{{ asset('images/Slide-2.png') }}')">
+            <div class="carousel-item" style="background-image: url('{{ asset('images/P-Hoodie.jpg') }}')">
                 <div class="carousel-caption text-center">
                     <h1>Kualitas Tak Tertandingi</h1>
                     <p class="lead">Dibuat dengan bahan pilihan untuk daya tahan maksimal.</p>

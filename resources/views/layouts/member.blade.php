@@ -10,6 +10,7 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     <link href="https://fonts.bunny.net/css?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
     <style>
         :root {
@@ -28,135 +29,183 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        #layoutSidenav {
+        .wrapper {
             display: flex;
         }
 
-        #layoutSidenav_nav {
-            flex-basis: 225px;
-            flex-shrink: 0;
+        .sidebar {
+            width: 250px;
+            background-color: var(--dark-surface);
+            min-height: 100vh;
+            border-right: 1px solid var(--dark-border);
         }
 
-        #layoutSidenav_content {
+        .main-content {
             flex-grow: 1;
-            min-width: 0;
-            padding: 2rem;
         }
 
-        .sb-topnav {
+        .topnav {
             background-color: var(--dark-surface);
             border-bottom: 1px solid var(--dark-border);
+            padding: 0.75rem 1.5rem;
         }
 
-        .sb-sidenav {
-            background-color: var(--dark-surface);
-        }
-
-        .sb-sidenav .sb-sidenav-menu .nav .nav-link {
-            color: var(--text-muted);
-        }
-
-        .sb-sidenav .sb-sidenav-menu .nav .nav-link .sb-nav-link-icon {
-            color: var(--text-muted);
-        }
-
-        .sb-sidenav .sb-sidenav-menu .nav .nav-link:hover {
-            color: #fff;
-        }
-
-        .sb-sidenav .sb-sidenav-menu .nav .nav-link.active {
-            color: var(--primary-gold);
-        }
-
-        .sb-sidenav .sb-sidenav-menu .nav .nav-link.active .sb-nav-link-icon {
-            color: var(--primary-gold);
-        }
-
-        .sb-sidenav-dark .sb-sidenav-footer {
-            background-color: var(--dark-surface-2);
-        }
-
-        .navbar-brand,
-        .dropdown-item {
-            color: var(--primary-gold);
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 10px;
         }
 
         .dropdown-menu {
             background-color: var(--dark-surface-2);
-            border-color: var(--dark-border);
+            border: 1px solid var(--dark-border);
+        }
+
+        .dropdown-item {
+            color: var(--text-light);
         }
 
         .dropdown-item:hover {
+            background-color: var(--primary-gold);
+            color: var(--dark-bg);
+        }
+
+        .sidebar-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--dark-border);
+            text-align: center;
+        }
+
+        .sidebar-header a {
+            color: var(--primary-gold) !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+
+        .sidebar .nav-link {
+            color: var(--text-muted);
+            padding: 0.9rem 1.5rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            border-left: 4px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar .nav-link i {
+            width: 20px;
+            margin-right: 15px;
+            text-align: center;
+        }
+
+        .sidebar .nav-link:hover {
+            color: #fff;
+            background-color: var(--dark-surface-2);
+        }
+
+        .sidebar .nav-link.active {
+            color: #fff;
             background-color: var(--dark-bg);
+            border-left-color: var(--primary-gold);
+            font-weight: 600;
+        }
+
+        .sidebar-heading {
+            padding: 0.75rem 1.5rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #777;
+        }
+
+        .page-content {
+            padding: 2rem;
+        }
+
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input {
+            background-color: var(--dark-surface-2);
+            color: var(--text-light);
+            border: 1px solid var(--dark-border);
+        }
+
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate .page-link {
+            color: var(--text-muted) !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .page-link {
+            background-color: transparent;
+            border: 1px solid transparent;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .page-item.active .page-link {
+            background-color: var(--primary-gold);
+            border-color: var(--primary-gold);
+            color: var(--dark-bg) !important;
         }
     </style>
     @stack('styles')
 </head>
 
-<body class="sb-nav-fixed">
-    <nav class="sb-topnav navbar navbar-expand navbar-dark">
-        <a class="navbar-brand ps-3" href="{{ route('member.dashboard') }}">Kestore.id Member</a>
-        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
-                class="fas fa-bars"></i></button>
-        <div class="ms-auto"></div>
-        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
-                    aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li>
-                        <a class="dropdown-item" href="{{ route('logout') }}"
-                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            Logout
+<body>
+    <div class="wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <a href="{{ route('member.dashboard') }}">MEMBER AREA</a>
+            </div>
+            <ul class="nav flex-column">
+                <li class="sidebar-heading">Utama</li>
+                <li class="nav-item"><a class="nav-link {{ request()->routeIs('member.dashboard') ? 'active' : '' }}"
+                        href="{{ route('member.dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li class="sidebar-heading">Toko</li>
+                <li class="nav-item"><a
+                        class="nav-link {{ request()->routeIs('member.products.index') ? 'active' : '' }}"
+                        href="{{ route('member.products.index') }}"><i class="fas fa-tshirt"></i> Katalog Produk</a>
+                </li>
+                <li class="nav-item"><a class="nav-link {{ request()->routeIs('member.orders.*') ? 'active' : '' }}"
+                        href="{{ route('member.orders.index') }}"><i class="fas fa-history"></i> Riwayat Pesanan</a>
+                </li>
+                <li class="sidebar-heading">Lainnya</li>
+                <li class="nav-item"><a class="nav-link" href="{{ url('/') }}"><i class="fas fa-home"></i> Kembali ke
+                        Toko</a></li>
+            </ul>
+        </nav>
+
+        <div class="main-content">
+            <nav class="topnav navbar navbar-expand navbar-dark">
+                <div class="ms-auto"></div>
+                <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" id="navbarDropdown" href="#"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=d4af37&color=1a1a1a&font-size=0.5"
+                                alt="Avatar" class="user-avatar">
+                            {{ Auth::user()->name }}
                         </a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                            @csrf
-                        </form>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#">Profil Saya</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('logout') }}"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                </a>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf
+                                </form>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
-            </li>
-        </ul>
-    </nav>
-    <div id="layoutSidenav">
-        <div id="layoutSidenav_nav">
-            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-                <div class="sb-sidenav-menu">
-                    <div class="nav">
-                        <div class="sb-sidenav-menu-heading">Utama</div>
-                        <a class="nav-link {{ request()->routeIs('member.dashboard') ? 'active' : '' }}"
-                            href="{{ route('member.dashboard') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            Dashboard
-                        </a>
-                        <div class="sb-sidenav-menu-heading">Toko</div>
-                        <a class="nav-link {{ request()->routeIs('member.products.index') ? 'active' : '' }}"
-                            href="{{ route('member.products.index') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tshirt"></i></div>
-                            Katalog Produk
-                        </a>
-                        <a class="nav-link {{ request()->routeIs('member.orders.*') ? 'active' : '' }}"
-                            href="{{ route('member.orders.index') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-history"></i></div>
-                            Riwayat Pesanan
-                        </a>
-
-                        <div class="sb-sidenav-menu-heading">Lainnya</div>
-                        <a class="nav-link" href="{{ route('landing') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-home"></i></div>
-                            Kembali ke Toko
-                        </a>
-                    </div>
-                </div>
-                <div class="sb-sidenav-footer">
-                    <div class="small">Logged in as:</div>
-                    {{ Auth::user()->name }}
-                </div>
             </nav>
-        </div>
-        <div id="layoutSidenav_content">
-            <main>
+
+            <div class="page-content">
                 @yield('content')
-            </main>
+            </div>
+
             <footer class="py-4 mt-auto">
                 <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small">
@@ -166,18 +215,11 @@
             </footer>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        window.addEventListener('DOMContentLoaded', event => {
-            const sidebarToggle = document.body.querySelector('#sidebarToggle');
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', event => {
-                    event.preventDefault();
-                    document.body.classList.toggle('sb-sidenav-toggled');
-                });
-            }
-        });
-    </script>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     @stack('scripts')
 </body>
 

@@ -25,7 +25,7 @@
                     <table class="table table-dark-custom table-hover align-middle">
                         <thead>
                             <tr>
-                                <th>#</th>
+                                <th>ID</th>
                                 <th>Gambar</th>
                                 <th>Nama Produk</th>
                                 <th>Harga</th>
@@ -75,4 +75,13 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        <script>
+            $(document).ready(function () {
+                // Ini akan membuat tabel produk Anda menjadi interaktif
+                $('#productsTable').DataTable();
+            });
+        </script>
+    @endpush
 @endsection

@@ -96,7 +96,7 @@
         {{-- Section Hero --}}
         <section class="relative h-screen flex items-center justify-center overflow-hidden">
             <div class="absolute inset-0 z-0">
-                <img src="{{ asset('images/Slide-1.jpg') }}" alt="Hero Background"
+                <img src="{{ asset('images/BG.jpg') }}" alt="Hero Background"
                     class="w-full h-full object-cover opacity-40">
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black"></div>
             </div>
@@ -104,9 +104,7 @@
                 <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold mb-4 leading-tight">
                     Kestore.id
                 </h1>
-                <p class="text-lg sm:text-xl max-w-2xl mx-auto text-gray-300">
-                    Spesialis Custom Apparel Satuan & Lusinan
-                </p>
+                <p class="text-xl mt-4 italic">"Wear Your Story."</p>
             </div>
         </section>
 
@@ -115,20 +113,18 @@
             <div class="container mx-auto px-4 sm:px-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                     <div class="reveal-card">
-                        <img src="{{ asset('images/Slide-2.png') }}" alt="Tentang Kestore.id"
+                        <img src="{{ asset('images/P-Hoodie.jpg') }}" alt="Tentang Kestore.id"
                             class="rounded-2xl shadow-lg w-full h-auto object-cover">
                     </div>
                     <div class="reveal-card">
                         <h2 class="text-3xl sm:text-4xl font-bold text-white mb-6">Tentang Kestore.id</h2>
                         <p class="text-gray-400 mb-4">
-                            Kestore.id adalah spesialis custom apparel yang lahir dari semangat untuk mengekspresikan
-                            diri. Kami percaya bahwa setiap orang berhak tampil beda dengan gaya yang unik dan
-                            personal.
+                            Kestore.id adalah brand lokal custom apparel yang berdiri sejak 2021. Didirikan oleh Deki Muhamad F.R., Kestore.id
+                            menghadirkan kaos, hoodie, dan crewneck dengan desain bebas sesuai gaya kamu.
                         </p>
                         <p class="text-gray-400">
-                            Dengan bahan berkualitas premium dan teknologi sablon terbaik, kami siap mewujudkan setiap
-                            desain impian Anda menjadi kenyataan, baik untuk pesanan satuan maupun dalam jumlah besar.
-                            Bergabunglah bersama kami dan tunjukkan gayamu yang sesungguhnya.
+                            Dengan bahan premium dan sablon berkualitas, kami siap bantu kamu tampil beda mulai dari pesanan satuan sampai produksi
+                            massal.
                         </p>
                     </div>
                 </div>
@@ -156,16 +152,16 @@
                             <i data-lucide="layers" class="h-8 w-8 text-yellow-500"></i>
                         </div>
                         <h3 class="text-xl font-semibold text-white mt-4">Teknologi Sablon Modern</h3>
-                        <p class="text-gray-400 mt-2">Dari DTF hingga Plastisol, kami gunakan teknologi yang tepat untuk
-                            hasil detail dan warna yang maksimal.</p>
+                        <p class="text-gray-400 mt-2">Dari DTF hingga Plastisol, kami gunakan teknologi yang tepat
+                            untuk hasil detail dan warna yang maksimal.</p>
                     </div>
                     <div class="reveal-card text-center p-8 bg-black rounded-2xl">
                         <div class="inline-block p-4 bg-gray-800 rounded-full">
                             <i data-lucide="sparkles" class="h-8 w-8 text-yellow-500"></i>
                         </div>
                         <h3 class="text-xl font-semibold text-white mt-4">Tanpa Minimum Order</h3>
-                        <p class="text-gray-400 mt-2">Pesan satuan untuk koleksi pribadi atau lusinan untuk komunitasmu.
-                            Kami siap melayani.</p>
+                        <p class="text-gray-400 mt-2">Pesan satuan untuk koleksi pribadi atau lusinan untuk
+                            komunitasmu. Kami siap melayani.</p>
                     </div>
                 </div>
             </div>
@@ -219,7 +215,7 @@
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-white">Apakah bisa memesan satuan?</span>
                                 <i data-lucide="chevron-down" class="transition-transform"
-                                    :class="{'rotate-180': open === 1}"></i>
+                                    :class="{ 'rotate-180': open === 1 }"></i>
                             </div>
                         </button>
                         <div x-show="open === 1" x-collapse class="px-4 pb-4 text-gray-400">
@@ -232,7 +228,7 @@
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-white">Berapa lama proses pengerjaannya?</span>
                                 <i data-lucide="chevron-down" class="transition-transform"
-                                    :class="{'rotate-180': open === 2}"></i>
+                                    :class="{ 'rotate-180': open === 2 }"></i>
                             </div>
                         </button>
                         <div x-show="open === 2" x-collapse class="px-4 pb-4 text-gray-400">
@@ -246,7 +242,7 @@
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-white">Jenis sablon apa yang digunakan?</span>
                                 <i data-lucide="chevron-down" class="transition-transform"
-                                    :class="{'rotate-180': open === 3}"></i>
+                                    :class="{ 'rotate-180': open === 3 }"></i>
                             </div>
                         </button>
                         <div x-show="open === 3" x-collapse class="px-4 pb-4 text-gray-400">

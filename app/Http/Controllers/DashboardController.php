@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers; // INI BAGIAN YANG DIPERBAIKI
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    /**
+     * Menampilkan dashboard untuk admin dengan data lengkap.
+     */
     public function admin()
     {
         // Data Statistik
@@ -42,7 +45,6 @@ class DashboardController extends Controller
             'data' => $salesValues,
         ];
 
-
         // Top Selling Products
         $top_products_data = Order::select('product_id', DB::raw('SUM(quantity) as total_sold'), DB::raw('SUM(total_price) as total_revenue'))
             ->whereNotNull('product_id')
@@ -61,13 +63,41 @@ class DashboardController extends Controller
             ];
         });
 
-
         return view('layouts.dashboard.index', compact('stats', 'salesChartData', 'top_products'));
     }
 
+    /**
+     * Menampilkan dashboard untuk member dengan data visualisasi.
+     */
     public function member()
     {
-        $orders = Order::where('user_id', Auth::id())->with('product')->latest()->paginate(10);
-        return view('Member.dashboard', compact('orders'));
+        $user = Auth::user();
+
+        // 1. Hitung statistik dasar
+        $totalOrders = Order::where('user_id', $user->id)->count();
+        $totalSpent = Order::where('user_id', $user->id)->sum('total_price');
+
+        // 2. Siapkan data untuk grafik belanja per bulan (6 bulan terakhir)
+        $spendingData = Order::where('user_id', $user->id)
+            ->select(
+                DB::raw('SUM(total_price) as total'),
+                DB::raw("DATE_FORMAT(created_at, '%b %Y') as month") // Format: Jan 2023
+            )
+            ->where('created_at', '>=', Carbon::now()->subMonths(6))
+            ->groupBy('month')
+            ->orderByRaw("MIN(created_at) asc") // Urutkan berdasarkan waktu
+            ->get();
+
+        // 3. Format data agar bisa dibaca oleh Chart.js
+        $chartLabels = $spendingData->pluck('month');
+        $chartValues = $spendingData->pluck('total');
+
+        // 4. Kirim semua data yang sudah dihitung ke view
+        return view('Member.dashboard', compact(
+            'totalOrders',
+            'totalSpent',
+            'chartLabels',
+            'chartValues'
+        ));
     }
 }

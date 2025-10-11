@@ -12,6 +12,9 @@
     <link href="https://fonts.bunny.net/css?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
 
+    {{-- PENAMBAHAN: CSS untuk DataTables agar tabel menjadi interaktif --}}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
     <style>
         :root {
             --dark-bg: #1a1a1a;
@@ -57,7 +60,6 @@
         .logout-form .btn-logout:hover {
             color: #fff !important;
         }
-
 
         /* Sidebar */
         .sidebar {
@@ -135,6 +137,38 @@
         tbody td,
         tbody th {
             border-color: var(--dark-border) !important;
+        }
+
+        /* PENAMBAHAN: Styling agar DataTables menyatu dengan tema gelap */
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input {
+            background-color: var(--dark-surface-2);
+            color: var(--text-light);
+            border: 1px solid var(--dark-border);
+            border-radius: 6px;
+        }
+
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            color: var(--text-muted) !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .page-link {
+            background-color: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted) !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .page-item.active .page-link {
+            background-color: var(--primary-gold);
+            border-color: var(--primary-gold);
+            color: var(--dark-bg) !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .page-item:not(.active) .page-link:hover {
+            background-color: var(--dark-surface);
         }
     </style>
     @stack('styles')
@@ -215,6 +249,13 @@
             </div>
         </div>
     </div>
+
+    {{-- PENAMBAHAN: Library JavaScript untuk fungsionalitas tambahan --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
     @stack('scripts')
 </body>
 

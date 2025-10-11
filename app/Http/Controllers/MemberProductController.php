@@ -7,15 +7,41 @@ use Illuminate\Http\Request;
 
 class MemberProductController extends Controller
 {
-    /**
-     * Menampilkan halaman katalog produk untuk member.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil semua produk dari yang terbaru
-        $products = Product::latest()->get();
+        $query = Product::query();
 
-        // Tampilkan view beserta data produk
+        // 1. Logika Pencarian
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->input('search') . '%');
+        }
+
+        // 2. Logika Filter Harga
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', $request->input('min_price'));
+        }
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', $request->input('max_price'));
+        }
+
+        // 3. Logika Pengurutan
+        if ($request->filled('sort')) {
+            $sort = $request->input('sort');
+            if ($sort == 'terbaru') {
+                $query->latest();
+            } elseif ($sort == 'harga_terendah') {
+                $query->orderBy('price', 'asc');
+            } elseif ($sort == 'harga_tertinggi') {
+                $query->orderBy('price', 'desc');
+            }
+        } else {
+            // Urutan default jika tidak ada pilihan
+            $query->latest();
+        }
+
+        // 4. Paginasi untuk membatasi jumlah produk per halaman
+        $products = $query->paginate(9)->withQueryString(); // withQueryString agar filter tetap aktif saat pindah halaman
+
         return view('Member.products.index', compact('products'));
     }
 }
