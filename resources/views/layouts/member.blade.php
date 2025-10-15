@@ -33,21 +33,38 @@
             display: flex;
         }
 
+        /* PERBAIKAN: Membuat sidebar sticky */
         .sidebar {
             width: 250px;
             background-color: var(--dark-surface);
             min-height: 100vh;
             border-right: 1px solid var(--dark-border);
+            position: sticky;
+            /* Tambahkan ini */
+            top: 0;
+            /* Tambahkan ini */
+            height: 100vh;
+            /* Tambahkan ini */
         }
 
         .main-content {
             flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
+        /* PERBAIKAN: Membuat header sticky */
         .topnav {
             background-color: var(--dark-surface);
             border-bottom: 1px solid var(--dark-border);
             padding: 0.75rem 1.5rem;
+            position: sticky;
+            /* Tambahkan ini */
+            top: 0;
+            /* Tambahkan ini */
+            z-index: 1020;
+            /* Tambahkan ini agar di atas konten lain */
         }
 
         .user-avatar {
@@ -121,6 +138,8 @@
 
         .page-content {
             padding: 2rem;
+            flex-grow: 1;
+            /* Membuat konten mengisi ruang kosong */
         }
 
         .dataTables_wrapper .dataTables_length select,
@@ -153,23 +172,39 @@
     <div class="wrapper">
         <nav class="sidebar">
             <div class="sidebar-header">
-                <a href="{{ route('member.dashboard') }}">MEMBER AREA</a>
+                <a class="navbar-brand d-flex align-items-center" href="{{ route('member.dashboard') }}">
+                    <img src="{{ asset('images/kestore-logo.png') }}" alt="Kestore.id Logo"
+                        style="height: 30px; margin-right: 10px;">
+                    KESTORE.ID
+                </a>
             </div>
             <ul class="nav flex-column">
                 <li class="sidebar-heading">Utama</li>
-                <li class="nav-item"><a class="nav-link {{ request()->routeIs('member.dashboard') ? 'active' : '' }}"
-                        href="{{ route('member.dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li class="sidebar-heading">Toko</li>
-                <li class="nav-item"><a
-                        class="nav-link {{ request()->routeIs('member.products.index') ? 'active' : '' }}"
-                        href="{{ route('member.products.index') }}"><i class="fas fa-tshirt"></i> Katalog Produk</a>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('member.dashboard') ? 'active' : '' }}"
+                        href="{{ route('member.dashboard') }}">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
                 </li>
-                <li class="nav-item"><a class="nav-link {{ request()->routeIs('member.orders.*') ? 'active' : '' }}"
-                        href="{{ route('member.orders.index') }}"><i class="fas fa-history"></i> Riwayat Pesanan</a>
+                <li class="sidebar-heading">Toko</li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('member.products.index') ? 'active' : '' }}"
+                        href="{{ route('member.products.index') }}">
+                        <i class="fas fa-tshirt"></i> Katalog Produk
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('member.orders.*') ? 'active' : '' }}"
+                        href="{{ route('member.orders.index') }}">
+                        <i class="fas fa-history"></i> Riwayat Pesanan
+                    </a>
                 </li>
                 <li class="sidebar-heading">Lainnya</li>
-                <li class="nav-item"><a class="nav-link" href="{{ url('/') }}"><i class="fas fa-home"></i> Kembali ke
-                        Toko</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('/') }}">
+                        <i class="fas fa-home"></i> Kembali ke Toko
+                    </a>
+                </li>
             </ul>
         </nav>
 
@@ -194,7 +229,8 @@
                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                     <i class="fas fa-sign-out-alt me-2"></i> Logout
                                 </a>
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    @csrf
                                 </form>
                             </li>
                         </ul>
@@ -206,7 +242,7 @@
                 @yield('content')
             </div>
 
-            <footer class="py-4 mt-auto">
+            <footer class="py-4">
                 <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small">
                         <div class="text-muted">Copyright &copy; Kestore.id {{ date('Y') }}</div>

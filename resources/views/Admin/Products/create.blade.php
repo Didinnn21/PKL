@@ -11,7 +11,8 @@
 
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('admin.products.store') }}" method="POST">
+                {{-- PERBAIKAN 1: Tambahkan enctype untuk upload file --}}
+                <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-3">
                         <label for="name" class="form-label">Nama Produk</label>
@@ -35,10 +36,11 @@
                                 value="{{ old('stock') }}" placeholder="Contoh: 150">
                         </div>
                     </div>
+
+                    {{-- PERBAIKAN 2: Ubah input teks menjadi input file untuk gambar --}}
                     <div class="mb-3">
-                        <label for="image_url" class="form-label">URL Gambar (Opsional)</label>
-                        <input type="text" class="form-control" id="image_url" name="image_url"
-                            value="{{ old('image_url') }}" placeholder="https://example.com/gambar.jpg">
+                        <label for="image" class="form-label">Gambar Produk</label>
+                        <input type="file" class="form-control" id="image" name="image" required>
                     </div>
 
                     <div class="d-flex justify-content-end">

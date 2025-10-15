@@ -59,7 +59,6 @@
             border-color: #b39330;
         }
 
-        /* Filter Section */
         .filter-card {
             background-color: var(--dark-surface-2);
             border: 1px solid var(--dark-border);
@@ -102,11 +101,9 @@
             Katalog Produk
         </h1>
 
-        {{-- Filter dan Sorting --}}
         <div class="filter-card mb-4">
             <form action="{{ route('member.products.index') }}" method="GET">
                 <div class="row g-3 align-items-center">
-                    {{-- Urutkan --}}
                     <div class="col-md-3">
                         <label for="sort" class="form-label">Urutkan</label>
                         <select name="sort" id="sort" class="form-select">
@@ -117,7 +114,6 @@
                                 Tertinggi</option>
                         </select>
                     </div>
-                    {{-- Filter Harga --}}
                     <div class="col-md-3">
                         <label for="min_price" class="form-label">Harga Minimum</label>
                         <input type="number" name="min_price" id="min_price" class="form-control" placeholder="Rp 0"
@@ -128,7 +124,6 @@
                         <input type="number" name="max_price" id="max_price" class="form-control" placeholder="Rp 1.000.000"
                             value="{{ request('max_price') }}">
                     </div>
-                    {{-- Tombol Terapkan --}}
                     <div class="col-md-3 d-flex align-items-end">
                         <button type="submit" class="btn btn-detail w-100">Terapkan Filter</button>
                     </div>
@@ -136,18 +131,17 @@
             </form>
         </div>
 
-        {{-- Daftar Produk --}}
         <div class="row g-4">
             @forelse ($products as $product)
-                <div class="col-md-4">
-                    <div class="card product-card">
+                <div class="col-lg-4 col-md-6">
+                    <div class="card product-card h-100">
                         <div class="product-image-container">
-                            <img src="{{ asset('images/product/' . $product->image) }}" alt="{{ $product->name }}">
+                            <img src="{{ asset($product->image_url) }}" alt="{{ $product->name }}">
                         </div>
-                        <div class="card-body">
+                        <div class="card-body d-flex flex-column">
                             <h5 class="card-title">{{ $product->name }}</h5>
-                            <p class="card-price">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
-                            <a href="{{ route('product.detail', $product->id) }}" class="btn btn-detail mt-2">
+                            <p class="card-price mb-3">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                            <a href="{{ route('product.detail', $product->id) }}" class="btn btn-detail mt-auto">
                                 Lihat Detail
                             </a>
                         </div>
@@ -155,12 +149,12 @@
                 </div>
             @empty
                 <div class="col-12 text-center py-5">
-                    <p class="text-muted">Produk tidak ditemukan.</p>
+                    <p class="text-muted fs-5">Produk tidak ditemukan.</p>
+                    <a href="{{ route('member.products.index') }}" class="btn btn-outline-light mt-2">Reset Filter</a>
                 </div>
             @endforelse
         </div>
 
-        {{-- Pagination Links --}}
         <div class="d-flex justify-content-center mt-4">
             {{ $products->links() }}
         </div>

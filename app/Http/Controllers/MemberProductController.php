@@ -11,7 +11,7 @@ class MemberProductController extends Controller
     {
         $query = Product::query();
 
-        // 1. Logika Pencarian
+        // 1. Logika Pencarian (jika Anda ingin menambahkannya nanti)
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->input('search') . '%');
         }
@@ -40,7 +40,7 @@ class MemberProductController extends Controller
         }
 
         // 4. Paginasi untuk membatasi jumlah produk per halaman
-        $products = $query->paginate(9)->withQueryString(); // withQueryString agar filter tetap aktif saat pindah halaman
+        $products = $query->paginate(9)->withQueryString();
 
         return view('Member.products.index', compact('products'));
     }

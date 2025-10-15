@@ -11,8 +11,6 @@
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
-
-    {{-- PENAMBAHAN: CSS untuk DataTables agar tabel menjadi interaktif --}}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
     <style>
@@ -33,7 +31,29 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        /* Navbar Atas */
+        /* PERBAIKAN UTAMA: Membuat label dan placeholder terlihat jelas */
+        .form-label {
+            color: var(--text-muted) !important;
+            /* Membuat warna label menjadi abu-abu terang */
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted) !important;
+            opacity: 0.6 !important;
+        }
+
+        .form-control:-ms-input-placeholder {
+            color: var(--text-muted) !important;
+            opacity: 0.6 !important;
+        }
+
+        .form-control::-ms-input-placeholder {
+            color: var(--text-muted) !important;
+            opacity: 0.6 !important;
+        }
+
+        /* Akhir dari perbaikan */
+
         .navbar-top {
             background-color: var(--dark-surface);
             border-bottom: 1px solid var(--dark-border);
@@ -61,7 +81,6 @@
             color: #fff !important;
         }
 
-        /* Sidebar */
         .sidebar {
             background-color: var(--dark-surface);
             min-height: 100vh;
@@ -96,16 +115,10 @@
             font-weight: 600;
         }
 
-        /* Konten Utama */
         main {
             padding: 2rem;
         }
 
-        .page-header {
-            border-bottom: 1px solid var(--dark-border);
-        }
-
-        /* Styling Umum untuk Komponen */
         .card {
             background-color: var(--dark-surface-2);
             border: 1px solid var(--dark-border);
@@ -123,11 +136,6 @@
             color: var(--text-light);
         }
 
-        .table-hover tbody tr:hover {
-            background-color: var(--dark-surface);
-            color: #fff;
-        }
-
         thead th {
             color: var(--text-muted);
             border-bottom-width: 1px !important;
@@ -139,36 +147,27 @@
             border-color: var(--dark-border) !important;
         }
 
-        /* PENAMBAHAN: Styling agar DataTables menyatu dengan tema gelap */
         .dataTables_wrapper .dataTables_length select,
         .dataTables_wrapper .dataTables_filter input {
             background-color: var(--dark-surface-2);
             color: var(--text-light);
             border: 1px solid var(--dark-border);
-            border-radius: 6px;
         }
 
-        .dataTables_wrapper .dataTables_length,
-        .dataTables_wrapper .dataTables_filter,
         .dataTables_wrapper .dataTables_info,
-        .dataTables_wrapper .dataTables_paginate {
+        .dataTables_wrapper .dataTables_paginate .page-link {
             color: var(--text-muted) !important;
         }
 
         .dataTables_wrapper .dataTables_paginate .page-link {
             background-color: transparent;
             border: 1px solid transparent;
-            color: var(--text-muted) !important;
         }
 
         .dataTables_wrapper .dataTables_paginate .page-item.active .page-link {
             background-color: var(--primary-gold);
             border-color: var(--primary-gold);
             color: var(--dark-bg) !important;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .page-item:not(.active) .page-link:hover {
-            background-color: var(--dark-surface);
         }
     </style>
     @stack('styles')
@@ -250,12 +249,10 @@
         </div>
     </div>
 
-    {{-- PENAMBAHAN: Library JavaScript untuk fungsionalitas tambahan --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-
     @stack('scripts')
 </body>
 

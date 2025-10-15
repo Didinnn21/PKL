@@ -1,27 +1,27 @@
 @extends('layouts.member')
 
-@section('title', 'Dashboard Member')
+@section('title', 'Dashboard')
 
 @push('styles')
     <style>
         .stat-card {
-            background-color: var(--dark-surface-2);
+            background: var(--dark-surface-2);
             border: 1px solid var(--dark-border);
             border-radius: 12px;
-            padding: 1.5rem;
             color: var(--text-light);
+            padding: 1.5rem;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.15);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.1);
         }
 
         .stat-card .stat-icon {
-            font-size: 2.5rem;
+            font-size: 1.75rem;
             color: var(--primary-gold);
-            opacity: 0.8;
         }
 
         .stat-card .stat-value {
@@ -31,53 +31,133 @@
         }
 
         .stat-card .stat-label {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: var(--text-muted);
         }
 
-        .chart-card {
+        .card-main {
             background-color: var(--dark-surface-2);
             border: 1px solid var(--dark-border);
             border-radius: 12px;
-            padding: 1.5rem;
+            height: 100%;
+        }
+
+        .card-main .card-header {
+            background-color: var(--dark-surface);
+            border-bottom: 1px solid var(--dark-border);
+            font-weight: 600;
+        }
+
+        .table-custom tbody tr:hover {
+            background-color: var(--dark-surface);
+        }
+
+        .badge-status-pending {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+            padding: 0.4em 0.8em;
+        }
+
+        .badge-status-selesai {
+            background-color: rgba(40, 167, 69, 0.15);
+            color: #28a745;
+            padding: 0.4em 0.8em;
         }
     </style>
 @endpush
 
 @section('content')
     <div class="container-fluid">
-        <h1 class="h2 pt-1 pb-2 mb-4" style="color:var(--text-light); border-bottom: 1px solid var(--dark-border);">
-            Selamat Datang, {{ Auth::user()->name }}!
-        </h1>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 pt-1" style="color:var(--text-light);">Dashboard</h1>
+                <p>Selamat Datang kembali, {{ Auth::user()->name }}!</p>
+            </div>
+            <a href="{{ route('member.products.index') }}" class="btn btn-warning fw-bold">
+                <i class="fas fa-plus me-2"></i>Buat Pesanan Baru
+            </a>
+        </div>
 
         {{-- Kartu Statistik Animasi --}}
         <div class="row g-4">
-            <div class="col-md-6">
-                <div class="stat-card d-flex align-items-center">
-                    <div class="stat-icon me-4"><i class="fas fa-box-open"></i></div>
-                    <div>
-                        <div class="stat-value" data-target="{{ $totalOrders }}">0</div>
-                        <div class="stat-label">Total Pesanan</div>
+            <div class="col-xl-4 col-md-6">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-label">Total Pesanan</div>
+                            <div class="stat-value" data-target="{{ $totalPesanan }}">0</div>
+                        </div>
+                        <div class="stat-icon"><i class="fas fa-box-open"></i></div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="stat-card d-flex align-items-center">
-                    <div class="stat-icon me-4"><i class="fas fa-wallet"></i></div>
-                    <div>
-                        <div class="stat-value" data-target="{{ $totalSpent }}" data-prefix="Rp ">0</div>
-                        <div class="stat-label">Total Belanja</div>
+            <div class="col-xl-4 col-md-6">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-label">Pesanan Aktif</div>
+                            <div class="stat-value" data-target="{{ $pesananAktif }}">0</div>
+                        </div>
+                        <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-12">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="stat-label">Pesanan Selesai</div>
+                            <div class="stat-value" data-target="{{ $pesananSelesai }}">0</div>
+                        </div>
+                        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Grafik Animasi --}}
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="chart-card">
-                    <h5 class="mb-3">Riwayat Belanja (6 Bulan Terakhir)</h5>
-                    <canvas id="spendingChart" style="min-height: 250px;"></canvas>
+        <div class="row g-4 mt-2">
+            {{-- Tabel Riwayat Pesanan Terbaru --}}
+            <div class="col-lg-8">
+                <div class="card card-main">
+                    <div class="card-header"><i class="fas fa-history me-2"></i>Riwayat Pesanan Terbaru</div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-custom table-hover align-middle">
+                                <tbody>
+                                    @forelse($orders as $order)
+                                        <tr>
+                                            <td><strong>#KESTORE-{{ str_pad($order->id, 4, '0', STR_PAD_LEFT) }}</strong></td>
+                                            <td>{{ $order->product->name ?? 'N/A' }}</td>
+                                            <td class="text-center">
+                                                <span
+                                                    class="badge rounded-pill {{ strtolower($order->status) == 'selesai' ? 'badge-status-selesai' : 'badge-status-pending' }}">
+                                                    {{ $order->status }}
+                                                </span>
+                                            </td>
+                                            <td class="text-end"><a href="{{ route('member.orders.show', $order->id) }}"
+                                                    class="btn btn-sm btn-outline-light">Detail</a></td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center py-5">
+                                                <i class="fas fa-box-open fa-2x text-muted mb-3"></i>
+                                                <h6 class="text-muted">Anda belum memiliki riwayat pesanan.</h6>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- Grafik Status Pesanan --}}
+            <div class="col-lg-4">
+                <div class="card card-main">
+                    <div class="card-header"><i class="fas fa-chart-pie me-2"></i>Ringkasan Status Pesanan</div>
+                    <div class="card-body d-flex align-items-center justify-content-center">
+                        <canvas id="orderStatusChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -87,76 +167,53 @@
 @push('scripts')
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // 1. Animasi Angka pada Kartu Statistik
+            // Animasi Angka pada Kartu Statistik
             const counters = document.querySelectorAll('.stat-value');
             counters.forEach(counter => {
-                const animate = () => {
-                    const target = +counter.getAttribute('data-target');
-                    const count = +counter.innerText.replace(/[^0-9]/g, '');
-                    const prefix = counter.getAttribute('data-prefix') || '';
-                    const inc = Math.ceil(target / 100); // Kecepatan animasi
+                const target = +counter.getAttribute('data-target');
+                if (target === 0) return;
+
+                const animate = (timestamp) => {
+                    const count = +counter.innerText;
+                    const inc = Math.ceil(target / 100);
 
                     if (count < target) {
-                        const newValue = Math.min(count + inc, target);
-                        counter.innerText = prefix + (prefix ? newValue.toLocaleString('id-ID') : newValue);
+                        counter.innerText = Math.min(count + inc, target);
                         setTimeout(animate, 15);
                     } else {
-                        counter.innerText = prefix + (prefix ? target.toLocaleString('id-ID') : target);
+                        counter.innerText = target;
                     }
                 }
                 animate();
             });
 
-            // 2. Inisialisasi Grafik (Chart.js)
-            if (document.getElementById('spendingChart')) {
-                const ctx = document.getElementById('spendingChart').getContext('2d');
-                const spendingChart = new Chart(ctx, {
-                    type: 'bar',
+            // Inisialisasi Grafik Donat (Chart.js)
+            if (document.getElementById('orderStatusChart')) {
+                const ctx = document.getElementById('orderStatusChart').getContext('2d');
+                const orderStatusData = @json($orderStatusData);
+
+                new Chart(ctx, {
+                    type: 'doughnut',
                     data: {
-                        labels: {!! json_encode($chartLabels) !!},
+                        labels: Object.keys(orderStatusData),
                         datasets: [{
-                            label: 'Total Belanja',
-                            data: {!! json_encode($chartValues) !!},
-                            backgroundColor: 'rgba(212, 175, 55, 0.6)',
-                            borderColor: 'rgba(212, 175, 55, 1)',
-                            borderWidth: 1,
-                            borderRadius: 5,
-                            hoverBackgroundColor: 'rgba(212, 175, 55, 0.8)'
+                            data: Object.values(orderStatusData),
+                            backgroundColor: ['rgba(40, 167, 69, 0.7)', 'rgba(255, 193, 7, 0.7)', 'rgba(23, 162, 184, 0.7)', 'rgba(220, 53, 69, 0.7)'],
+                            borderColor: 'var(--dark-surface-2)',
+                            borderWidth: 4,
+                            hoverOffset: 4
                         }]
                     },
                     options: {
                         responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: { color: 'var(--text-muted)', callback: (value) => 'Rp ' + value.toLocaleString('id-ID') },
-                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                            },
-                            x: {
-                                ticks: { color: 'var(--text-muted)' },
-                                grid: { display: false }
-                            }
-                        },
+                        cutout: '70%',
                         plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: 'var(--dark-bg)',
-                                titleColor: 'var(--text-light)',
-                                bodyColor: 'var(--text-muted)',
-                                callbacks: {
-                                    label: function (context) {
-                                        let label = context.dataset.label || '';
-                                        if (label) { label += ': '; }
-                                        if (context.parsed.y !== null) {
-                                            label += 'Rp ' + context.parsed.y.toLocaleString('id-ID');
-                                        }
-                                        return label;
-                                    }
-                                }
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: 'var(--text-muted)', boxWidth: 12, padding: 20 }
                             }
                         },
-                        animation: { duration: 1200, easing: 'easeInOutQuart' }
+                        animation: { animateScale: true, animateRotate: true }
                     }
                 });
             }

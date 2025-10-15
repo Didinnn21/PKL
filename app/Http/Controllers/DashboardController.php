@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers; // INI BAGIAN YANG DIPERBAIKI
+namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +25,7 @@ class DashboardController extends Controller
             'total_revenue' => Order::where('status', 'Completed')->sum('total_price'),
         ];
 
-        // Chart Data (Sales Overview) - Contoh data 8 bulan terakhir
+        // Chart Data (Sales Overview)
         $salesData = Order::select(
             DB::raw('YEAR(created_at) as year'),
             DB::raw('MONTH(created_at) as month'),
@@ -38,7 +38,7 @@ class DashboardController extends Controller
             ->get();
 
         $salesLabels = $salesData->map(fn($item) => Carbon::createFromDate($item->year, $item->month)->format('M'));
-        $salesValues = $salesData->map(fn($item) => $item->total / 1000000); // dalam jutaan
+        $salesValues = $salesData->map(fn($item) => ($item->total) ? $item->total / 1000000 : 0); // dalam jutaan
 
         $salesChartData = [
             'labels' => $salesLabels,
@@ -51,7 +51,7 @@ class DashboardController extends Controller
             ->groupBy('product_id')
             ->orderBy('total_sold', 'desc')
             ->take(5)
-            ->with('product') // Eager load relasi produk
+            ->with('product')
             ->get();
 
         $top_products = $top_products_data->map(function ($item) {
@@ -59,7 +59,7 @@ class DashboardController extends Controller
                 'name' => $item->product->name ?? 'Produk Tidak Ditemukan',
                 'sold' => $item->total_sold,
                 'revenue' => $item->total_revenue,
-                'icon' => 'fa-box', // Ikon default
+                'icon' => 'fa-box',
             ];
         });
 
@@ -67,37 +67,33 @@ class DashboardController extends Controller
     }
 
     /**
-     * Menampilkan dashboard untuk member dengan data visualisasi.
+     * PERBAIKAN: Menampilkan dashboard untuk member dengan data visualisasi yang lebih kaya.
      */
     public function member()
     {
         $user = Auth::user();
 
-        // 1. Hitung statistik dasar
-        $totalOrders = Order::where('user_id', $user->id)->count();
-        $totalSpent = Order::where('user_id', $user->id)->sum('total_price');
+        // 1. Hitung statistik dasar untuk kartu
+        $totalPesanan = Order::where('user_id', $user->id)->count();
+        $pesananAktif = Order::where('user_id', $user->id)->whereNotIn('status', ['Selesai', 'Dibatalkan'])->count();
+        $pesananSelesai = Order::where('user_id', $user->id)->where('status', 'Selesai')->count();
 
-        // 2. Siapkan data untuk grafik belanja per bulan (6 bulan terakhir)
-        $spendingData = Order::where('user_id', $user->id)
-            ->select(
-                DB::raw('SUM(total_price) as total'),
-                DB::raw("DATE_FORMAT(created_at, '%b %Y') as month") // Format: Jan 2023
-            )
-            ->where('created_at', '>=', Carbon::now()->subMonths(6))
-            ->groupBy('month')
-            ->orderByRaw("MIN(created_at) asc") // Urutkan berdasarkan waktu
-            ->get();
+        // 2. Ambil 5 pesanan terbaru untuk tabel ringkasan
+        $orders = Order::where('user_id', $user->id)->with('product')->latest()->take(5)->get();
 
-        // 3. Format data agar bisa dibaca oleh Chart.js
-        $chartLabels = $spendingData->pluck('month');
-        $chartValues = $spendingData->pluck('total');
+        // 3. Siapkan data untuk grafik donat status pesanan
+        $orderStatusData = Order::where('user_id', $user->id)
+            ->select('status', DB::raw('count(*) as total'))
+            ->groupBy('status')
+            ->pluck('total', 'status');
 
         // 4. Kirim semua data yang sudah dihitung ke view
         return view('Member.dashboard', compact(
-            'totalOrders',
-            'totalSpent',
-            'chartLabels',
-            'chartValues'
+            'totalPesanan',
+            'pesananAktif',
+            'pesananSelesai',
+            'orders',
+            'orderStatusData'
         ));
     }
 }

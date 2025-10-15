@@ -11,7 +11,9 @@
 
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('admin.products.update', $product->id) }}" method="POST">
+                {{-- PERBAIKAN 1: Tambahkan enctype untuk upload file --}}
+                <form action="{{ route('admin.products.update', $product->id) }}" method="POST"
+                    enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="mb-3">
@@ -36,10 +38,20 @@
                                 value="{{ old('stock', $product->stock) }}">
                         </div>
                     </div>
+
+                    {{-- PERBAIKAN 2: Ubah input gambar dan tampilkan gambar saat ini --}}
                     <div class="mb-3">
-                        <label for="image_url" class="form-label">URL Gambar (Opsional)</label>
-                        <input type="text" class="form-control" id="image_url" name="image_url"
-                            value="{{ old('image_url', $product->image_url) }}">
+                        <label for="image" class="form-label">Ganti Gambar Produk (Opsional)</label>
+                        <input type="file" class="form-control" id="image" name="image">
+                        <div class="form-text text-muted">Kosongkan jika tidak ingin mengganti gambar.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Gambar Saat Ini</label>
+                        <div>
+                            <img src="{{ asset($product->image_url) }}" alt="{{ $product->name }}"
+                                style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px;">
+                        </div>
                     </div>
 
                     <div class="d-flex justify-content-end">

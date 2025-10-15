@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
+use App\Models\Product; // PERBAIKAN DI SINI: Tambahkan baris ini
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -17,7 +18,10 @@ class HomeController extends Controller
 
     public function index()
     {
-        return view('home');
+        // Logika ini lebih cocok untuk landing page, bukan home setelah login.
+        // Sebaiknya, rute '/' diarahkan ke controller lain yang tidak memakai middleware 'auth'
+        $products = Product::latest()->get();
+        return view('landing.index', compact('products'));
     }
 
     public function memberDashboard(Request $request)
@@ -53,5 +57,18 @@ class HomeController extends Controller
             'chartLabels',
             'chartValues'
         ));
+    }
+
+    public function showProductDetail($id)
+    {
+        // Cari produk berdasarkan ID. Jika tidak ditemukan, akan menampilkan halaman 404.
+        $product = Product::findOrFail($id);
+
+        // Ambil 3 produk lain secara acak sebagai rekomendasi,
+        // pastikan tidak menampilkan produk yang sedang dilihat.
+        $relatedProducts = Product::where('id', '!=', $id)->inRandomOrder()->take(3)->get();
+
+        // Kembalikan view 'product_detail' dengan data produk dan produk terkait.
+        return view('product_detail', compact('product', 'relatedProducts'));
     }
 }
