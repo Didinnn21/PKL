@@ -3,150 +3,197 @@
 @section('title', $product->name)
 
 @push('styles')
+    {{-- Font Awesome untuk ikon --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <style>
-        .product-detail-card {
-            background-color: #252525;
-            border: 1px solid #444;
-            border-radius: 15px;
-            overflow: hidden;
+        .product-container {
+            max-width: 800px;
+            margin: auto;
         }
 
-        .product-image-main {
+        .product-card {
+            background-color: var(--dark-surface-2);
+            border: 1px solid var(--dark-border);
             border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-image-wrapper {
+            background-color: #000;
+            padding: 1rem;
+        }
+
+        .product-image {
             width: 100%;
-            height: 550px;
-            object-fit: cover;
+            max-height: 500px;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        .product-info {
+            padding: 2rem;
         }
 
         .product-title {
-            font-size: 2.5rem;
+            font-size: 2.25rem;
             font-weight: 700;
             color: #fff;
         }
 
         .product-price {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 600;
-            color: #d4af37;
+            color: var(--primary-gold);
         }
 
-        .product-stock {
-            font-weight: 500;
-            color: #f0f0f0;
+        .stock-badge {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.4em 0.8em;
+            border-radius: 20px;
         }
 
         .product-description {
+            color: var(--text-muted);
             line-height: 1.8;
         }
 
-        /* Quantity Selector Interaktif */
-        .quantity-selector {
+        .spec-list {
+            list-style: none;
+            padding-left: 0;
+            color: var(--text-muted);
+        }
+
+        .spec-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--dark-border);
             display: flex;
-            align-items: center;
-            border: 1px solid #444;
-            border-radius: 8px;
-            overflow: hidden;
+            justify-content: space-between;
+        }
+
+        .spec-list li strong {
+            color: var(--text-light);
+        }
+
+        /* PERBAIKAN: Form Pemesanan dibungkus card gold */
+        .order-form-container {
+            background: linear-gradient(145deg, #e6b438, #c8a02a);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #d4af37;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.25);
+        }
+
+        .order-form-container .form-label {
+            color: #2c2c2c;
+            /* Warna gelap agar kontras dengan background gold */
         }
 
         .quantity-selector button {
-            background-color: #2c2c2c;
-            color: #f0f0f0;
-            border: none;
-            font-size: 1.2rem;
-            width: 45px;
-            height: 45px;
-            cursor: pointer;
+            background-color: #fff;
+            color: #2c2c2c;
+            border: 1px solid #c8a02a;
+        }
+
+        .quantity-selector button:hover {
+            background-color: #f0f0f0;
+            color: #000;
         }
 
         .quantity-selector input {
-            width: 60px;
-            height: 45px;
             text-align: center;
-            border: none;
-            background-color: #1a1a1a;
-            color: #f0f0f0;
-            font-weight: 600;
-        }
-
-        input[type=number]::-webkit-inner-spin-button,
-        input[type=number]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        input[type=number] {
+            border-top: 1px solid #c8a02a;
+            border-bottom: 1px solid #c8a02a;
+            border-left: none;
+            border-right: none;
+            background-color: #fff;
+            color: #1a1a1a;
+            /* PERBAIKAN: Warna font jumlah menjadi gelap */
+            font-weight: 700;
             -moz-appearance: textfield;
         }
 
-        /* Tombol Pesan */
         .btn-order {
-            background-color: #d4af37;
-            border-color: #d4af37;
-            color: #1a1a1a;
+            background-color: #2c2c2c;
+            border-color: #2c2c2c;
+            color: #fff;
             font-weight: 700;
-            font-size: 1.1rem;
-            padding: 0.8rem 1.5rem;
-            width: 100%;
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
             transition: all 0.3s ease;
         }
 
         .btn-order:hover {
-            background-color: #b39330;
-            border-color: #b39330;
-            color: #1a1a1a;
+            background-color: #1a1a1a;
+            border-color: #1a1a1a;
+            color: #fff;
+            transform: translateY(-2px);
         }
     </style>
 @endpush
 
 @section('content')
-    <div class="container my-5">
-        <div class="product-detail-card">
-            <div class="row g-0">
-                {{-- Kolom Gambar --}}
-                <div class="col-md-6">
-                    {{-- PERBAIKAN: Menggunakan $product->image_url dan asset() --}}
-                    <img src="{{ asset($product->image_url) }}" class="product-image-main" alt="{{ $product->name }}">
+    <div class="container product-container my-5">
+        <div class="product-card">
+            {{-- Bagian Gambar --}}
+            <div class="product-image-wrapper">
+                <img src="{{ asset($product->image_url ?? 'https://placehold.co/800x600/000000/FFFFFF/png?text=Gambar+Produk') }}"
+                    class="product-image" alt="{{ $product->name }}">
+            </div>
+
+            {{-- Bagian Informasi & Form --}}
+            <div class="product-info">
+                {{-- Nama & Stok --}}
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h1 class="product-title">{{ $product->name }}</h1>
+                    <span class="stock-badge mt-2">Stok: {{ $product->stock }}</span>
                 </div>
 
-                {{-- Kolom Detail & Form Pemesanan --}}
-                <div class="col-md-6 p-4 p-md-5 d-flex flex-column">
-                    <h1 class="product-title">{{ $product->name }}</h1>
-                    <p class="product-price my-3">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
-                    <p class="product-stock">Stok Tersedia: {{ $product->stock }} unit</p>
+                {{-- Harga --}}
+                <p class="product-price mb-4">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
 
-                    <hr style="border-color: #444;">
+                {{-- Deskripsi --}}
+                <h5 class="text-white fw-bold">Deskripsi</h5>
+                <p class="product-description">{{ $product->description }}</p>
 
-                    <p class="product-description text-muted">{{ $product->description }}</p>
+                <hr class="my-4" style="border-color: var(--dark-border);">
 
-                    {{-- Form Pemesanan --}}
-                    <div class="mt-auto">
-                        {{-- PERBAIKAN: Mengarahkan form ke rute 'member.cart.store' --}}
-                        <form action="{{ route('member.cart.store') }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                {{-- Spesifikasi --}}
+                <h5 class="text-white fw-bold">Spesifikasi</h5>
+                <ul class="spec-list">
+                    <li><span>Bahan</span> <strong>Cotton Fleece 280gsm (Hoodie/Crewneck), Cotton Combed 24s (Kaos)</strong>
+                    </li>
+                    <li><span>Sablon Satuan</span> <strong>DTF (Direct to Film)</strong></li>
+                    <li><span>Sablon Lusinan</span> <strong>Plastisol (Min. 12 pcs)</strong></li>
+                    <li><span>Kualitas</span> <strong>Premium & Tahan Lama</strong></li>
+                </ul>
 
-                            <div class="row">
-                                {{-- Pilihan Jumlah --}}
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Jumlah</label>
-                                    <div class="quantity-selector">
-                                        <button type="button" onclick="decreaseQuantity()">-</button>
-                                        <input type="number" name="quantity" id="quantity" value="1" min="1"
-                                            max="{{ $product->stock }}" required>
-                                        <button type="button" onclick="increaseQuantity()">+</button>
-                                    </div>
+                {{-- Form Pemesanan --}}
+                <div class="order-form-container mt-4">
+                    <form action="{{ route('member.cart.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <div class="row align-items-center g-3">
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold small">JUMLAH</label>
+                                <div class="input-group quantity-selector">
+                                    <button class="btn" type="button" onclick="decreaseQuantity()">-</button>
+                                    <input type="number" name="quantity" id="quantity" class="form-control text-center"
+                                        value="1" min="1" max="{{ $product->stock }}" required readonly>
+                                    <button class="btn" type="button" onclick="increaseQuantity()">+</button>
                                 </div>
-
-                                {{-- Upload Desain (Dihilangkan karena sudah ada di proses order) --}}
-                                {{-- Catatan Tambahan (Dihilangkan karena sudah ada di proses order) --}}
-
                             </div>
-
-                            <button type="submit" class="btn btn-order mt-3">
-                                <i class="fas fa-shopping-cart me-2"></i> Tambahkan ke Keranjang
-                            </button>
-                        </form>
-                    </div>
+                            <div class="col-md-7">
+                                <label class="form-label fw-bold small">&nbsp;</label>
+                                <button type="submit" class="btn btn-order w-100">
+                                    <i class="fas fa-shopping-cart me-2"></i> Tambahkan ke Keranjang
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

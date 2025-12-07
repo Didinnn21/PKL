@@ -11,6 +11,7 @@ class CartController extends Controller
     public function index()
     {
         $cartItems = Cart::where('user_id', Auth::id())->with('product')->get();
+        // Pastikan Anda memiliki view 'cart.index'
         return view('cart.index', compact('cartItems'));
     }
 
@@ -35,19 +36,34 @@ class CartController extends Controller
             ]);
         }
 
-        return redirect()->route('cart.index')->with('success', 'Produk berhasil ditambahkan ke keranjang!');
+        // PERBAIKAN: Mengarahkan ke nama rute yang benar
+        return redirect()->route('member.cart.index')->with('success', 'Produk berhasil ditambahkan ke keranjang!');
     }
 
     public function update(Request $request, Cart $cart)
     {
+        // Pastikan cart yang diupdate milik user yang login
+        if ($cart->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         $request->validate(['quantity' => 'required|integer|min:1']);
         $cart->update(['quantity' => $request->quantity]);
-        return redirect()->route('cart.index')->with('success', 'Jumlah produk berhasil diperbarui.');
+
+        // PERBAIKAN: Mengarahkan ke nama rute yang benar
+        return redirect()->route('member.cart.index')->with('success', 'Jumlah produk berhasil diperbarui.');
     }
 
     public function destroy(Cart $cart)
     {
+        // Pastikan cart yang dihapus milik user yang login
+        if ($cart->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         $cart->delete();
-        return redirect()->route('cart.index')->with('success', 'Produk berhasil dihapus dari keranjang.');
+
+        // PERBAIKAN: Mengarahkan ke nama rute yang benar
+        return redirect()->route('member.cart.index')->with('success', 'Produk berhasil dihapus dari keranjang.');
     }
 }

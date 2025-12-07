@@ -5,10 +5,9 @@
 @push('styles')
     <style>
         .stat-card {
-            background: var(--dark-surface-2);
-            border: 1px solid var(--dark-border);
+            background: linear-gradient(135deg, #000, #333);
             border-radius: 12px;
-            color: var(--text-light);
+            color: #ffc107;
             padding: 1.5rem;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             height: 100%;
@@ -16,40 +15,41 @@
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
         .stat-card .stat-icon {
             font-size: 1.75rem;
-            color: var(--primary-gold);
+            color: #ffc107;
         }
 
         .stat-card .stat-value {
-            font-size: 2.25rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            color: #fff;
         }
 
         .stat-card .stat-label {
-            font-size: 0.9rem;
-            color: var(--text-muted);
+            font-size: 1rem;
+            color: rgba(255, 193, 7, 0.8);
         }
 
         .card-main {
-            background-color: var(--dark-surface-2);
-            border: 1px solid var(--dark-border);
+            background-color: #000;
             border-radius: 12px;
             height: 100%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            color: #fff;
         }
 
         .card-main .card-header {
-            background-color: var(--dark-surface);
-            border-bottom: 1px solid var(--dark-border);
+            background-color: #333;
+            border-bottom: 1px solid #ffc107;
             font-weight: 600;
+            color: #ffc107;
         }
 
         .table-custom tbody tr:hover {
-            background-color: var(--dark-surface);
+            background-color: #333;
         }
 
         .badge-status-pending {
@@ -63,22 +63,49 @@
             color: #28a745;
             padding: 0.4em 0.8em;
         }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2rem;
+            color: #ffc107;
+        }
+
+        .dashboard-header p {
+            color: #fff;
+        }
+
+        .dashboard-header .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #212529;
+            font-weight: bold;
+        }
+
+        .dashboard-header .btn-warning:hover {
+            background-color: #e0a800;
+            border-color: #d39e00;
+        }
     </style>
 @endpush
 
 @section('content')
     <div class="container-fluid">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="dashboard-header">
             <div>
-                <h1 class="h2 pt-1" style="color:var(--text-light);">Dashboard</h1>
+                <h1>Dashboard</h1>
                 <p>Selamat Datang kembali, {{ Auth::user()->name }}!</p>
             </div>
-            <a href="{{ route('member.products.index') }}" class="btn btn-warning fw-bold">
+            <a href="{{ route('member.products.index') }}" class="btn btn-warning">
                 <i class="fas fa-plus me-2"></i>Buat Pesanan Baru
             </a>
         </div>
 
-        {{-- Kartu Statistik Animasi --}}
         <div class="row g-4">
             <div class="col-xl-4 col-md-6">
                 <div class="stat-card">
@@ -115,8 +142,7 @@
             </div>
         </div>
 
-        <div class="row g-4 mt-2">
-            {{-- Tabel Riwayat Pesanan Terbaru --}}
+        <div class="row g-4 mt-4">
             <div class="col-lg-8">
                 <div class="card card-main">
                     <div class="card-header"><i class="fas fa-history me-2"></i>Riwayat Pesanan Terbaru</div>
@@ -135,7 +161,7 @@
                                                 </span>
                                             </td>
                                             <td class="text-end"><a href="{{ route('member.orders.show', $order->id) }}"
-                                                    class="btn btn-sm btn-outline-light">Detail</a></td>
+                                                    class="btn btn-sm btn-outline-dark">Detail</a></td>
                                         </tr>
                                     @empty
                                         <tr>
@@ -151,7 +177,6 @@
                     </div>
                 </div>
             </div>
-            {{-- Grafik Status Pesanan --}}
             <div class="col-lg-4">
                 <div class="card card-main">
                     <div class="card-header"><i class="fas fa-chart-pie me-2"></i>Ringkasan Status Pesanan</div>

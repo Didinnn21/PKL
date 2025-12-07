@@ -3,29 +3,31 @@
 @push('styles')
     <style>
         .card-orders {
-            background-color: #2c2c2c;
-            border: 1px solid #444;
+            background-color: #000;
+            border: 1px solid #ffc107;
             border-radius: 12px;
         }
 
         .card-orders .card-header {
-            background-color: #2c2c2c;
-            border-bottom: 1px solid #444;
+            background-color: #333;
+            border-bottom: 1px solid #ffc107;
+            color: #ffc107;
+            font-weight: bold;
         }
 
         .table-dark-custom {
-            color: #e0e0e0;
+            color: #fff;
         }
 
         .table-dark-custom th {
-            border-color: #444 !important;
+            border-color: #ffc107 !important;
             font-weight: 600;
-            color: #aaa;
+            color: #ffc107;
         }
 
         .table-dark-custom td,
         .table-dark-custom th {
-            border-color: #444 !important;
+            border-color: #ffc107 !important;
         }
 
         .product-thumbnail {
