@@ -1,262 +1,277 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>@yield('title', 'Dashboard') - Kestore.id</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Dashboard Member') - Kestore.id</title>
 
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-    <link href="https://fonts.bunny.net/css?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
     <style>
         :root {
-            --dark-bg: #1a1a1a;
-            --dark-surface: #252525;
-            --dark-surface-2: #2c2c2c;
-            --dark-border: #444;
-            --primary-gold: #d4af37;
-            --text-light: #f0f0f0;
-            --text-muted: #a0a0a0;
+            /* Tema Gold & Black */
+            --bg-body: #0a0a0a;      /* Hitam Pekat */
+            --bg-sidebar: #000000;   /* Hitam Murni */
+            --bg-card: #141414;      /* Abu Sangat Gelap */
+            --bg-input: #1f1f1f;     /* Background Input */
+            --border-color: #333333;
+            --gold-primary: #D4AF37;
+            --gold-hover: #F1C40F;
+            --gold-dim: rgba(212, 175, 55, 0.1); 
+            --text-white: #ffffff;
+            --text-muted: #a3a3a3;
         }
 
         body {
-            background-color: var(--dark-bg);
-            color: var(--text-light);
-            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-white);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            overflow-x: hidden;
         }
 
-        .wrapper {
-            display: flex;
+        /* --- GLOBAL STYLES AGAR TEKS PUTIH KELIHATAN --- */
+        
+        /* 1. Card (Kotak Konten) */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-white); /* Paksa teks putih */
+        }
+        .card-header, .card-footer {
+            background-color: rgba(255,255,255,0.02);
+            border-color: var(--border-color);
+            color: var(--text-white);
         }
 
-        /* PERBAIKAN: Membuat sidebar sticky */
+        /* 2. Input Form (PENTING: Agar teks putih terlihat, background harus gelap) */
+        .form-control, .form-select {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: #ffffff !important; /* Paksa teks putih */
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-input);
+            border-color: var(--gold-primary);
+            color: #ffffff !important;
+            box-shadow: 0 0 0 0.2rem var(--gold-dim);
+        }
+        .form-control::placeholder {
+            color: var(--text-muted); /* Placeholder abu-abu */
+        }
+        /* Fix untuk autofill browser (sering bikin background jadi putih) */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active{
+            -webkit-box-shadow: 0 0 0 30px var(--bg-input) inset !important;
+            -webkit-text-fill-color: white !important;
+        }
+
+        /* 3. Tabel */
+        .table {
+            color: var(--text-white);
+            border-color: var(--border-color);
+        }
+        .table thead th {
+            color: var(--gold-primary);
+            border-bottom: 2px solid var(--border-color);
+        }
+        .table td, .table th {
+            border-top: 1px solid var(--border-color);
+        }
+        .table-hover tbody tr:hover {
+            color: var(--text-white);
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        /* Sidebar Styling */
         .sidebar {
-            width: 250px;
-            background-color: var(--dark-surface);
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
             min-height: 100vh;
-            border-right: 1px solid var(--dark-border);
-            position: sticky;
-            /* Tambahkan ini */
-            top: 0;
-            /* Tambahkan ini */
-            height: 100vh;
-            /* Tambahkan ini */
+            padding-top: 1rem;
         }
 
-        .main-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* PERBAIKAN: Membuat header sticky */
-        .topnav {
-            background-color: var(--dark-surface);
-            border-bottom: 1px solid var(--dark-border);
-            padding: 0.75rem 1.5rem;
-            position: sticky;
-            /* Tambahkan ini */
-            top: 0;
-            /* Tambahkan ini */
-            z-index: 1020;
-            /* Tambahkan ini agar di atas konten lain */
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-
-        .dropdown-menu {
-            background-color: var(--dark-surface-2);
-            border: 1px solid var(--dark-border);
-        }
-
-        .dropdown-item {
-            color: var(--text-light);
-        }
-
-        .dropdown-item:hover {
-            background-color: var(--primary-gold);
-            color: var(--dark-bg);
-        }
-
-        .sidebar-header {
-            padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid var(--dark-border);
-            text-align: center;
-        }
-
-        .sidebar-header a {
-            color: var(--primary-gold) !important;
+        .navbar-brand {
+            color: #fff !important;
             font-weight: 700;
-            font-size: 1.5rem;
-            text-decoration: none;
+            letter-spacing: 0.5px;
+            font-size: 1.1rem;
         }
+        .navbar-brand span { color: var(--gold-primary); }
 
-        .sidebar .nav-link {
-            color: var(--text-muted);
-            padding: 0.9rem 1.5rem;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            border-left: 4px solid transparent;
-            transition: all 0.2s ease;
-        }
-
-        .sidebar .nav-link i {
-            width: 20px;
-            margin-right: 15px;
-            text-align: center;
-        }
-
-        .sidebar .nav-link:hover {
-            color: #fff;
-            background-color: var(--dark-surface-2);
-        }
-
-        .sidebar .nav-link.active {
-            color: #fff;
-            background-color: var(--dark-bg);
-            border-left-color: var(--primary-gold);
-            font-weight: 600;
-        }
-
-        .sidebar-heading {
-            padding: 0.75rem 1.5rem;
+        .nav-category {
             font-size: 0.75rem;
             text-transform: uppercase;
-            color: #777;
+            color: var(--text-white);
+            padding: 1rem 1.5rem 0.5rem;
+            font-weight: 700;
+            opacity: 0.9;
         }
 
-        .page-content {
-            padding: 2rem;
-            flex-grow: 1;
-            /* Membuat konten mengisi ruang kosong */
+        .nav-link {
+            color: var(--text-white);
+            padding: 0.75rem 1.5rem;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            opacity: 0.8;
         }
 
-        .dataTables_wrapper .dataTables_length select,
-        .dataTables_wrapper .dataTables_filter input {
-            background-color: var(--dark-surface-2);
-            color: var(--text-light);
-            border: 1px solid var(--dark-border);
+        .nav-link i {
+            width: 24px;
+            margin-right: 10px;
+            color: var(--text-white);
+            transition: all 0.3s ease;
         }
 
-        .dataTables_wrapper .dataTables_info,
-        .dataTables_wrapper .dataTables_paginate .page-link {
-            color: var(--text-muted) !important;
+        .nav-link:hover {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.1);
+            opacity: 1;
+        }
+        .nav-link:hover i { color: var(--gold-primary); }
+
+        .nav-link.active {
+            color: #fff;
+            background: linear-gradient(90deg, var(--gold-dim) 0%, transparent 100%);
+            border-left-color: var(--gold-primary);
+            font-weight: 600;
+            opacity: 1;
+        }
+        .nav-link.active i { color: var(--gold-primary); }
+
+        .navbar-top {
+            background-color: var(--bg-sidebar);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
         }
 
-        .dataTables_wrapper .dataTables_paginate .page-link {
-            background-color: transparent;
-            border: 1px solid transparent;
+        /* Button Logout */
+        .btn-logout {
+            color: #ff6b6b; 
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 0.4rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            transition: all 0.2s;
         }
+        .btn-logout:hover { background: #ef4444; color: #fff; }
 
-        .dataTables_wrapper .dataTables_paginate .page-item.active .page-link {
-            background-color: var(--primary-gold);
-            border-color: var(--primary-gold);
-            color: var(--dark-bg) !important;
-        }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-sidebar); }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--gold-primary); }
     </style>
     @stack('styles')
 </head>
 
 <body>
-    <div class="wrapper">
-        <nav class="sidebar">
-            <div class="sidebar-header">
-                <a class="navbar-brand d-flex align-items-center" href="{{ route('member.dashboard') }}">
-                    <img src="{{ asset('images/kestore-logo.png') }}" alt="Kestore.id Logo"
-                        style="height: 30px; margin-right: 10px;">
-                    KESTORE.ID
-                </a>
-            </div>
-            <ul class="nav flex-column">
-                <li class="sidebar-heading">Utama</li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('member.dashboard') ? 'active' : '' }}"
-                        href="{{ route('member.dashboard') }}">
-                        <i class="fas fa-tachometer-alt"></i> Dashboard
-                    </a>
-                </li>
-                <li class="sidebar-heading">Toko</li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('member.products.index') ? 'active' : '' }}"
-                        href="{{ route('member.products.index') }}">
-                        <i class="fas fa-tshirt"></i> Katalog Produk
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('member.orders.*') ? 'active' : '' }}"
-                        href="{{ route('member.orders.index') }}">
-                        <i class="fas fa-history"></i> Riwayat Pesanan
-                    </a>
-                </li>
-                <li class="sidebar-heading">Lainnya</li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url('/') }}">
-                        <i class="fas fa-home"></i> Kembali ke Toko
-                    </a>
-                </li>
-            </ul>
-        </nav>
-
-        <div class="main-content">
-            <nav class="topnav navbar navbar-expand navbar-dark">
-                <div class="ms-auto"></div>
-                <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" id="navbarDropdown" href="#"
-                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=d4af37&color=1a1a1a&font-size=0.5"
-                                alt="Avatar" class="user-avatar">
-                            {{ Auth::user()->name }}
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky">
+                    <div class="px-4 py-4 mb-3 d-flex align-items-center justify-content-center border-bottom border-secondary">
+                        <a class="navbar-brand d-flex align-items-center" href="{{ route('member.dashboard') }}">
+                            <img src="{{ asset('images/kestore-logo.png') }}" alt="Logo" style="height: 32px; margin-right: 10px;">
+                            KESTORE<span>.ID</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">Profil Saya</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ route('logout') }}"
-                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    <i class="fas fa-sign-out-alt me-2"></i> Logout
-                                </a>
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                    @csrf
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
+                    </div>
+
+                    <ul class="nav flex-column mt-2">
+                        <div class="nav-category">Menu Member</div>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('member.dashboard') ? 'active' : '' }}" href="{{ route('member.dashboard') }}">
+                                <i class="fas fa-home"></i> Dashboard
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('member.products.index') ? 'active' : '' }}" href="{{ route('member.products.index') }}">
+                                <i class="fas fa-store"></i> Belanja Produk
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('member.custom.create') ? 'active' : '' }}" href="{{ route('member.custom.create') }}">
+                                <i class="fas fa-drafting-compass"></i> Pesan Custom
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('member.cart.index') ? 'active' : '' }}" href="{{ route('member.cart.index') }}">
+                                <i class="fas fa-shopping-cart"></i> Keranjang Saya
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('member.orders.index') ? 'active' : '' }}" href="{{ route('member.orders.index') }}">
+                                <i class="fas fa-clipboard-list"></i> Riwayat Pesanan
+                            </a>
+                        </li>
+
+                        <div class="nav-category mt-3">Akun</div>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('profile.index') ? 'active' : '' }}" href="{{ route('profile.index') }}">
+                                <i class="fas fa-user-circle"></i> Profil Saya
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </nav>
 
-            <div class="page-content">
-                @yield('content')
-            </div>
-
-            <footer class="py-4">
-                <div class="container-fluid px-4">
-                    <div class="d-flex align-items-center justify-content-between small">
-                        <div class="text-muted">Copyright &copy; Kestore.id {{ date('Y') }}</div>
+            <main class="col-md-9 ms-sm-auto col-lg-10 p-0">
+                <nav class="navbar navbar-expand-md navbar-top sticky-top">
+                    <div class="container-fluid">
+                        <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        
+                        <div class="d-flex align-items-center ms-auto">
+                            <div class="me-4 text-white d-none d-md-block text-end">
+                                <small class="text-white opacity-75">Halo, Member</small>
+                                <span class="text-white fw-bold d-block">{{ Auth::user()->name }}</span>
+                            </div>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-logout">
+                                    <i class="fas fa-power-off me-1"></i> Logout
+                                </button>
+                            </form>
+                        </div>
                     </div>
+                </nav>
+
+                <div class="p-4">
+                    @yield('content')
                 </div>
-            </footer>
+
+                <footer class="mt-auto py-4 border-top" style="border-color: var(--border-color) !important; background-color: var(--bg-body);">
+                    <div class="container-fluid text-center">
+                        <span class="small" style="color: #a3a3a3; letter-spacing: 0.5px;">
+                            &copy; {{ date('Y') }} 
+                            <span class="fw-bold text-white">Kestore</span><span style="color: var(--gold-primary)">.id</span> 
+                        </span>
+                    </div>
+                </footer>
+            </main>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
 </body>
-
 </html>

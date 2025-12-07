@@ -17,6 +17,8 @@ class Order extends Model
         'status',
         'notes',
         'design_file',
+        'shipping_address', // Pastikan ini ada
+        'shipping_service', // Pastikan ini ada (sesuai controller checkout)
     ];
 
     /**

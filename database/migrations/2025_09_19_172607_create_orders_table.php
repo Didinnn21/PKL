@@ -6,15 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+
+            // UBAH DI SINI: product_id dibuat nullable agar bisa simpan custom order
+            $table->foreignId('product_id')->nullable()->constrained()->onDelete('cascade');
+
             $table->integer('quantity');
-            $table->decimal('total_price', 10, 2);
+            $table->decimal('total_price', 15, 2); // Disarankan perbesar presisi harga
             $table->string('status')->default('pending');
             $table->text('notes')->nullable();
             $table->string('design_file')->nullable();
@@ -22,7 +24,6 @@ return new class extends Migration
             $table->timestamps();
         });
     }
-
 
     public function down(): void
     {
