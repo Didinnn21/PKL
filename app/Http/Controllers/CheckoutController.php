@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use app\Models\ShippingService;
 use App\Models\Cart;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,7 +18,7 @@ class CheckoutController extends Controller
             'J&T - Express' => 16000,
             'SiCepat - REG' => 14000,
         ];
-
+        $shippingOptions = ShippingService::all();
         return view('checkout.index', compact('cartItems', 'shippingOptions'));
     }
 }

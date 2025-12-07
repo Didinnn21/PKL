@@ -63,6 +63,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('settings.index');
         Route::put('/pengaturan/profil', [PengaturanController::class, 'updateProfile'])->name('settings.profile.update');
         Route::put('/pengaturan/toko', [PengaturanController::class, 'updateStore'])->name('settings.store.update');
+        // Route Manajemen Jasa Kirim
+        Route::resource('shippings', \App\Http\Controllers\AdminShippingController::class)->only(['index', 'store', 'destroy']);
     });
 
     // --- RUTE MEMBER ---
@@ -70,6 +72,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'member'])->name('dashboard');
         Route::get('/products', [MemberProductController::class, 'index'])->name('products.index');
         Route::resource('orders', MemberOrderController::class)->only(['index', 'show']);
+
+        // Route Pembayaran
+        Route::get('/orders/{order}/payment', [MemberOrderController::class, 'payment'])->name('orders.payment');
+        Route::put('/orders/{order}/payment', [MemberOrderController::class, 'updatePayment'])->name('orders.update_payment');
 
         // Keranjang & Checkout
         Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -94,4 +100,5 @@ Route::middleware(['auth'])->group(function () {
     // --- Rute Profil ---
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });

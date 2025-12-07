@@ -19,6 +19,7 @@ class Order extends Model
         'design_file',
         'shipping_address', // Pastikan ini ada
         'shipping_service', // Pastikan ini ada (sesuai controller checkout)
+        'payment_proof',    // Kolom Bukti Bayar
     ];
 
     /**
