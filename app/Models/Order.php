@@ -17,9 +17,9 @@ class Order extends Model
         'status',
         'notes',
         'design_file',
-        'shipping_address', // Pastikan ini ada
-        'shipping_service', // Pastikan ini ada (sesuai controller checkout)
-        'payment_proof',    // Kolom Bukti Bayar
+        'shipping_address', // Wajib ada
+        'shipping_service', // Wajib ada (Fitur baru)
+        'payment_proof',    // Wajib ada (Fitur baru)
     ];
 
     /**

@@ -27,7 +27,6 @@
                                     <tr>
                                         <th class="py-3 ps-4">ID Order</th>
                                         <th class="py-3">Produk</th>
-                                        <th class="py-3">Tanggal</th>
                                         <th class="py-3">Total Harga</th>
                                         <th class="py-3">Status</th>
                                         <th class="py-3 text-end pe-4">Aksi</th>
@@ -39,12 +38,11 @@
                                             <td class="ps-4 fw-bold text-muted">#{{ $order->id }}</td>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    {{-- Cek Gambar: Jika Custom (product_id null) pakai ikon, jika Produk pakai
-                                                    gambar --}}
                                                     @if($order->product)
                                                         <img src="{{ asset('images/product/' . $order->product->image) }}"
                                                             class="rounded border border-secondary me-3"
-                                                            style="width: 50px; height: 50px; object-fit: cover;">
+                                                            style="width: 50px; height: 50px; object-fit: cover;"
+                                                            onerror="this.src='{{ asset('images/kestore-logo.png') }}'">
                                                         <div>
                                                             <span
                                                                 class="d-block fw-bold text-white">{{ $order->product->name }}</span>
@@ -62,37 +60,40 @@
                                                     @endif
                                                 </div>
                                             </td>
-                                            <td class="text-white">{{ $order->created_at->format('d M Y') }}</td>
                                             <td class="text-warning fw-bold">Rp
                                                 {{ number_format($order->total_price, 0, ',', '.') }}</td>
                                             <td>
                                                 @if($order->status == 'Menunggu Pembayaran')
-                                                    <span class="badge bg-warning text-dark border border-warning">Menunggu
-                                                        Pembayaran</span>
+                                                    <span class="badge bg-warning text-dark">Belum Dibayar</span>
                                                 @elseif($order->status == 'Menunggu Verifikasi')
-                                                    <span class="badge bg-info text-dark border border-info">Verifikasi Admin</span>
+                                                    <span class="badge bg-info text-dark">Sedang Diverifikasi</span>
                                                 @elseif($order->status == 'Menunggu Konfirmasi')
-                                                    <span class="badge bg-secondary text-white border border-secondary">Menunggu
-                                                        Harga</span>
-                                                @elseif(in_array($order->status, ['Lunas', 'Selesai', 'Dikirim']))
-                                                    <span
-                                                        class="badge bg-success text-white border border-success">{{ $order->status }}</span>
+                                                    <span class="badge bg-secondary text-white">Menunggu Harga</span>
                                                 @else
-                                                    <span
-                                                        class="badge bg-danger text-white border border-danger">{{ $order->status }}</span>
+                                                    <span class="badge bg-success text-white">{{ $order->status }}</span>
                                                 @endif
                                             </td>
                                             <td class="text-end pe-4">
-                                                <a href="{{ route('member.orders.show', $order->id) }}"
-                                                    class="btn btn-outline-light btn-sm">
-                                                    Detail
-                                                </a>
+                                                {{-- TOMBOL AKSI --}}
+                                                <div class="btn-group">
+                                                    {{-- Jika Status Menunggu Pembayaran, Tampilkan Tombol Bayar --}}
+                                                    @if($order->status == 'Menunggu Pembayaran')
+                                                        <a href="{{ route('member.orders.payment', $order->id) }}"
+                                                            class="btn btn-warning btn-sm text-dark fw-bold me-2">
+                                                            <i class="fas fa-upload me-1"></i> Bayar
+                                                        </a>
+                                                    @endif
+
+                                                    <a href="{{ route('member.orders.show', $order->id) }}"
+                                                        class="btn btn-outline-light btn-sm">
+                                                        Detail
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="6" class="text-center py-5 text-muted">
-                                                <i class="fas fa-box-open fa-3x mb-3 opacity-50"></i>
+                                            <td colspan="5" class="text-center py-5 text-muted">
                                                 <p class="mb-0">Anda belum memiliki riwayat pesanan.</p>
                                             </td>
                                         </tr>
@@ -102,7 +103,6 @@
                         </div>
                     </div>
 
-                    {{-- Pagination Links --}}
                     @if($orders->hasPages())
                         <div class="card-footer border-top border-secondary py-3" style="background-color: #141414;">
                             <div class="d-flex justify-content-center">

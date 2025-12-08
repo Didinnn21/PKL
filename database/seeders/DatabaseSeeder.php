@@ -25,6 +25,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminUserSeeder::class,
             ProductSeeder::class, // TAMBAHKAN BARIS INI
+            CustomerSeeder::class,
+            ShippingServiceSeeder::class,
+    
         ]);
         // Atau jika ingin menggunakan seeder terpisah, uncomment baris berikut:
         // $this->call([

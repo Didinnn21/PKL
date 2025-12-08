@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use app\Models\ShippingService;
+use App\Models\ShippingService;
 use App\Models\Cart;
 use Illuminate\Support\Facades\Auth;
 
