@@ -228,19 +228,23 @@
                     <div class="card product-card">
                         <div class="product-image-container">
                             {{-- Cek 1: Jika gambar disimpan di public/images/product/ (Manual/Seeder) --}}
-                            @if(file_exists(public_path('images/product/' . $product->image)))
-                                <img src="{{ asset('images/product/' . $product->image) }}" alt="{{ $product->name }}">
+                            {{-- @if(file_exists(public_path('images/product/' . $product->image_url)))
+                                <img src="{{ asset('storage/products/' . $product->image_url) }}" alt="{{ $product->name }}"> --}}
 
                                 {{-- Cek 2: Jika gambar disimpan di storage (Upload Admin) --}}
-                            @elseif($product->image && file_exists(storage_path('app/public/products' . $product->image)))
-                                <img src="{{ asset('stora' . $product->image) }}" alt="{{ $product->name }}">
+                            {{-- @elseif($product->image && file_exists(storage_path('app/public/products' . $product->image)))
+                                <img src="{{ asset('store' . $product->image_url) }}" alt="{{ $product->name }}"> --}}
 
                                 {{-- Fallback: Jika tidak ada gambar, tampilkan placeholder/logo --}}
-                            @else
+                            {{-- @else
                                 <img src="{{ asset('images/kestore-logo.png') }}" alt="{{ $product->name }}"
                                     style="object-fit: contain; padding: 20px; opacity: 0.5;">
+                            @endif --}}
+                            @if (file_exists(public_path($product->image_url)))
+                                <img src="{{ asset($product->image_url) }}" alt="{{ $product->name }}">
+                            @else
+                                <img src="{{ asset('images/kestore-logo.png') }}" alt="{{ $product->name }}">
                             @endif
-
                             {{-- Badge Harga Overlay (Opsional) --}}
                             <div class="position-absolute top-0 end-0 m-3 px-3 py-1 bg-warning text-dark fw-bold rounded-pill shadow small">
                                 Stok: {{ $product->stock }}

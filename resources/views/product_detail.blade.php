@@ -139,9 +139,9 @@
     <div class="container product-container my-5">
         <div class="product-card">
             {{-- Bagian Gambar --}}
-            <div class="product-image-wrapper">
+            <div class="product-image-wrapper d-flex justify-content-center">
                 <img src="{{ asset($product->image_url ?? 'https://placehold.co/800x600/000000/FFFFFF/png?text=Gambar+Produk') }}"
-                    class="product-image" alt="{{ $product->name }}">
+                    class="product-image" alt="{{ $product->name }}" width="50%">
             </div>
 
             {{-- Bagian Informasi & Form --}}
