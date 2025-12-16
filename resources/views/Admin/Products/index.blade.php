@@ -22,7 +22,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-dark-custom table-hover align-middle">
+                    <table class="table table-dark table-hover align-middle">
                         <thead>
                             <tr>
                                 <th>ID</th>

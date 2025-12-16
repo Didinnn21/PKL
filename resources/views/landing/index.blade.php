@@ -130,9 +130,9 @@
             @forelse ($products as $product)
                 <div class="col-md-4 mb-4">
                     <div class="card product-card h-100">
-                        <img src="{{ $product->image_url ?? asset('images/product/default.jpg') }}" class="card-img-top" alt="{{ $product->name }}">
+                        <img src="{{ $product->image_url ?? asset('storage/product/default.jpg') }}" class="card-img-top" alt="{{ $product->image_url }}">
                         <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">{{ $product->name }}</h5>
+                            <h5 class="card-title">{{ $product->image_url }}</h5>
                             <p class="card-text flex-grow-1">{{ Str::limit($product->description, 100) }}</p>
                             <div class="d-flex justify-content-between align-items-center mt-3">
                                 <span class="product-price">Rp {{ number_format($product->price, 0, ',', '.') }}</span>

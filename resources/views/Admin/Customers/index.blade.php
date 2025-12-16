@@ -22,7 +22,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
+                    <table class="table table-dark table-hover align-middle">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -42,7 +42,7 @@
                                     <td class="text-center">
                                         <div class="btn-group btn-group-sm" role="group">
                                             <a href="{{ route('admin.customers.edit', $customer->id) }}"
-                                                class="btn btn-gold text-dark" title="Edit">
+                                                class="btn btn-gold text-white" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
 

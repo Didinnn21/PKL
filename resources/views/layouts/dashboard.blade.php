@@ -129,7 +129,7 @@
         .form-control:focus, .form-select:focus {
             background-color: var(--dark-surface-2);
             border-color: var(--primary-gold);
-            color: #fff;
+            color: #ffffff;
             box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
         }
         .form-control::placeholder { color: #888 !important; opacity: 1; }
