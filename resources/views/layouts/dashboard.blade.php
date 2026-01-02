@@ -67,7 +67,10 @@
         .sidebar-container {
             background-color: var(--dark-surface);
             border-right: 1px solid var(--dark-border);
-            height: 100%;
+            /* height: 100%; */
+            position: sticky;
+            top: 0;
+            height: 100vh;
             overflow-y: auto;
             padding-top: 1rem;
             padding-bottom: 2rem;

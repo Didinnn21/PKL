@@ -122,7 +122,10 @@
         .sidebar {
             background-color: var(--bg-sidebar);
             border-right: 1px solid var(--border-color);
-            min-height: 100vh;
+            /* min-height: 100vh; */
+            position: sticky;
+            top: 0;
+            height: 100vh;
             padding-top: 1rem;
         }
 
