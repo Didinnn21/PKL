@@ -11,22 +11,25 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
-        'product_id',   // Digunakan jika pesanan langsung 1 produk
-        'quantity',     // Digunakan jika pesanan langsung 1 produk
-        'total_price',
-        'status',
+        'order_number',     // WAJIB: Sesuai dengan logika di CheckoutController
+        'product_id',       // Digunakan untuk pesanan langsung (direct checkout)
+        'quantity',         // Digunakan untuk pesanan langsung
+        'total_price',      // Total akhir (Subtotal + Ongkir)
+        'status',           // default: 'unpaid'
         'notes',
         'design_file',
         'shipping_address',
         'shipping_service',
-        'payment_proof',
-        'order_type',    // 'regular' atau 'custom'
-        'product_type',  // Untuk pesanan custom (Kaos, Hoodie, dll)
-        'size',          // Untuk menyimpan rincian ukuran
+        'shipping_cost',    // WAJIB: Untuk menyimpan biaya ongkir
+        'payment_proof',    // Untuk upload bukti transfer
+        'order_type',       // 'regular' atau 'custom'
+        'product_type',     // Untuk custom order
+        'size',             // Detail ukuran (S, M, L, XL, dll)
     ];
 
     /**
      * Relasi ke model User
+     * Pesanan dimiliki oleh satu pengguna
      */
     public function user()
     {
@@ -35,6 +38,7 @@ class Order extends Model
 
     /**
      * Relasi ke model Product
+     * Digunakan jika pesanan hanya berisi satu produk langsung
      */
     public function product()
     {
@@ -42,7 +46,8 @@ class Order extends Model
     }
 
     /**
-     * Relasi ke detail barang (Wajib bernama 'items' agar cocok dengan Controller)
+     * Relasi ke detail barang (OrderItem)
+     * Satu pesanan bisa memiliki banyak item produk
      */
     public function items()
     {

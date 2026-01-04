@@ -106,6 +106,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/checkout/direct', [CheckoutController::class, 'directCheckout'])->name('checkout.direct');
         Route::post('/order', [OrderController::class, 'store'])->name('order.store');
         Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+        Route::post('/member/checkout/direct', [CheckoutController::class, 'directCheckout'])->name('member.checkout.direct');
+        // Di dalam group middleware auth member:
+        Route::match(['get', 'post'], '/checkout/direct', [CheckoutController::class, 'directCheckout'])->name('member.checkout.direct');
 
         // Custom Order
         Route::get('/custom-order', [OrderController::class, 'createCustom'])->name('custom.create');

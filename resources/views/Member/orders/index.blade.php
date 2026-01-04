@@ -24,26 +24,39 @@
                 <thead>
                     <tr style="background-color: #000;">
                         <th class="ps-4 py-3 text-warning border-secondary">ID Pesanan</th>
-                        <th class="text-warning border-secondary">Detail Produk</th>
-                        <th class="text-warning border-secondary text-center">Total Harga</th>
+                        <th class="text-warning border-secondary">Produk</th>
+                        <th class="text-warning border-secondary text-center">Total Bayar</th>
                         <th class="text-warning border-secondary text-center">Status</th>
-                        {{-- POSISI TENGAH: text-center --}}
                         <th class="text-warning border-secondary text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($orders as $order)
                     <tr class="border-secondary">
-                        <td class="ps-4 fw-bold text-white-50">#{{ $order->id }}</td>
+                        <td class="ps-4 fw-bold text-white-50">#{{ $order->order_number ?? $order->id }}</td>
                         <td>
                             <div class="d-flex align-items-center">
-                                @php $firstItem = $order->items->first(); @endphp
-                                <img src="{{ asset($firstItem?->product?->image_url ?? 'https://placehold.co/50x50/1a1a1a/d4af37?text=P') }}"
+                                {{-- Logika Gambar: Cek Direct Checkout (product) atau Cart Checkout (items) --}}
+                                @php
+                                    $firstItem = $order->items->first();
+                                    $imagePath = $order->product
+                                        ? asset('storage/products/' . $order->product->image)
+                                        : ($firstItem && $firstItem->product ? asset('storage/products/' . $firstItem->product->image) : asset('images/Slide-2.png'));
+
+                                    $productName = $order->product
+                                        ? $order->product->name
+                                        : ($firstItem && $firstItem->product ? $firstItem->product->name : ($order->order_type == 'custom' ? 'Custom Order' : 'Produk Kestore'));
+                                @endphp
+
+                                <img src="{{ $imagePath }}"
                                      class="rounded border border-secondary me-3"
-                                     style="width: 45px; height: 45px; object-fit: cover;">
+                                     style="width: 50px; height: 50px; object-fit: cover;"
+                                     onerror="this.src='{{ asset('images/Slide-2.png') }}'">
                                 <div>
-                                    <div class="text-white fw-bold">{{ $firstItem?->product?->name ?? 'Produk Kustom' }}</div>
-                                    <small class="text-white-50">{{ $order->items->sum('quantity') }} Pcs</small>
+                                    <div class="text-white fw-bold small uppercase">{{ $productName }}</div>
+                                    <small class="text-white-50">
+                                        {{ $order->quantity ?? $order->items->sum('quantity') }} Item
+                                    </small>
                                 </div>
                             </div>
                         </td>
@@ -52,13 +65,11 @@
                         </td>
                         <td class="text-center">
                             @php
-                                // Pemetaan Status ke Bahasa Indonesia
+                                // Pemetaan Status sesuai CheckoutController
                                 $statusMap = [
+                                    'unpaid' => 'BELUM DIBAYAR',
                                     'pending' => 'BELUM DIBAYAR',
-                                    'Belum Dibayar' => 'BELUM DIBAYAR',
-                                    'MENUNGGU PEMBAYARAN' => 'BELUM DIBAYAR',
-                                    'Menunggu Pembayaran' => 'BELUM DIBAYAR',
-                                    'Menunggu Verifikasi' => 'MENUNGGU VERIFIKASI',
+                                    'Menunggu Verifikasi' => 'PROSES VERIFIKASI',
                                     'processing' => 'DIPROSES',
                                     'completed' => 'SELESAI',
                                     'Selesai' => 'SELESAI',
@@ -67,54 +78,46 @@
 
                                 $displayStatus = $statusMap[$order->status] ?? strtoupper($order->status);
 
-                                // Cek kondisi untuk tampilan tombol
-                                $isPending = in_array($order->status, ['pending', 'Belum Dibayar', 'MENUNGGU PEMBAYARAN', 'Menunggu Pembayaran']);
-                                $isVerifying = ($order->status == 'Menunggu Verifikasi');
+                                // Kondisi warna badge
+                                $isUnpaid = in_array($order->status, ['unpaid', 'pending', 'Belum Dibayar']);
                             @endphp
 
-                            @if($isPending)
-                                <span class="badge rounded-pill bg-dark text-danger border border-danger px-3 py-2">
+                            @if($isUnpaid)
+                                <span class="badge rounded-pill bg-dark text-danger border border-danger px-3 py-2 small">
                                     {{ $displayStatus }}
                                 </span>
-                            @elseif($isVerifying)
-                                <span class="badge rounded-pill bg-primary px-3 py-2">
+                            @elseif($order->status == 'Menunggu Verifikasi')
+                                <span class="badge rounded-pill bg-primary px-3 py-2 small">
                                     {{ $displayStatus }}
                                 </span>
-                            @elseif($order->status == 'completed' || $order->status == 'Selesai')
-                                <span class="badge rounded-pill bg-success px-3 py-2">
+                            @elseif(in_array($order->status, ['completed', 'Selesai']))
+                                <span class="badge rounded-pill bg-success px-3 py-2 small">
                                     {{ $displayStatus }}
                                 </span>
                             @else
-                                <span class="badge rounded-pill bg-secondary px-3 py-2">
+                                <span class="badge rounded-pill bg-secondary px-3 py-2 small">
                                     {{ $displayStatus }}
                                 </span>
                             @endif
                         </td>
-                        {{-- KOLOM AKSI: text-center & justify-content-center --}}
                         <td class="text-center">
                             <div class="d-flex justify-content-center gap-2">
-                                {{-- Tombol Detail --}}
                                 <a href="{{ route('member.orders.show', $order->id) }}" class="btn btn-dark btn-sm border-secondary text-white-50" title="Detail">
-                                    <i class="fas fa-eye"></i> Detail
+                                    <i class="fas fa-eye"></i>
                                 </a>
 
-                                {{-- Aksi Edit & Hapus & Bayar: Hanya muncul jika belum bayar --}}
-                                @if($isPending)
-                                    <a href="{{ route('member.orders.edit', $order->id) }}" class="btn btn-dark btn-sm border-secondary text-info" title="Ubah Alamat/Catatan">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-
+                                @if($isUnpaid)
                                     <form action="{{ route('member.orders.destroy', $order->id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-dark btn-sm border-secondary text-danger"
-                                                onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan #{{ $order->id }}?')" title="Batalkan">
-                                            <i class="fas fa-trash-alt"></i>
+                                                onclick="return confirm('Batalkan pesanan ini?')" title="Batalkan">
+                                            <i class="fas fa-times"></i>
                                         </button>
                                     </form>
 
                                     <a href="{{ route('member.orders.payment', $order->id) }}" class="btn btn-warning btn-sm fw-bold text-dark px-3 shadow-sm">
-                                        Bayar
+                                        BAYAR
                                     </a>
                                 @endif
                             </div>
@@ -125,6 +128,7 @@
                         <td colspan="5" class="text-center py-5">
                             <i class="fas fa-box-open fa-3x mb-3 text-secondary" style="opacity: 0.3;"></i>
                             <h6 class="text-white-50">Belum ada riwayat pesanan.</h6>
+                            <a href="{{ route('member.products.index') }}" class="btn btn-outline-warning btn-sm mt-2">Mulai Belanja</a>
                         </td>
                     </tr>
                     @endforelse
@@ -136,7 +140,7 @@
     {{-- PAGINATION --}}
     @if($orders->hasPages())
     <div class="mt-4 d-flex justify-content-center">
-        {{ $orders->links() }}
+        {!! $orders->links() !!}
     </div>
     @endif
 </div>
