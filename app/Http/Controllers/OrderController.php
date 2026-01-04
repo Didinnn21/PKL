@@ -23,8 +23,6 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        // --- PERBAIKAN DI SINI ---
-        // Saya menghapus 'products' => 'required' karena kita ambil dari DB Cart
         $request->validate([
             'shipping_address' => 'required|string',
             'shipping_service' => 'required|string',
@@ -33,33 +31,27 @@ class OrderController extends Controller
         ]);
 
         $user = Auth::user();
-
-        // Ambil item dari database keranjang, bukan dari input form
         $cartItems = Cart::where('user_id', $user->id)->with('product')->get();
 
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Keranjang Anda kosong!');
         }
 
-        // Ambil Data Jasa Kirim
         $serviceName = $request->shipping_service;
         $shippingService = ShippingService::where('name', $serviceName)->first();
         $shippingCost = $shippingService ? $shippingService->price : 0;
-
-        // Format teks jasa kirim
         $shippingLabel = $serviceName . ' (Rp ' . number_format($shippingCost, 0, ',', '.') . ')';
 
-        // Proses Upload File Desain (Jika Ada)
         $designPath = null;
         if ($request->hasFile('design_file')) {
             $designPath = $request->file('design_file')->store('designs', 'public');
         }
 
-        // Loop Simpan Pesanan
+        // Generate satu nomor pesanan untuk seluruh keranjang
+        $orderGroupNumber = 'ORD-' . strtoupper(uniqid());
+
         foreach ($cartItems as $index => $item) {
             $productTotal = $item->product->price * $item->quantity;
-
-            // Ongkir hanya masuk ke item pertama agar tidak double charge
             $finalTotal = $productTotal;
             $currentShippingLabel = $shippingLabel;
 
@@ -71,6 +63,7 @@ class OrderController extends Controller
 
             Order::create([
                 'user_id'          => $user->id,
+                'order_number'     => $orderGroupNumber, // TAMBAHKAN INI
                 'product_id'       => $item->product_id,
                 'quantity'         => $item->quantity,
                 'total_price'      => $finalTotal,
@@ -79,14 +72,12 @@ class OrderController extends Controller
                 'shipping_service' => $currentShippingLabel,
                 'notes'            => $request->notes ?? '-',
                 'design_file'      => $designPath,
-                'payment_proof'    => null,
+                'order_type'       => 'regular', // Pastikan tipe tercatat
             ]);
         }
 
-        // Bersihkan Keranjang
         Cart::where('user_id', $user->id)->delete();
-
-        return redirect()->route('member.orders.index')->with('success', 'Pesanan berhasil dibuat! Silakan lakukan pembayaran.');
+        return redirect()->route('member.orders.index')->with('success', 'Pesanan berhasil dibuat!');
     }
 
     /**
@@ -102,8 +93,6 @@ class OrderController extends Controller
             'notes'        => 'required'
         ]);
 
-        // Gabungkan array ukuran menjadi string agar mudah dibaca admin
-        // Hasilnya misal: "S:10, M:20, L:5"
         $rincianSize = [];
         foreach ($request->sizes as $index => $size) {
             $qty = $request->quantities[$index];
@@ -111,16 +100,19 @@ class OrderController extends Controller
         }
         $sizeString = implode(', ', $rincianSize);
 
-        // Simpan file desain
         $filePath = $request->file('design_file')->store('custom_designs', 'public');
 
+        // PERBAIKAN: Generate nomor pesanan khusus custom
+        $customOrderNumber = 'ORD-CUST-' . strtoupper(uniqid());
+
         // Simpan pesanan
-        \App\Models\Order::create([
+        Order::create([
             'user_id'      => auth()->id(),
+            'order_number' => $customOrderNumber, // PERBAIKAN: Field ini sekarang terisi
             'order_type'   => 'custom',
             'product_type' => $request->product_type,
-            'size'         => $sizeString, // Menyimpan rincian gabungan
-            'quantity'     => array_sum($request->quantities), // Total seluruh qty
+            'size'         => $sizeString,
+            'quantity'     => array_sum($request->quantities),
             'design_file'  => $filePath,
             'notes'        => $request->notes,
             'status'       => 'pending_quote',

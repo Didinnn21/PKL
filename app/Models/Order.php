@@ -11,20 +11,20 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
-        'order_number',     // WAJIB: Sesuai dengan logika di CheckoutController
-        'product_id',       // Digunakan untuk pesanan langsung (direct checkout)
-        'quantity',         // Digunakan untuk pesanan langsung
-        'total_price',      // Total akhir (Subtotal + Ongkir)
-        'status',           // default: 'unpaid'
+        'order_number',
+        'product_id',       // Penting untuk Beli Langsung
+        'quantity',         // Penting untuk Beli Langsung
+        'total_price',
+        'status',           // Status 'unpaid' atau 'pending_quote'
         'notes',
         'design_file',
         'shipping_address',
         'shipping_service',
-        'shipping_cost',    // WAJIB: Untuk menyimpan biaya ongkir
-        'payment_proof',    // Untuk upload bukti transfer
-        'order_type',       // 'regular' atau 'custom'
-        'product_type',     // Untuk custom order
-        'size',             // Detail ukuran (S, M, L, XL, dll)
+        'shipping_cost',
+        'payment_proof',
+        'order_type',       // Penting untuk membedakan 'regular' dan 'custom'
+        'product_type',
+        'size', // Detail ukuran (S, M, L, XL, dll)
     ];
 
     /**
@@ -53,4 +53,8 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+    protected $casts = [
+        'total_price' => 'integer', // atau 'decimal:2'
+        'shipping_cost' => 'integer',
+    ];
 }

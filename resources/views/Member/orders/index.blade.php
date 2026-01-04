@@ -36,16 +36,17 @@
                         <td class="ps-4 fw-bold text-white-50">#{{ $order->order_number ?? $order->id }}</td>
                         <td>
                             <div class="d-flex align-items-center">
-                                {{-- Logika Gambar: Cek Direct Checkout (product) atau Cart Checkout (items) --}}
+                                {{-- PERBAIKAN LOGIKA: Mendeteksi produk dari tabel Order (Direct) atau OrderItems (Cart) --}}
                                 @php
-                                    $firstItem = $order->items->first();
-                                    $imagePath = $order->product
-                                        ? asset('storage/products/' . $order->product->image)
-                                        : ($firstItem && $firstItem->product ? asset('storage/products/' . $firstItem->product->image) : asset('images/Slide-2.png'));
+                                    $product = $order->product ?? ($order->items->first() ? $order->items->first()->product : null);
 
-                                    $productName = $order->product
-                                        ? $order->product->name
-                                        : ($firstItem && $firstItem->product ? $firstItem->product->name : ($order->order_type == 'custom' ? 'Custom Order' : 'Produk Kestore'));
+                                    $imagePath = ($product && $product->image)
+                                        ? asset('storage/products/' . $product->image)
+                                        : asset('images/Slide-2.png');
+
+                                    $productName = $product
+                                        ? $product->name
+                                        : ($order->order_type == 'custom' ? 'Custom: ' . $order->product_type : 'Produk Kestore');
                                 @endphp
 
                                 <img src="{{ $imagePath }}"
@@ -55,7 +56,7 @@
                                 <div>
                                     <div class="text-white fw-bold small uppercase">{{ $productName }}</div>
                                     <small class="text-white-50">
-                                        {{ $order->quantity ?? $order->items->sum('quantity') }} Item
+                                        {{ $order->quantity ?? ($order->items->sum('quantity') ?: 1) }} Item
                                     </small>
                                 </div>
                             </div>
@@ -65,10 +66,10 @@
                         </td>
                         <td class="text-center">
                             @php
-                                // Pemetaan Status sesuai CheckoutController
                                 $statusMap = [
                                     'unpaid' => 'BELUM DIBAYAR',
                                     'pending' => 'BELUM DIBAYAR',
+                                    'pending_quote' => 'MENUNGGU QUOTE',
                                     'Menunggu Verifikasi' => 'PROSES VERIFIKASI',
                                     'processing' => 'DIPROSES',
                                     'completed' => 'SELESAI',
@@ -77,9 +78,7 @@
                                 ];
 
                                 $displayStatus = $statusMap[$order->status] ?? strtoupper($order->status);
-
-                                // Kondisi warna badge
-                                $isUnpaid = in_array($order->status, ['unpaid', 'pending', 'Belum Dibayar']);
+                                $isUnpaid = in_array($order->status, ['unpaid', 'pending', 'Belum Dibayar', 'pending_quote']);
                             @endphp
 
                             @if($isUnpaid)
@@ -116,9 +115,11 @@
                                         </button>
                                     </form>
 
+                                    @if($order->status != 'pending_quote')
                                     <a href="{{ route('member.orders.payment', $order->id) }}" class="btn btn-warning btn-sm fw-bold text-dark px-3 shadow-sm">
                                         BAYAR
                                     </a>
+                                    @endif
                                 @endif
                             </div>
                         </td>
