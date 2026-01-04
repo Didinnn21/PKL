@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.member') {{-- Pastikan menggunakan layouts.member agar sidebar tetap muncul --}}
 
 @section('title', 'Checkout')
 
@@ -7,7 +7,6 @@
         /* Card Styling */
         .checkout-card {
             background-color: #141414;
-            /* Abu Sangat Gelap */
             border: 1px solid #333;
             border-radius: 12px;
             padding: 2rem;
@@ -16,14 +15,13 @@
 
         .summary-card {
             background-color: #0a0a0a;
-            /* Hitam Pekat */
             border: 1px solid #333;
             border-radius: 12px;
             padding: 1.5rem;
             color: #ffffff;
         }
 
-        /* --- FORM STYLING (WARNA PUTIH) --- */
+        /* --- FORM STYLING --- */
         .form-label {
             color: #ffffff !important;
             font-weight: 500;
@@ -47,22 +45,7 @@
             box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25) !important;
         }
 
-        .form-control::placeholder {
-            color: #888 !important;
-            opacity: 1;
-        }
-
-        option {
-            background-color: #1f1f1f;
-            color: #ffffff;
-        }
-
-        hr {
-            border-color: #444 !important;
-            opacity: 1;
-        }
-
-        /* Teks Info Khusus */
+        /* Info Teks */
         .info-text {
             font-size: 0.85rem;
             color: #a0a0a0;
@@ -73,28 +56,30 @@
         .info-warning {
             color: #f0c674;
         }
-
-        /* Kuning Pucat */
     </style>
 @endpush
 
 @section('content')
     <div class="container my-5">
-        <h1 class="text-white text-3xl font-bold mb-4 fw-bold">Checkout Pesanan</h1>
+        <h1 class="text-white text-3xl font-bold mb-4 fw-bold">
+            <i class="fas fa-shopping-bag me-2 text-warning"></i>Checkout Pesanan
+        </h1>
 
         @if ($cartItems->isEmpty())
             <div class="checkout-card text-center py-5">
                 <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
                 <p class="text-white fs-4">Keranjang belanja Anda kosong.</p>
-                <a href="{{ route('member.products.index') }}" class="btn btn-warning fw-bold mt-3">
+                <a href="{{ route('member.products.index') }}" class="btn btn-warning fw-bold mt-3 text-dark">
                     <i class="fas fa-arrow-left me-2"></i> Kembali Belanja
                 </a>
             </div>
         @else
-            <form action="{{ route('order.store') }}" method="POST" enctype="multipart/form-data">
+            {{-- Perbaiki route action sesuai dengan route pengolah pesanan Anda --}}
+            <form action="{{ route('member.orders.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row g-4">
 
+                    {{-- KOLOM KIRI: DETAIL PENGIRIMAN --}}
                     <div class="col-lg-7">
                         <div class="checkout-card shadow-lg">
                             <h4 class="text-white mb-4 fw-bold border-bottom border-secondary pb-3">
@@ -102,9 +87,9 @@
                             </h4>
 
                             <div class="mb-4">
-                                <label for="shipping_address" class="form-label">Alamat Lengkap</label>
+                                <label for="shipping_address" class="form-label">Alamat Lengkap Pengiriman</label>
                                 <textarea name="shipping_address" id="shipping_address" class="form-control" rows="3" required
-                                    placeholder="Jalan, No. Rumah, RT/RW, Kecamatan, Kota, Kode Pos..."></textarea>
+                                    placeholder="Jalan, No. Rumah, RT/RW, Kecamatan, Kota, Kode Pos...">{{ auth()->user()->address }}</textarea>
                             </div>
 
                             <div class="mb-4">
@@ -113,8 +98,8 @@
                                     <option value="" data-price="0">-- Pilih Ekspedisi --</option>
                                     @foreach($shippingOptions as $shipping)
                                         <option value="{{ $shipping->name }}" data-price="{{ $shipping->price }}">
-                                            {{ $shipping->name }} - Rp {{ number_format($shipping->price, 0, ',', '.') }}
-                                            ({{ $shipping->etd ?? 'Estd' }})
+                                            {{ strtoupper($shipping->name) }} - Rp {{ number_format($shipping->price, 0, ',', '.') }}
+                                            ({{ $shipping->etd ?? '2-3 Hari' }})
                                         </option>
                                     @endforeach
                                 </select>
@@ -123,9 +108,10 @@
                             <div class="mb-4">
                                 <label for="notes" class="form-label">Catatan Pesanan (Opsional)</label>
                                 <textarea name="notes" id="notes" class="form-control" rows="2"
-                                    placeholder="Contoh: Packing yang aman ya min..."></textarea>
+                                    placeholder="Contoh: Ukuran L sablon depan saja..."></textarea>
                             </div>
 
+                            {{-- FITUR CUSTOM --}}
                             <div class="mb-3 p-3 rounded border border-secondary" style="background-color: #1a1a1a;">
                                 <label for="design_file" class="form-label fw-bold text-warning">
                                     <i class="fas fa-palette me-1"></i> Upload File Desain (Opsional)
@@ -133,36 +119,26 @@
                                 <input class="form-control" type="file" id="design_file" name="design_file"
                                     accept="image/*,.cdr,.ai,.psd,.pdf">
 
-                                <div class="info-text info-warning mt-2">
+                                <div class="info-text info-warning mt-2 italic">
                                     <i class="fas fa-info-circle me-1"></i>
-                                    <strong>PENTING:</strong> Hanya upload jika Anda ingin menambah sablon/desain pada produk
-                                    ini. Kosongkan jika membeli produk polos.
-                                </div>
-                                <div class="info-text">
-                                    Format: JPG, PNG, PDF, CDR, AI. Maksimal ukuran file: 5MB.
+                                    <strong>PENTING:</strong> Upload jika Anda ingin menambah sablon kustom. Kosongkan jika membeli produk stok ready.
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    {{-- KOLOM KANAN: RINGKASAN --}}
                     <div class="col-lg-5">
                         <div class="summary-card shadow-lg sticky-top" style="top: 100px;">
                             <h4 class="text-white mb-4 fw-bold border-bottom border-secondary pb-3">
-                                <i class="fas fa-file-invoice-dollar me-2 text-warning"></i> Ringkasan
+                                <i class="fas fa-file-invoice-dollar me-2 text-warning"></i> Ringkasan Pembayaran
                             </h4>
-
-                            @php
-                                $subtotal = 0;
-                                foreach ($cartItems as $item) {
-                                    $subtotal += $item->product->price * $item->quantity;
-                                }
-                            @endphp
 
                             <div class="mb-3">
                                 @foreach($cartItems as $item)
                                     <div class="d-flex justify-content-between mb-2 text-white small">
                                         <span>{{ $item->product->name }} (x{{ $item->quantity }})</span>
-                                        <span>Rp {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}</span>
+                                        <span>Rp {{ number_format($item->price * $item->quantity, 0, ',', '.') }}</span>
                                     </div>
                                 @endforeach
                             </div>
@@ -170,27 +146,31 @@
                             <hr>
 
                             <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">Subtotal Produk</span>
-                                <strong class="text-white">Rp {{ number_format($subtotal, 0, ',', '.') }}</strong>
+                                <span class="text-white-50">Subtotal Produk</span>
+                                <strong class="text-white">Rp {{ number_format($total, 0, ',', '.') }}</strong>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">Ongkos Kirim</span>
-                                <strong class="text-white" id="shipping-cost-text">Rp 0</strong>
+                                <span class="text-white-50">Ongkos Kirim</span>
+                                <strong class="text-warning" id="shipping-cost-text">Rp 0</strong>
                             </div>
 
                             <hr class="my-3">
 
-                            <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
                                 <h5 class="text-white fw-bold mb-0">Total Bayar</h5>
-                                <h4 class="text-warning fw-bold mb-0" id="total-payment-text">
-                                    Rp {{ number_format($subtotal, 0, ',', '.') }}
+                                <h4 class="text-warning fw-bold mb-0" id="total-payment-text" style="font-size: 1.8rem;">
+                                    Rp {{ number_format($total, 0, ',', '.') }}
                                 </h4>
                             </div>
 
                             <button type="submit"
-                                class="btn btn-warning w-100 mt-4 py-3 fw-bold text-dark fs-5 shadow-sm hover-shadow">
-                                <i class="fas fa-check-circle me-2"></i> Buat Pesanan
+                                class="btn btn-warning w-100 py-3 fw-black text-dark fs-5 shadow-sm hover:scale-105 transition-transform">
+                                <i class="fas fa-check-circle me-2"></i> BUAT PESANAN
                             </button>
+
+                            <p class="text-center text-white-50 small mt-3">
+                                <i class="fas fa-lock me-1"></i> Pembayaran Aman & Terverifikasi
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -204,14 +184,19 @@
                 const shippingSelect = document.getElementById('shipping_service');
                 const shippingCostText = document.getElementById('shipping-cost-text');
                 const totalPaymentText = document.getElementById('total-payment-text');
-                const subtotal = {{ $subtotal ?? 0 }};
+
+                // Gunakan variabel total dari PHP sebagai subtotal dasar
+                const subtotal = {{ $total ?? 0 }};
 
                 shippingSelect.addEventListener('change', function () {
                     const selectedOption = this.options[this.selectedIndex];
                     const shippingCost = parseInt(selectedOption.getAttribute('data-price')) || 0;
                     const totalPayment = subtotal + shippingCost;
 
-                    const formatRupiah = (num) => 'Rp ' + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                    // Fungsi format rupiah
+                    const formatRupiah = (num) => {
+                        return 'Rp ' + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                    };
 
                     shippingCostText.textContent = formatRupiah(shippingCost);
                     totalPaymentText.textContent = formatRupiah(totalPayment);

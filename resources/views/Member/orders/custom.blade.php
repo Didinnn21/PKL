@@ -1,71 +1,132 @@
 @extends('layouts.member')
 
-@section('title', 'Pesan Custom')
+@section('title', 'Pesan Produk Custom')
 
 @section('content')
-    <div class="container-fluid p-0">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="h4 fw-bold text-white mb-0">Buat Pesanan Custom</h2>
-            <a href="{{ route('member.dashboard') }}" class="btn btn-outline-light btn-sm">
-                <i class="fas fa-arrow-left me-2"></i> Kembali
-            </a>
-        </div>
-
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="card shadow-lg">
-                    <div class="card-body p-5">
-
-                        {{-- Alert Errors --}}
-                        @if ($errors->any())
-                            <div class="alert alert-danger text-white border-0"
-                                style="background-color: rgba(239, 68, 68, 0.2);">
-                                <ul class="mb-0">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-
-                        <form action="{{ route('custom.order') }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-
-                            <div class="mb-4">
-                                <label for="name" class="form-label text-white">Judul Pesanan / Nama Produk</label>
-                                <input type="text" id="name" name="name" class="form-control"
-                                    placeholder="Contoh: Hoodie Angkatan 2024" required>
-                            </div>
-
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <label for="quantity" class="form-label text-white">Jumlah</label>
-                                    <input type="number" id="quantity" name="quantity" min="1" class="form-control"
-                                        placeholder="1" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="image" class="form-label text-white">Unggah Desain (JPG/PNG)</label>
-                                    <input type="file" id="image" name="image" class="form-control" required>
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="description" class="form-label text-white">Deskripsi Detail</label>
-                                <textarea id="description" name="description" rows="5" class="form-control"
-                                    placeholder="Jelaskan detail warna, ukuran, bahan, dan posisi sablon..."
-                                    required></textarea>
-                            </div>
-
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-warning fw-bold py-3 text-dark">
-                                    <i class="fas fa-paper-plane me-2"></i> Kirim Pesanan Custom
-                                </button>
-                            </div>
-                        </form>
-
-                    </div>
-                </div>
-            </div>
+<div class="container-fluid pt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="text-white fw-bold"><i class="fas fa-layer-group text-warning me-2"></i> Pesanan Custom (Grosir/Satuan)</h4>
+            <p class="text-white-50">Isi detail jumlah per ukuran dan unggah desain Anda di bawah ini.</p>
         </div>
     </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <form action="{{ route('member.custom.order') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="row g-4">
+                    {{-- KOLOM KIRI: SPESIFIKASI & UKURAN --}}
+                    <div class="col-lg-7">
+                        <div class="card border-secondary h-100" style="background-color: #1a1a1a; border-radius: 20px;">
+                            <div class="card-body p-4">
+                                <h5 class="text-warning fw-bold mb-4">1. Detail Produk & Ukuran</h5>
+
+                                <div class="mb-4">
+                                    <label class="form-label text-white-50">Jenis Produk</label>
+                                    <select name="product_type" class="form-select bg-dark text-white border-secondary shadow-none" required>
+                                        <option value="Kaos" selected>Kaos Custom</option>
+                                        <option value="Hoodie">Hoodie Custom</option>
+                                        <option value="Crewneck">Crewneck Custom</option>
+                                    </select>
+                                </div>
+
+                                {{-- BAGIAN INPUT DINAMIS UKURAN --}}
+                                <div class="mb-3">
+                                    <label class="form-label text-white-50 d-flex justify-content-between">
+                                        Rincian Ukuran
+                                        <button type="button" class="btn btn-warning btn-sm fw-bold py-0" onclick="tambahBarisSize()">+ Tambah Ukuran</button>
+                                    </label>
+                                    <div id="size-container">
+                                        <div class="row g-2 mb-2 size-row">
+                                            <div class="col-7">
+                                                <select name="sizes[]" class="form-select bg-dark text-white border-secondary" required>
+                                                    <option value="S">Ukuran S</option>
+                                                    <option value="M">Ukuran M</option>
+                                                    <option value="L">Ukuran L</option>
+                                                    <option value="XL">Ukuran XL</option>
+                                                    <option value="XXL">Ukuran XXL</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="number" name="quantities[]" class="form-control bg-dark text-white border-secondary" placeholder="Jml" min="1" required>
+                                            </div>
+                                            <div class="col-1">
+                                                <button type="button" class="btn btn-outline-danger btn-sm w-100 h-100" onclick="hapusBaris(this)"><i class="fas fa-times"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-0">
+                                    <label class="form-label text-white-50">Instruksi Tambahan (Warna Kaos, Posisi Sablon, dll)</label>
+                                    <textarea name="notes" rows="4" class="form-control bg-dark text-white border-secondary" placeholder="Contoh: Kaos warna Navy, Sablon depan A3, belakang Logo kecil di tengkuk..." required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- KOLOM KANAN: DESAIN & SUBMIT --}}
+                    <div class="col-lg-5">
+                        <div class="card border-secondary h-100" style="background-color: #1a1a1a; border-radius: 20px;">
+                            <div class="card-body p-4 d-flex flex-column">
+                                <h5 class="text-warning fw-bold mb-4">2. File Desain</h5>
+
+                                <div class="upload-area mb-4 flex-grow-1 d-flex flex-column justify-content-center align-items-center border-secondary rounded p-4" style="background-color: #000; border: 2px dashed #333;">
+                                    <i class="fas fa-file-upload fa-3x text-secondary mb-3"></i>
+                                    <input type="file" name="design_file" class="form-control bg-dark text-white border-secondary mb-2" required>
+                                    <p class="small text-white-50 text-center mb-0">Format JPG, PNG, atau PDF (Maks. 5MB)</p>
+                                </div>
+
+                                <div class="alert alert-dark border-secondary text-white-50 small mb-4">
+                                    <i class="fas fa-info-circle text-warning me-2"></i>
+                                    Admin akan menghitung total biaya berdasarkan rincian ukuran dan kerumitan desain Anda. Cek berkala menu <b>Riwayat Pesanan</b> untuk melihat penawaran harga.
+                                </div>
+
+                                <button type="submit" class="btn btn-warning fw-bold py-3 text-dark w-100 shadow">
+                                    KIRIM PENGAJUAN CUSTOM <i class="fas fa-paper-plane ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function tambahBarisSize() {
+        const container = document.getElementById('size-container');
+        const newRow = document.createElement('div');
+        newRow.className = 'row g-2 mb-2 size-row';
+        newRow.innerHTML = `
+            <div class="col-7">
+                <select name="sizes[]" class="form-select bg-dark text-white border-secondary" required>
+                    <option value="S">Ukuran S</option>
+                    <option value="M">Ukuran M</option>
+                    <option value="L">Ukuran L</option>
+                    <option value="XL">Ukuran XL</option>
+                    <option value="XXL">Ukuran XXL</option>
+                </select>
+            </div>
+            <div class="col-4">
+                <input type="number" name="quantities[]" class="form-control bg-dark text-white border-secondary" placeholder="Jml" min="1" required>
+            </div>
+            <div class="col-1">
+                <button type="button" class="btn btn-outline-danger btn-sm w-100 h-100" onclick="hapusBaris(this)"><i class="fas fa-times"></i></button>
+            </div>
+        `;
+        container.appendChild(newRow);
+    }
+
+    function hapusBaris(btn) {
+        const row = btn.closest('.size-row');
+        if (document.querySelectorAll('.size-row').length > 1) {
+            row.remove();
+        } else {
+            alert("Minimal harus ada satu rincian ukuran.");
+        }
+    }
+</script>
 @endsection

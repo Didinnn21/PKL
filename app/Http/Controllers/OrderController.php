@@ -95,33 +95,38 @@ class OrderController extends Controller
     public function storeCustom(Request $request)
     {
         $request->validate([
-            'name'        => 'required|string|max:255',
-            'description' => 'required|string',
-            'image'       => 'required|file|mimes:jpeg,png,jpg,pdf,ai,psd|max:5120',
-            'quantity'    => 'required|integer|min:1',
+            'product_type' => 'required',
+            'sizes'        => 'required|array',
+            'quantities'   => 'required|array',
+            'design_file'  => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'notes'        => 'required'
         ]);
 
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('custom-designs', 'public');
+        // Gabungkan array ukuran menjadi string agar mudah dibaca admin
+        // Hasilnya misal: "S:10, M:20, L:5"
+        $rincianSize = [];
+        foreach ($request->sizes as $index => $size) {
+            $qty = $request->quantities[$index];
+            $rincianSize[] = "$size:$qty";
         }
+        $sizeString = implode(', ', $rincianSize);
 
-        Order::create([
-            'user_id'     => Auth::id(),
-            'product_id'  => null,
-            'quantity'    => $request->quantity,
-            'total_price' => 0,
-            'status'      => 'Menunggu Konfirmasi',
-            'notes'       => "CUSTOM ORDER\nJudul: " . $request->name . "\nDetail: " . $request->description,
-            'design_file' => $imagePath,
-            'shipping_address' => '-',
-            'shipping_service' => '-',
+        // Simpan file desain
+        $filePath = $request->file('design_file')->store('custom_designs', 'public');
+
+        // Simpan pesanan
+        \App\Models\Order::create([
+            'user_id'      => auth()->id(),
+            'order_type'   => 'custom',
+            'product_type' => $request->product_type,
+            'size'         => $sizeString, // Menyimpan rincian gabungan
+            'quantity'     => array_sum($request->quantities), // Total seluruh qty
+            'design_file'  => $filePath,
+            'notes'        => $request->notes,
+            'status'       => 'pending_quote',
+            'total_price'  => 0,
         ]);
 
-        if ($request->routeIs('member.*') || $request->is('member/*')) {
-            return redirect()->route('member.orders.index')->with('success', 'Pesanan Custom berhasil dikirim! Tunggu konfirmasi admin.');
-        }
-
-        return redirect()->back()->with('success', 'Pesanan Custom berhasil dikirim!');
+        return redirect()->route('member.orders.index')->with('success', 'Pengajuan custom grosir berhasil dikirim!');
     }
 }

@@ -9,13 +9,14 @@ use Illuminate\Support\Facades\Storage;
 
 class MemberOrderController extends Controller
 {
-    // Variabel pembantu untuk status yang diizinkan dimodifikasi
-    protected $editableStatuses = ['pending', 'Belum Dibayar', 'Menunggu Pembayaran', 'MENUNGGU PEMBAYARAN'];
-
+    /**
+     * Menampilkan daftar pesanan member dengan Pagination.
+     */
     public function index()
     {
+        // Mengambil data order milik member dengan memuat relasi items dan product
         $orders = Order::where('user_id', Auth::id())
-            ->with(['items.product']) // Eager loading untuk efisiensi kueri
+            ->with(['items.product'])
             ->latest()
             ->paginate(10);
 
@@ -24,6 +25,7 @@ class MemberOrderController extends Controller
 
     public function show($id)
     {
+        // Memastikan relasi produk ikut terload agar tidak error di halaman detail
         $order = Order::where('user_id', Auth::id())
             ->with(['items.product'])
             ->findOrFail($id);
@@ -31,40 +33,54 @@ class MemberOrderController extends Controller
         return view('Member.orders.show', compact('order'));
     }
 
+    /**
+     * Menghapus pesanan (Hanya jika belum dibayar)
+     */
     public function destroy($id)
     {
         $order = Order::where('user_id', Auth::id())->findOrFail($id);
 
-        if (!in_array($order->status, $this->editableStatuses)) {
+        // Perbaikan: Gunakan array untuk mengecek berbagai kemungkinan string status yang Anda gunakan
+        $allowedStatuses = ['pending', 'Belum Dibayar', 'Menunggu Pembayaran'];
+        if (!in_array($order->status, $allowedStatuses)) {
             return back()->with('error', 'Pesanan yang sudah diproses tidak dapat dihapus.');
         }
 
-        // Pembersihan file di storage
+        // Hapus file desain custom jika ada agar tidak memenuhi storage
         if ($order->design_file) {
             Storage::disk('public')->delete($order->design_file);
         }
+
+        // Hapus bukti pembayaran jika user pernah upload tapi lalu ingin hapus pesanan
         if ($order->payment_proof) {
             Storage::disk('public')->delete($order->payment_proof);
         }
 
-        // Hapus detail barang terlebih dahulu (Foreign Key integrity)
+        // Hapus detail item terlebih dahulu baru pesanan utamanya
         $order->items()->delete();
         $order->delete();
 
         return redirect()->route('member.orders.index')->with('success', 'Pesanan berhasil dibatalkan dan dihapus.');
     }
 
+    /**
+     * Menampilkan halaman edit (Alamat & Catatan)
+     */
     public function edit($id)
     {
         $order = Order::where('user_id', Auth::id())->findOrFail($id);
 
-        if (!in_array($order->status, $this->editableStatuses)) {
-            return redirect()->route('member.orders.index')->with('error', 'Pesanan ini sudah dalam proses dan tidak bisa diubah.');
+        $allowedStatuses = ['pending', 'Belum Dibayar', 'Menunggu Pembayaran'];
+        if (!in_array($order->status, $allowedStatuses)) {
+            return redirect()->route('member.orders.index')->with('error', 'Pesanan ini sudah dalam proses.');
         }
 
         return view('Member.orders.edit', compact('order'));
     }
 
+    /**
+     * Memperbarui data alamat atau catatan pesanan
+     */
     public function update(Request $request, $id)
     {
         $order = Order::where('user_id', Auth::id())->findOrFail($id);
@@ -82,11 +98,15 @@ class MemberOrderController extends Controller
         return redirect()->route('member.orders.index')->with('success', 'Detail pengiriman berhasil diperbarui.');
     }
 
+    /**
+     * Halaman Unggah Bukti Pembayaran
+     */
     public function payment($id)
     {
         $order = Order::where('user_id', Auth::id())->findOrFail($id);
 
-        if (!in_array($order->status, $this->editableStatuses)) {
+        $allowedStatuses = ['pending', 'Belum Dibayar', 'Menunggu Pembayaran'];
+        if (!in_array($order->status, $allowedStatuses)) {
             return redirect()->route('member.orders.show', $id)
                 ->with('error', 'Status pesanan tidak memungkinkan untuk upload bukti bayar.');
         }
@@ -94,6 +114,9 @@ class MemberOrderController extends Controller
         return view('Member.orders.payment', compact('order'));
     }
 
+    /**
+     * Proses Unggah Bukti Pembayaran
+     */
     public function updatePayment(Request $request, $id)
     {
         $order = Order::where('user_id', Auth::id())->findOrFail($id);
@@ -103,7 +126,7 @@ class MemberOrderController extends Controller
         ]);
 
         if ($request->hasFile('payment_proof')) {
-            // Hapus file lama jika ada penggantian bukti
+            // Bersihkan file lama jika user mengupload ulang bukti bayar
             if ($order->payment_proof) {
                 Storage::disk('public')->delete($order->payment_proof);
             }
@@ -112,7 +135,7 @@ class MemberOrderController extends Controller
 
             $order->update([
                 'payment_proof' => $path,
-                'status' => 'Menunggu Verifikasi', // Mengalihkan ke antrean admin
+                'status' => 'Menunggu Verifikasi', // Status berpindah ke admin untuk dicek
             ]);
         }
 

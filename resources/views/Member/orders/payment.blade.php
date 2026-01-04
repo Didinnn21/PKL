@@ -26,15 +26,26 @@
                         <hr class="border-secondary my-4">
 
                         <div class="bg-dark p-4 rounded border border-secondary mb-4">
-                            <h6 class="text-white fw-bold mb-3"><i class="fas fa-university me-2 text-warning"></i> Silakan
-                                Transfer ke:</h6>
+                            <h6 class="text-white fw-bold mb-3">
+                                <i class="fas fa-university me-2 text-warning"></i> Silakan Transfer ke:
+                            </h6>
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="text-muted">Bank BCA</span>
-                                <span class="text-white fw-bold fs-5">123-456-7890</span>
+                                <span class="text-muted">Bank / E-Wallet</span>
+                                <span class="text-white fw-bold fs-5">
+                                    {{ $settings['payment_bank_name'] ?? 'BCA' }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted">Nomor Rekening</span>
+                                <span class="text-white fw-bold fs-5">
+                                    {{ $settings['payment_account_number'] ?? '123-456-7890' }}
+                                </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="text-muted">Atas Nama</span>
-                                <span class="text-white">Kestore Official</span>
+                                <span class="text-white">
+                                    {{ $settings['payment_account_holder'] ?? 'Kestore Official' }}
+                                </span>
                             </div>
                         </div>
 

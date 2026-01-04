@@ -11,15 +11,18 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
-        'product_id',
-        'quantity',
+        'product_id',   // Digunakan jika pesanan langsung 1 produk
+        'quantity',     // Digunakan jika pesanan langsung 1 produk
         'total_price',
         'status',
         'notes',
         'design_file',
-        'shipping_address', // Wajib ada
-        'shipping_service', // Wajib ada (Fitur baru)
-        'payment_proof',    // Wajib ada (Fitur baru)
+        'shipping_address',
+        'shipping_service',
+        'payment_proof',
+        'order_type',    // 'regular' atau 'custom'
+        'product_type',  // Untuk pesanan custom (Kaos, Hoodie, dll)
+        'size',          // Untuk menyimpan rincian ukuran
     ];
 
     /**
@@ -36,5 +39,13 @@ class Order extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Relasi ke detail barang (Wajib bernama 'items' agar cocok dengan Controller)
+     */
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
     }
 }

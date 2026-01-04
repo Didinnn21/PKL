@@ -3,115 +3,141 @@
 @section('title', 'Riwayat Pesanan')
 
 @section('content')
-    <div class="container-fluid p-0">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="h4 fw-bold text-white mb-0">Riwayat Pesanan</h2>
-            <a href="{{ route('member.products.index') }}" class="btn btn-warning fw-bold text-dark btn-sm">
-                <i class="fas fa-plus me-2"></i> Pesan Lagi
+<div class="container-fluid pt-4">
+    {{-- HEADER HALAMAN --}}
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="text-white fw-bold"><i class="fas fa-history text-warning me-2"></i> Riwayat Pesanan</h4>
+                <p class="text-white-50 small mb-0">Daftar transaksi dan status pesanan Anda di Kestore.id</p>
+            </div>
+            <a href="{{ route('member.products.index') }}" class="btn btn-warning fw-bold text-dark px-4 shadow-sm">
+                <i class="fas fa-shopping-cart me-2"></i> + Pesan Lagi
             </a>
         </div>
+    </div>
 
-        @if(session('success'))
-            <div class="alert alert-success bg-success bg-opacity-25 text-white border-0 mb-4">
-                <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
-            </div>
-        @endif
-
-        <div class="row">
-            <div class="col-12">
-                <div class="card shadow-lg border-secondary" style="background-color: #141414;">
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0" style="color: #fff; border-color: #333;">
-                                <thead class="bg-black text-warning">
-                                    <tr>
-                                        <th class="py-3 ps-4">ID Order</th>
-                                        <th class="py-3">Produk</th>
-                                        <th class="py-3">Total Harga</th>
-                                        <th class="py-3">Status</th>
-                                        <th class="py-3 text-end pe-4">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($orders as $order)
-                                        <tr style="border-bottom: 1px solid #333;">
-                                            <td class="ps-4 fw-bold text-muted">#{{ $order->id }}</td>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    @if($order->product)
-                                                        <img src="{{ asset('images/product/' . $order->product->image) }}"
-                                                            class="rounded border border-secondary me-3"
-                                                            style="width: 50px; height: 50px; object-fit: cover;"
-                                                            onerror="this.src='{{ asset('images/kestore-logo.png') }}'">
-                                                        <div>
-                                                            <span
-                                                                class="d-block fw-bold text-white">{{ $order->product->name }}</span>
-                                                            <small class="text-muted">{{ $order->quantity }} pcs</small>
-                                                        </div>
-                                                    @else
-                                                        <div class="rounded border border-secondary me-3 d-flex align-items-center justify-content-center bg-dark"
-                                                            style="width: 50px; height: 50px;">
-                                                            <i class="fas fa-tshirt text-warning"></i>
-                                                        </div>
-                                                        <div>
-                                                            <span class="d-block fw-bold text-white">Custom Order</span>
-                                                            <small class="text-muted">{{ $order->quantity }} pcs</small>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                            </td>
-                                            <td class="text-warning fw-bold">Rp
-                                                {{ number_format($order->total_price, 0, ',', '.') }}</td>
-                                            <td>
-                                                @if($order->status == 'Menunggu Pembayaran')
-                                                    <span class="badge bg-warning text-dark">Belum Dibayar</span>
-                                                @elseif($order->status == 'Menunggu Verifikasi')
-                                                    <span class="badge bg-info text-dark">Sedang Diverifikasi</span>
-                                                @elseif($order->status == 'Menunggu Konfirmasi')
-                                                    <span class="badge bg-secondary text-white">Menunggu Harga</span>
-                                                @else
-                                                    <span class="badge bg-success text-white">{{ $order->status }}</span>
-                                                @endif
-                                            </td>
-                                            <td class="text-end pe-4">
-                                                {{-- TOMBOL AKSI --}}
-                                                <div class="btn-group">
-                                                    {{-- Jika Status Menunggu Pembayaran, Tampilkan Tombol Bayar --}}
-                                                    @if($order->status == 'Menunggu Pembayaran')
-                                                        <a href="{{ route('member.orders.payment', $order->id) }}"
-                                                            class="btn btn-warning btn-sm text-dark fw-bold me-2">
-                                                            <i class="fas fa-upload me-1"></i> Bayar
-                                                        </a>
-                                                    @endif
-
-                                                    <a href="{{ route('member.orders.show', $order->id) }}"
-                                                        class="btn btn-outline-light btn-sm">
-                                                        Detail
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="5" class="text-center py-5 text-muted">
-                                                <p class="mb-0">Anda belum memiliki riwayat pesanan.</p>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    @if($orders->hasPages())
-                        <div class="card-footer border-top border-secondary py-3" style="background-color: #141414;">
-                            <div class="d-flex justify-content-center">
-                                {{ $orders->links('pagination::bootstrap-5') }}
+    {{-- KONTEN UTAMA --}}
+    <div class="card border-secondary shadow-lg" style="background-color: #1a1a1a; border-radius: 15px; overflow: hidden;">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0 align-middle">
+                <thead>
+                    <tr style="background-color: #000;">
+                        <th class="ps-4 py-3 text-warning border-secondary">ID Pesanan</th>
+                        <th class="text-warning border-secondary">Detail Produk</th>
+                        <th class="text-warning border-secondary text-center">Total Harga</th>
+                        <th class="text-warning border-secondary text-center">Status</th>
+                        {{-- POSISI TENGAH: text-center --}}
+                        <th class="text-warning border-secondary text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($orders as $order)
+                    <tr class="border-secondary">
+                        <td class="ps-4 fw-bold text-white-50">#{{ $order->id }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                @php $firstItem = $order->items->first(); @endphp
+                                <img src="{{ asset($firstItem?->product?->image_url ?? 'https://placehold.co/50x50/1a1a1a/d4af37?text=P') }}"
+                                     class="rounded border border-secondary me-3"
+                                     style="width: 45px; height: 45px; object-fit: cover;">
+                                <div>
+                                    <div class="text-white fw-bold">{{ $firstItem?->product?->name ?? 'Produk Kustom' }}</div>
+                                    <small class="text-white-50">{{ $order->items->sum('quantity') }} Pcs</small>
+                                </div>
                             </div>
-                        </div>
-                    @endif
-                </div>
-            </div>
+                        </td>
+                        <td class="text-warning fw-bold text-nowrap text-center">
+                            Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                        </td>
+                        <td class="text-center">
+                            @php
+                                // Pemetaan Status ke Bahasa Indonesia
+                                $statusMap = [
+                                    'pending' => 'BELUM DIBAYAR',
+                                    'Belum Dibayar' => 'BELUM DIBAYAR',
+                                    'MENUNGGU PEMBAYARAN' => 'BELUM DIBAYAR',
+                                    'Menunggu Pembayaran' => 'BELUM DIBAYAR',
+                                    'Menunggu Verifikasi' => 'MENUNGGU VERIFIKASI',
+                                    'processing' => 'DIPROSES',
+                                    'completed' => 'SELESAI',
+                                    'Selesai' => 'SELESAI',
+                                    'cancelled' => 'DIBATALKAN'
+                                ];
+
+                                $displayStatus = $statusMap[$order->status] ?? strtoupper($order->status);
+
+                                // Cek kondisi untuk tampilan tombol
+                                $isPending = in_array($order->status, ['pending', 'Belum Dibayar', 'MENUNGGU PEMBAYARAN', 'Menunggu Pembayaran']);
+                                $isVerifying = ($order->status == 'Menunggu Verifikasi');
+                            @endphp
+
+                            @if($isPending)
+                                <span class="badge rounded-pill bg-dark text-danger border border-danger px-3 py-2">
+                                    {{ $displayStatus }}
+                                </span>
+                            @elseif($isVerifying)
+                                <span class="badge rounded-pill bg-primary px-3 py-2">
+                                    {{ $displayStatus }}
+                                </span>
+                            @elseif($order->status == 'completed' || $order->status == 'Selesai')
+                                <span class="badge rounded-pill bg-success px-3 py-2">
+                                    {{ $displayStatus }}
+                                </span>
+                            @else
+                                <span class="badge rounded-pill bg-secondary px-3 py-2">
+                                    {{ $displayStatus }}
+                                </span>
+                            @endif
+                        </td>
+                        {{-- KOLOM AKSI: text-center & justify-content-center --}}
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2">
+                                {{-- Tombol Detail --}}
+                                <a href="{{ route('member.orders.show', $order->id) }}" class="btn btn-dark btn-sm border-secondary text-white-50" title="Detail">
+                                    <i class="fas fa-eye"></i> Detail
+                                </a>
+
+                                {{-- Aksi Edit & Hapus & Bayar: Hanya muncul jika belum bayar --}}
+                                @if($isPending)
+                                    <a href="{{ route('member.orders.edit', $order->id) }}" class="btn btn-dark btn-sm border-secondary text-info" title="Ubah Alamat/Catatan">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    <form action="{{ route('member.orders.destroy', $order->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-dark btn-sm border-secondary text-danger"
+                                                onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan #{{ $order->id }}?')" title="Batalkan">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+
+                                    <a href="{{ route('member.orders.payment', $order->id) }}" class="btn btn-warning btn-sm fw-bold text-dark px-3 shadow-sm">
+                                        Bayar
+                                    </a>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <i class="fas fa-box-open fa-3x mb-3 text-secondary" style="opacity: 0.3;"></i>
+                            <h6 class="text-white-50">Belum ada riwayat pesanan.</h6>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
+
+    {{-- PAGINATION --}}
+    @if($orders->hasPages())
+    <div class="mt-4 d-flex justify-content-center">
+        {{ $orders->links() }}
+    </div>
+    @endif
+</div>
 @endsection

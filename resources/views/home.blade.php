@@ -1,509 +1,271 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Kestore.id - Custom Apparel</title>
-
-    {{-- Tailwind CSS --}}
+    <title>Kestore.id - Custom Apparel Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
-    {{-- Alpine JS --}}
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
-
-    {{-- Lucide Icons --}}
     <script src="https://unpkg.com/lucide@latest"></script>
-
-    {{-- Google Fonts --}}
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
-
-        /* Animasi Scroll Reveal */
-        .reveal-card {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
-        }
-
-        .reveal-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Tombol Custom */
-        .btn-primary {
-            @apply inline-flex items-center justify-center px-6 py-2.5 text-sm font-bold text-black bg-yellow-500 rounded-lg hover:bg-yellow-400 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-yellow-500/20;
-        }
-
-        .btn-secondary {
-            @apply inline-flex items-center justify-center px-6 py-2.5 text-sm font-bold text-white bg-zinc-800 border border-zinc-700 rounded-lg hover:bg-zinc-700 hover:border-zinc-600 transition-all duration-300;
-        }
-
-        /* Input Styles (Sama dengan Login) */
-        .form-input-dark {
-            @apply w-full px-4 py-3 text-white bg-[#141414] border border-[#333] rounded-lg focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all duration-300 placeholder-gray-500;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #eab308; }
-
-        [x-cloak] { display: none !important; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #050505; color: #e2e8f0; scroll-behavior: smooth; }
+        .force-black { color: #000000 !important; }
+        .reveal-card { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .reveal-card.visible { opacity: 1; transform: translateY(0); }
+        .btn-premium { background: linear-gradient(135deg, #d4af37 0%, #f2d06b 50%, #b38f24 100%); color: #000000 !important; @apply inline-flex items-center justify-center px-7 py-3 text-sm font-black uppercase tracking-widest rounded-full transition-all duration-500 transform hover:-translate-y-1; }
+        .glass-card { background: rgba(15, 15, 15, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); @apply rounded-[2rem] transition-all duration-500; }
+        .step-number { @apply w-12 h-12 rounded-full border-2 border-[#d4af37] text-[#d4af37] flex items-center justify-center font-black text-xl mb-4; }
     </style>
 </head>
 
-<body class="bg-black text-white antialiased selection:bg-yellow-500 selection:text-black">
+<body class="antialiased selection:bg-[#d4af37] selection:text-black">
 
-    {{-- Navigation Bar --}}
-    <header x-data="{ navOpen: false, scrolled: false }"
-            @scroll.window="scrolled = (window.pageYOffset > 20)"
-            :class="{ 'bg-black/90 backdrop-blur-md border-b border-white/10 shadow-lg': scrolled, 'bg-transparent': !scrolled }"
-            class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
-
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-
-                {{-- Logo --}}
-                <div class="flex-shrink-0">
-                    <a href="/" class="flex items-center gap-2 group">
-                        <img src="{{ asset('images/kestore-logo.png') }}" alt="Kestore Logo" class="h-10 w-auto transition-transform group-hover:scale-105">
-                        <span class="text-xl font-bold tracking-tight text-white hidden sm:block">
-                            KESTORE<span class="text-yellow-500">.ID</span>
-                        </span>
-                    </a>
-                </div>
-
-                {{-- Desktop Navigation --}}
-                <nav class="hidden md:flex items-center space-x-8">
-                    <a href="#koleksi" class="text-sm font-medium text-gray-300 hover:text-yellow-500 transition-colors">KOLEKSI</a>
-                    <a href="#custom-order" class="text-sm font-medium text-gray-300 hover:text-yellow-500 transition-colors">CUSTOM ORDER</a>
-                    <a href="#tentang-kami" class="text-sm font-medium text-gray-300 hover:text-yellow-500 transition-colors">TENTANG KAMI</a>
-                    <a href="#faq" class="text-sm font-medium text-gray-300 hover:text-yellow-500 transition-colors">FAQ</a>
-                </nav>
-
-                {{-- Auth Buttons --}}
-                <div class="hidden md:flex items-center space-x-4">
-                    @auth
-                        <a href="{{ route('dashboard') }}" class="btn-primary">
-                            <i data-lucide="layout-dashboard" class="w-4 h-4 mr-2"></i> Dashboard
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}" class="text-sm font-bold text-white hover:text-yellow-500 transition-colors px-4">Login</a>
-                        <ster href="{{ route('register') }}" class="btn-primary">Register</ster>
-                    @endauth
-                </div>
-
-                {{-- Mobile Menu Button --}}
-                <div class="md:hidden flex items-center">
-                    <button @click="navOpen = !navOpen" class="text-gray-300 hover:text-white p-2 focus:outline-none">
-                        <i data-lucide="menu" class="w-6 h-6" x-show="!navOpen"></i>
-                        <i data-lucide="x" class="w-6 h-6" x-show="navOpen" x-cloak></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        {{-- Mobile Menu Overlay --}}
-        <div x-show="navOpen"
-             x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="opacity-0 -translate-y-4"
-             x-transition:enter-end="opacity-100 translate-y-0"
-             x-transition:leave="transition ease-in duration-150"
-             x-transition:leave-start="opacity-100 translate-y-0"
-             x-transition:leave-end="opacity-0 -translate-y-4"
-             @click.away="navOpen = false"
-             class="absolute top-20 left-0 right-0 bg-zinc-900 border-b border-white/10 md:hidden shadow-2xl"
-             x-cloak>
-
-            <div class="flex flex-col p-4 space-y-2">
-                <a href="#koleksi" @click="navOpen = false" class="text-base font-medium text-gray-300 hover:text-yellow-500 hover:bg-white/5 px-4 py-3 rounded-lg transition-colors">KOLEKSI</a>
-                <a href="#custom-order" @click="navOpen = false" class="text-base font-medium text-gray-300 hover:text-yellow-500 hover:bg-white/5 px-4 py-3 rounded-lg transition-colors">CUSTOM ORDER</a>
-                <a href="#tentang-kami" @click="navOpen = false" class="text-base font-medium text-gray-300 hover:text-yellow-500 hover:bg-white/5 px-4 py-3 rounded-lg transition-colors">TENTANG KAMI</a>
-                <a href="#faq" @click="navOpen = false" class="text-base font-medium text-gray-300 hover:text-yellow-500 hover:bg-white/5 px-4 py-3 rounded-lg transition-colors">FAQ</a>
-
-                <div class="border-t border-white/10 pt-4 mt-2 flex flex-col gap-3 px-4 pb-2">
-                    @auth
-                        <a href="{{ route('dashboard') }}" class="btn-primary w-full text-center">Dashboard</a>
-                    @else
-                        <a href="{{ route('login') }}" class="btn-secondary w-full text-center">Login</a>
-                        <ster href="{{ route('register') }}" class="btn-primary w-full text-center">Register</ster>
-                    @endauth
-                </div>
+    {{-- HEADER/NAVBAR --}}
+    <header x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 20)"
+            :class="{ 'bg-black/95 border-b border-white/10': scrolled, 'bg-transparent': !scrolled }"
+            class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+        <div class="container mx-auto px-6 h-24 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-3">
+                <img src="{{ asset('images/kestore-logo.png') }}" alt="Logo" class="h-10 w-auto">
+                <span class="text-xl lg:text-2xl font-black text-white uppercase tracking-tighter">KESTORE<span class="text-[#d4af37]">.ID</span></span>
+            </a>
+            <nav class="hidden lg:flex items-center space-x-12 text-sm font-semibold text-gray-400">
+                <a href="#koleksi" class="hover:text-[#d4af37]">KOLEKSI</a>
+                <a href="#cara-order" class="hover:text-[#d4af37]">CARA ORDER</a>
+                <a href="#custom-order" class="hover:text-[#d4af37]">PESAN CUSTOM</a>
+                <a href="#tentang-kami" class="hover:text-[#d4af37]">TENTANG KAMI</a>
+            </nav>
+            <div class="flex items-center gap-6 text-sm font-bold">
+                @auth
+                    <a href="{{ route('dashboard') }}" class="btn-premium force-black">DASHBOARD</a>
+                @else
+                    <a href="{{ route('login') }}" class="hover:text-[#d4af37] transition-colors">LOGIN</a>
+                    <a href="{{ route('register') }}" class="btn-premium force-black">DAFTAR</a>
+                @endauth
             </div>
         </div>
     </header>
 
     <main>
         {{-- HERO SECTION --}}
-        <section class="relative h-screen flex items-center justify-center overflow-hidden">
-            {{-- Background Image with Overlay --}}
+        <section class="relative min-h-screen flex items-center justify-center overflow-hidden text-center px-6">
             <div class="absolute inset-0 z-0">
-                <img src="{{ asset('images/BG.jpg') }}" alt="Background" class="w-full h-full object-cover opacity-50 hover:scale-105 transition-transform duration-[20s]">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/60"></div>
-                {{-- Texture Overlay --}}
-                <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
+                <img src="{{ asset('images/BG.jpg') }}" class="w-full h-full object-cover opacity-40 scale-110">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-[#050505]/95 to-[#050505]"></div>
             </div>
-
-            {{-- Hero Content --}}
-            <div class="relative z-10 container mx-auto px-4 text-center">
-                <div class="reveal-card">
-                    <span class="inline-block py-1 px-3 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 text-xs font-bold tracking-widest uppercase mb-6">
-                        Premium Custom Apparel
-                    </span>
-                    <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight tracking-tight">
-                        Wujudkan Desain <br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">Impianmu</span>
-                    </h1>
-                    <p class="text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
-                        Platform pembuatan pakaian custom terbaik dengan kualitas premium. Buat hoodie, kaos, dan jaket sesuai keinginanmu tanpa batas minimum order.
-                    </p>
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                        <a href="#custom-order" class="btn-primary text-base px-8 py-4 shadow-lg shadow-yellow-500/20">
-                            Pesan Sekarang
-                        </a>
-                        <a href="#koleksi" class="btn-secondary text-base px-8 py-4">
-                            Lihat Koleksi
-                        </a>
-                    </div>
-                </div>
-
-                {{-- Alert Success --}}
-                @if(session('success'))
-                    <div class="mt-8 mx-auto max-w-md bg-green-500/10 border border-green-500/20 text-green-400 px-6 py-4 rounded-lg backdrop-blur-md flex items-center gap-3 reveal-card animate-bounce">
-                        <i data-lucide="check-circle" class="w-5 h-5 flex-shrink-0"></i>
-                        <span>{{ session('success') }}</span>
-                    </div>
-                @endif
+            <div class="relative z-10 reveal-card">
+                <div class="text-[#d4af37] text-[10px] font-black tracking-[0.4em] uppercase mb-6">Premium Custom Apparel Est. 2021</div>
+                <h1 class="text-6xl md:text-8xl lg:text-9xl font-black text-white mb-10 tracking-tighter uppercase leading-none">Master your <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-[#d4af37] via-[#f2d06b] to-[#b38f24]">Creativity</span></h1>
+                <p class="text-lg md:text-2xl text-gray-400 mb-16 max-w-3xl mx-auto italic font-medium">Wujudkan desain impianmu dengan kualitas kain distro premium tanpa batas minimum order.</p>
+                <a href="#custom-order" class="btn-premium force-black min-w-[260px] py-5">MULAI DESAIN SEKARANG</a>
             </div>
         </section>
 
-        {{-- ABOUT US SECTION --}}
-        <section id="tentang-kami" class="py-24 bg-black relative overflow-hidden">
-            <div class="container mx-auto px-4 sm:px-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
-                    {{-- Image Grid --}}
-                    <div class="reveal-card relative group">
-                        <div class="absolute -inset-4 bg-yellow-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-40 transition duration-500"></div>
-                        <img src="{{ asset('images/P-Hoodie.jpg') }}" alt="Tentang Kami" class="relative rounded-2xl shadow-2xl border border-white/10 w-full h-auto object-cover transform transition duration-500 group-hover:scale-[1.02]">
-                    </div>
-
-                    {{-- Text Content --}}
+        {{-- TENTANG KAMI --}}
+        <section id="tentang-kami" class="py-32 bg-[#050505]">
+            <div class="container mx-auto px-6 lg:px-12">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                     <div class="reveal-card">
-                        <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">Tentang <span class="text-yellow-500">Kestore.id</span></h2>
+                        <h2 class="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-none mb-8">Standardisasi Baru <br> <span class="text-[#d4af37]">Fashion Kustom</span></h2>
                         <div class="space-y-6 text-gray-400 text-lg leading-relaxed">
-                            <p>
-                                Kestore.id adalah brand lokal custom apparel yang berdiri sejak 2021. Kami hadir untuk menjawab kebutuhan fashion yang personal dan unik.
-                            </p>
-                            <p>
-                                Didirikan oleh Deki Muhamad F.R., kami berkomitmen menghadirkan kaos, hoodie, dan crewneck dengan standar kualitas distro namun dengan kebebasan desain sepenuhnya di tangan Anda.
-                            </p>
-                            <ul class="space-y-3 mt-4">
-                                <li class="flex items-center gap-3 text-white">
-                                    <div class="p-1 rounded-full bg-yellow-500/20 text-yellow-500"><i data-lucide="check" class="w-4 h-4"></i></div>
-                                    Bahan Premium (Cotton Combed & Fleece)
-                                </li>
-                                <li class="flex items-center gap-3 text-white">
-                                    <div class="p-1 rounded-full bg-yellow-500/20 text-yellow-500"><i data-lucide="check" class="w-4 h-4"></i></div>
-                                    Sablon DTF & Plastisol High Quality
-                                </li>
-                                <li class="flex items-center gap-3 text-white">
-                                    <div class="p-1 rounded-full bg-yellow-500/20 text-yellow-500"><i data-lucide="check" class="w-4 h-4"></i></div>
-                                    Jahitan Rapi Standar Distro
-                                </li>
-                            </ul>
+                            <p>Kestore.id adalah brand lokal spesialis apparel kustom yang lahir sejak 2021 untuk menjawab tantangan dunia fashion personal yang seringkali terkendala batas minimum order.</p>
+                            <p>Kami menggabungkan material kain premium standar distro dengan teknologi sablon modern DTF untuk memastikan setiap detail imajinasi Anda tercetak sempurna.</p>
+                        </div>
+                        <div class="mt-12 flex flex-wrap gap-8">
+                            <div class="border-l-2 border-[#d4af37] pl-6">
+                                <h4 class="text-white font-black text-3xl">2021</h4>
+                                <p class="text-gray-500 text-sm uppercase font-bold">Hadir Sejak</p>
+                            </div>
+                            <div class="border-l-2 border-[#d4af37] pl-6">
+                                <h4 class="text-white font-black text-3xl">PREMIUM</h4>
+                                <p class="text-gray-500 text-sm uppercase font-bold">Kualitas Distro</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="reveal-card">
+                        <div class="glass-card p-4">
+                            <img src="{{ asset('images/Brand-Story.jpg') }}" alt="Brand Story" class="rounded-[1.5rem] w-full shadow-2xl filter contrast-125 grayscale hover:grayscale-0 transition-all duration-700">
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        {{-- ADVANTAGES SECTION --}}
-        <section id="keunggulan" class="py-24 bg-zinc-900/30 border-y border-white/5">
-            <div class="container mx-auto px-4 sm:px-6">
-                <div class="text-center mb-16 reveal-card">
-                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Kenapa Memilih Kami?</h2>
-                    <p class="text-gray-400 max-w-2xl mx-auto">Kami tidak hanya menjual pakaian, kami memberikan kualitas dan kepuasan dalam setiap jahitan.</p>
+        {{-- KATALOG PRODUK --}}
+        <section id="koleksi" class="py-32 bg-[#080808]">
+            <div class="container mx-auto px-6 lg:px-12">
+                <div class="text-center mb-20 reveal-card">
+                    <h2 class="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter italic">Katalog Pilihan</h2>
+                    <div class="h-1.5 w-24 bg-[#d4af37] mx-auto rounded-full mt-4 shadow-[0_0_15px_rgba(212,175,55,0.5)]"></div>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="reveal-card bg-[#0a0a0a] p-8 rounded-2xl border border-white/5 hover:border-yellow-500/30 transition-colors duration-300 group hover:shadow-xl hover:shadow-yellow-500/5">
-                        <div class="w-14 h-14 bg-zinc-800 rounded-xl flex items-center justify-center mb-6 group-hover:bg-yellow-500 transition-colors duration-300">
-                            <i data-lucide="gem" class="w-7 h-7 text-yellow-500 group-hover:text-black transition-colors"></i>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <div class="reveal-card glass-card overflow-hidden group">
+                        <div class="relative h-[450px] overflow-hidden">
+                            <img src="{{ asset('images/P-Hoodie.jpg') }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <div class="absolute top-6 right-6 bg-[#d4af37] force-black font-black px-4 py-2 rounded-full text-[10px] shadow-xl">MULAI Rp 465rb</div>
                         </div>
-                        <h3 class="text-xl font-bold text-white mb-3">Bahan Premium</h3>
-                        <p class="text-gray-400 leading-relaxed text-sm">
-                            Kami hanya menggunakan material terbaik seperti Cotton Fleece 280gsm dan Combed 30s yang nyaman, adem, dan awet.
-                        </p>
+                        <div class="p-8">
+                            <h3 class="text-2xl font-black text-white mb-2 uppercase tracking-tighter">Hoodie Premium</h3>
+                            <p class="text-gray-500 text-sm font-medium leading-relaxed">Cotton Fleece 280gsm kualitas ekspor terbaik.</p>
+                        </div>
                     </div>
-
-                    <div class="reveal-card bg-[#0a0a0a] p-8 rounded-2xl border border-white/5 hover:border-yellow-500/30 transition-colors duration-300 group hover:shadow-xl hover:shadow-yellow-500/5">
-                        <div class="w-14 h-14 bg-zinc-800 rounded-xl flex items-center justify-center mb-6 group-hover:bg-yellow-500 transition-colors duration-300">
-                            <i data-lucide="layers" class="w-7 h-7 text-yellow-500 group-hover:text-black transition-colors"></i>
+                    <div class="reveal-card glass-card overflow-hidden group">
+                        <div class="relative h-[450px] overflow-hidden">
+                            <img src="{{ asset('images/Slide-2.png') }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <div class="absolute top-6 right-6 bg-[#d4af37] force-black font-black px-4 py-2 rounded-full text-[10px] shadow-xl">MULAI Rp 115rb</div>
                         </div>
-                        <h3 class="text-xl font-bold text-white mb-3">Sablon Modern</h3>
-                        <p class="text-gray-400 leading-relaxed text-sm">
-                            Teknologi sablon DTF (Direct Transfer Film) untuk detail presisi dan Plastisol untuk ketahanan maksimal.
-                        </p>
+                        <div class="p-8">
+                            <h3 class="text-2xl font-black text-white mb-2 uppercase tracking-tighter">T-Shirt Kustom</h3>
+                            <p class="text-gray-500 text-sm font-medium leading-relaxed">Cotton Combed 30s sejuk dan nyaman dipakai.</p>
+                        </div>
                     </div>
-
-                    <div class="reveal-card bg-[#0a0a0a] p-8 rounded-2xl border border-white/5 hover:border-yellow-500/30 transition-colors duration-300 group hover:shadow-xl hover:shadow-yellow-500/5">
-                        <div class="w-14 h-14 bg-zinc-800 rounded-xl flex items-center justify-center mb-6 group-hover:bg-yellow-500 transition-colors duration-300">
-                            <i data-lucide="sparkles" class="w-7 h-7 text-yellow-500 group-hover:text-black transition-colors"></i>
+                    <div class="reveal-card glass-card overflow-hidden group">
+                        <div class="relative h-[450px] overflow-hidden">
+                            <img src="{{ asset('images/HOODIE.png') }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <div class="absolute top-6 right-6 bg-[#d4af37] force-black font-black px-4 py-2 rounded-full text-[10px] shadow-xl">Rp 185.000</div>
                         </div>
-                        <h3 class="text-xl font-bold text-white mb-3">Tanpa Minimum Order</h3>
-                        <p class="text-gray-400 leading-relaxed text-sm">
-                            Bebas berekspresi! Pesan satuan untuk koleksi pribadi atau lusinan untuk komunitasmu. Kami siap melayani.
-                        </p>
+                        <div class="p-8">
+                            <h3 class="text-2xl font-black text-white mb-2 uppercase tracking-tighter">Crewneck Classic</h3>
+                            <p class="text-gray-500 text-sm font-medium leading-relaxed">Material premium dengan jahitan rapi standar distro.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        {{-- COLLECTIONS SECTION --}}
-        <section id="koleksi" class="py-24 bg-black">
-            <div class="container mx-auto px-4 sm:px-6">
-                <div class="text-center mb-16 reveal-card">
-                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">KOLEKSI KAMI</h2>
-                    <p class="text-gray-400 mt-2">Temukan produk yang sesuai dengan gayamu.</p>
+        {{-- LANGKAH PEMESANAN --}}
+        <section id="cara-order" class="py-32 bg-[#050505]">
+            <div class="container mx-auto px-6 lg:px-12">
+                <div class="text-center mb-20 reveal-card">
+                    <h2 class="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter leading-tight">Langkah Pemesanan</h2>
+                    <p class="text-gray-500 font-medium italic mt-2 text-sm uppercase tracking-widest">Proses mudah & transparan</p>
                 </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div class="reveal-card glass-card p-10 border-t-4 border-[#d4af37] text-left">
+                        <div class="step-number">1</div>
+                        <h4 class="text-white font-black mb-4 uppercase tracking-tight">Daftar Akun</h4>
+                        <p class="text-gray-500 text-sm leading-relaxed">Wajib registrasi untuk fitur custom order dan riwayat transaksi.</p>
+                    </div>
+                    <div class="reveal-card glass-card p-10 border-t-4 border-[#d4af37] text-left">
+                        <div class="step-number">2</div>
+                        <h4 class="text-white font-black mb-4 uppercase tracking-tight">Kirim Desain</h4>
+                        <p class="text-gray-500 text-sm leading-relaxed">Gunakan menu "Pesan Custom" dan unggah file desain terbaik Anda.</p>
+                    </div>
+                    <div class="reveal-card glass-card p-10 border-t-4 border-[#d4af37] text-left">
+                        <div class="step-number">3</div>
+                        <h4 class="text-white font-black mb-4 uppercase tracking-tight">Pembayaran</h4>
+                        <p class="text-gray-500 text-sm leading-relaxed">Lakukan transfer bank sesuai tagihan dan unggah bukti transfer.</p>
+                    </div>
+                    <div class="reveal-card glass-card p-10 border-t-4 border-[#d4af37] text-left">
+                        <div class="step-number">4</div>
+                        <h4 class="text-white font-black mb-4 uppercase tracking-tight">Produksi</h4>
+                        <p class="text-gray-500 text-sm leading-relaxed">Pesanan Anda diproses admin hingga dipacking dan dikirim.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    @foreach ($products as $product)
-                        <div class="reveal-card group bg-[#0a0a0a] rounded-2xl overflow-hidden border border-white/5 hover:border-yellow-500/30 transition-all duration-300 hover:shadow-xl">
-                            {{-- Image Container --}}
-                            <div class="relative overflow-hidden h-80 bg-zinc-900">
-                                <img src="{{ asset('images/product/' . $product->image) }}" alt="{{ $product->name }}"
-                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+        {{-- PESAN PRODUK CUSTOM (FORM) --}}
+        <section id="custom-order" class="py-40 bg-[#080808]">
+            <div class="container mx-auto px-6">
+                <div class="max-w-5xl mx-auto">
+                    <div class="text-center mb-24 reveal-card uppercase">
+                        <h2 class="text-5xl md:text-7xl font-black text-white tracking-tighter italic">Buat Desainmu</h2>
+                        <div class="h-2 w-32 bg-[#d4af37] mx-auto rounded-full mt-4"></div>
+                    </div>
 
-                                {{-- Overlay Gradient --}}
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
-
-                                {{-- Price Badge --}}
-                                <div class="absolute top-4 right-4 bg-yellow-500 text-black font-bold text-sm px-3 py-1 rounded-full shadow-lg">
-                                    Rp {{ number_format($product->price, 0, ',', '.') }}
+                    @auth
+                        <div class="glass-card p-10 md:p-16 reveal-card border-l-8 border-l-[#d4af37]">
+                            <form action="{{ route('member.custom.order') }}" method="POST" enctype="multipart/form-data" class="space-y-10">
+                                @csrf
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-10 text-left">
+                                    <div class="space-y-4">
+                                        <label class="text-xs font-black text-gray-500 uppercase tracking-widest ml-2">Nama Projek</label>
+                                        <input type="text" name="name" class="w-full px-6 py-4 text-white bg-black border border-white/10 rounded-2xl focus:border-[#d4af37] outline-none" placeholder="Contoh: Kaos Komunitas" required>
+                                    </div>
+                                    <div class="space-y-4">
+                                        <label class="text-xs font-black text-gray-500 uppercase tracking-widest ml-2">Jumlah (Pcs)</label>
+                                        <input type="number" name="quantity" class="w-full px-6 py-4 text-white bg-black border border-white/10 rounded-2xl focus:border-[#d4af37] outline-none" placeholder="1" required>
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="p-6">
-                                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-yellow-500 transition-colors">{{ $product->name }}</h3>
-                                <p class="text-gray-400 text-sm mb-6 line-clamp-2">{{ $product->description }}</p>
-
-                                <a href="{{ route('product.detail', $product->id) }}" class="block w-full py-3 text-center rounded-lg border border-yellow-500 text-yellow-500 font-bold hover:bg-yellow-500 hover:text-black transition-all duration-300">
-                                    Lihat Detail
-                                </a>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-
-                @if($products->isEmpty())
-                    <div class="text-center py-12 text-gray-500 reveal-card">
-                        <i data-lucide="package-open" class="w-16 h-16 mx-auto mb-4 opacity-50"></i>
-                        <p>Belum ada produk yang ditampilkan saat ini.</p>
-                    </div>
-                @endif
-            </div>
-        </section>
-
-        {{-- FAQ SECTION --}}
-        <section id="faq" class="py-24 bg-zinc-900/30 border-t border-white/5">
-            <div class="container mx-auto px-4 sm:px-6">
-                <div class="text-center mb-16 reveal-card">
-                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Tanya Jawab</h2>
-                    <p class="text-gray-400">Temukan jawaban dari pertanyaan yang sering diajukan.</p>
-                </div>
-
-                <div class="max-w-3xl mx-auto space-y-4" x-data="{ open: 1 }">
-                    <div class="reveal-card bg-[#0a0a0a] rounded-xl border border-white/5 overflow-hidden transition-all duration-300" :class="{ 'border-yellow-500/30': open === 1 }">
-                        <button @click="open = (open === 1 ? 0 : 1)" class="w-full text-left p-5 flex justify-between items-center hover:bg-white/5 transition-colors">
-                            <span class="font-bold text-white text-lg">Apakah bisa memesan satuan?</span>
-                            <i data-lucide="chevron-down" class="transition-transform duration-300 text-yellow-500" :class="{ 'rotate-180': open === 1 }"></i>
-                        </button>
-                        <div x-show="open === 1" x-collapse class="px-5 pb-5 text-gray-400 leading-relaxed border-t border-white/5 pt-4">
-                            <p>Tentu saja! Kami melayani pemesanan satuan tanpa minimum order. Sangat cocok untuk kamu yang ingin punya apparel eksklusif atau sebagai hadiah spesial.</p>
-                        </div>
-                    </div>
-
-                    <div class="reveal-card bg-[#0a0a0a] rounded-xl border border-white/5 overflow-hidden transition-all duration-300" :class="{ 'border-yellow-500/30': open === 2 }">
-                        <button @click="open = (open === 2 ? 0 : 2)" class="w-full text-left p-5 flex justify-between items-center hover:bg-white/5 transition-colors">
-                            <span class="font-bold text-white text-lg">Berapa lama proses pengerjaannya?</span>
-                            <i data-lucide="chevron-down" class="transition-transform duration-300 text-yellow-500" :class="{ 'rotate-180': open === 2 }"></i>
-                        </button>
-                        <div x-show="open === 2" x-collapse class="px-5 pb-5 text-gray-400 leading-relaxed border-t border-white/5 pt-4">
-                            <p>Proses pengerjaan normalnya memakan waktu 3-7 hari kerja, tergantung pada kerumitan desain dan antrian produksi kami. Kami selalu berusaha secepat mungkin.</p>
-                        </div>
-                    </div>
-
-                    <div class="reveal-card bg-[#0a0a0a] rounded-xl border border-white/5 overflow-hidden transition-all duration-300" :class="{ 'border-yellow-500/30': open === 3 }">
-                        <button @click="open = (open === 3 ? 0 : 3)" class="w-full text-left p-5 flex justify-between items-center hover:bg-white/5 transition-colors">
-                            <span class="font-bold text-white text-lg">Jenis sablon apa yang digunakan?</span>
-                            <i data-lucide="chevron-down" class="transition-transform duration-300 text-yellow-500" :class="{ 'rotate-180': open === 3 }"></i>
-                        </button>
-                        <div x-show="open === 3" x-collapse class="px-5 pb-5 text-gray-400 leading-relaxed border-t border-white/5 pt-4">
-                            <p>Untuk pesanan satuan kami menggunakan teknologi DTF (Direct to Film) yang detail dan awet. Untuk pesanan lusinan (12+ pcs), kami menyediakan opsi sablon Plastisol.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        {{-- CUSTOM ORDER SECTION --}}
-        <section id="custom-order" class="py-24 bg-black border-t border-white/5">
-            <div class="container mx-auto px-4 sm:px-6">
-                <div class="text-center mb-16 reveal-card">
-                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Pesan Produk Custom</h2>
-                    <p class="text-gray-400 mt-2">Punya desain sendiri? Buat produk impianmu dengan mudah di sini.</p>
-                </div>
-
-                {{-- Alert Errors --}}
-                @if ($errors->any())
-                    <div class="max-w-3xl mx-auto bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-lg mb-8 reveal-card">
-                        <ul class="list-disc list-inside">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
-                {{-- CEK AUTH --}}
-                @auth
-                    <div class="max-w-3xl mx-auto bg-[#0a0a0a] p-8 md:p-10 rounded-2xl shadow-2xl border border-white/10 reveal-card relative overflow-hidden">
-                        {{-- Decorative Glow --}}
-                        <div class="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 blur-3xl rounded-full pointer-events-none"></div>
-
-                        <form action="{{ route('custom.order') }}" method="POST" enctype="multipart/form-data" class="space-y-6 relative z-10">
-                            @csrf
-
-                            <div>
-                                <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Judul Pesanan / Nama Produk</label>
-                                <input type="text" id="name" name="name" class="form-input-dark" placeholder="Contoh: Hoodie Angkatan 2024 - Size L" required>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label for="quantity" class="block text-sm font-medium text-gray-300 mb-2">Jumlah</label>
-                                    <input type="number" id="quantity" name="quantity" min="1" class="form-input-dark" placeholder="1" required>
+                                <div class="space-y-4 text-left">
+                                    <label class="text-xs font-black text-gray-500 uppercase tracking-widest ml-2">File Desain (JPG/PNG)</label>
+                                    <input type="file" name="image" class="w-full px-6 py-10 text-gray-500 bg-black border border-white/10 rounded-2xl border-dashed hover:border-[#d4af37] transition-all">
                                 </div>
-                                <div>
-                                    <label for="image" class="block text-sm font-medium text-gray-300 mb-2">Unggah Desain (JPG/PNG)</label>
-                                    <input type="file" id="image" name="image" class="w-full text-sm text-gray-400 bg-[#141414] border border-[#333] rounded-lg cursor-pointer focus:outline-none file:mr-4 file:py-3 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-bold file:bg-zinc-800 file:text-white hover:file:bg-zinc-700 transition" required>
+                                <div class="space-y-4 text-left">
+                                    <label class="text-xs font-black text-gray-500 uppercase tracking-widest ml-2">Detail Instruksi</label>
+                                    <textarea name="description" rows="5" class="w-full px-6 py-4 text-white bg-black border border-white/10 rounded-2xl focus:border-[#d4af37] outline-none" placeholder="Detail sablon, warna kain, dll..."></textarea>
                                 </div>
-                            </div>
-
-                            <div>
-                                <label for="description" class="block text-sm font-medium text-gray-300 mb-2">Detail Spesifikasi</label>
-                                <textarea id="description" name="description" rows="4" class="form-input-dark" placeholder="Jelaskan detail warna kain, ukuran sablon, posisi sablon, dan request lainnya..." required></textarea>
-                            </div>
-
-                            <div class="pt-4 text-center">
-                                <button type="submit" class="btn-primary w-full md:w-auto px-10 py-3 text-base shadow-lg shadow-yellow-500/20">
-                                    Kirim Pesanan
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                @else
-                    {{-- Lock Screen for Guest --}}
-                    <div class="max-w-2xl mx-auto bg-[#0a0a0a] border border-white/10 p-10 rounded-2xl text-center reveal-card shadow-2xl relative overflow-hidden">
-                        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"></div>
-                        <div class="relative z-10">
-                            <div class="w-20 h-20 bg-zinc-900 rounded-full flex items-center justify-center mx-auto mb-6 border border-white/5">
-                                <i data-lucide="lock" class="h-10 w-10 text-yellow-500"></i>
-                            </div>
-                            <h3 class="text-2xl font-bold text-white mb-3">Akses Terbatas</h3>
-                            <p class="text-gray-400 mb-8 max-w-md mx-auto">Anda harus login terlebih dahulu untuk melakukan pemesanan custom. Silakan login atau registrasi akun baru.</p>
-                            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                                <a href="{{ route('login') }}" class="btn-primary w-full sm:w-auto px-8">Login</a>
-                                <a href="{{ route('register') }}" class="btn-secondary w-full sm:w-auto px-8">Daftar Akun</a>
+                                <button type="submit" class="btn-premium force-black w-full text-lg py-6 shadow-2xl">KIRIM PESANAN SEKARANG</button>
+                            </form>
+                        </div>
+                    @else
+                        {{-- AKSES EKSKLUSIF MEMBER --}}
+                        <div class="glass-card p-24 text-center reveal-card border-dashed border-2 border-[#d4af37]/30">
+                            <i data-lucide="lock" class="w-20 h-20 mx-auto mb-10 text-[#d4af37]/40"></i>
+                            <h3 class="text-4xl font-black text-white mb-8 uppercase tracking-tighter">Akses Eksklusif Member</h3>
+                            <p class="text-xl text-gray-400 mb-14 max-w-lg mx-auto font-medium">Silakan masuk ke akun Anda atau daftar untuk memulai pemesanan kustom premium.</p>
+                            <div class="flex flex-col sm:flex-row justify-center gap-8">
+                                <a href="{{ route('login') }}" class="px-10 py-4 border border-white/20 rounded-full font-black text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all">Login</a>
+                                <a href="{{ route('register') }}" class="btn-premium force-black px-10 py-4 shadow-xl shadow-[#d4af37]/20">Daftar Sekarang</a>
                             </div>
                         </div>
-                    </div>
-                @endauth
+                    @endauth
+                </div>
             </div>
         </section>
-
     </main>
 
-    {{-- Footer --}}
-<footer class="bg-[#050505] pt-16 pb-8 border-t border-white/10">
-    <div class="container mx-auto px-4 sm:px-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left mb-12">
-            
-            <div class="space-y-4">
-                <h3 class="text-2xl font-bold text-white tracking-tight">
-                    KESTORE<span class="text-yellow-500">.ID</span>
-                </h3>
-                <p class="text-sm text-gray-400 leading-relaxed max-w-xs mx-auto md:mx-0">
-                    Spesialis custom apparel untuk gaya unikmu. Kualitas premium, desain tanpa batas, dan pelayanan terbaik untuk kepuasan Anda.
-                </p>
-            </div>
-
-            <div class="space-y-4">
-                <h3 class="font-bold text-white text-lg">Lokasi Kami</h3>
-                <div class="text-sm text-gray-400 leading-relaxed space-y-2">
-                    <p>Komplek Margaasih Permai,</p>
-                    <p>Jl. Sedap Malam No.22 blok U1, RT.04/RW.19,</p>
-                    <p>Margaasih, Kab. Bandung, Jawa Barat 40215</p>
+    {{-- FOOTER --}}
+    <footer class="bg-black py-24 border-t border-white/10 relative z-10">
+        <div class="container mx-auto px-6 lg:px-12 text-center md:text-left">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-16 mb-24">
+                <div class="col-span-1 md:col-span-2 space-y-8">
+                    <div class="flex items-center gap-4 justify-center md:justify-start">
+                        <img src="{{ asset('images/kestore-logo.png') }}" class="h-12 shadow-lg">
+                        <span class="text-3xl font-black text-white tracking-tighter uppercase leading-none block">KESTORE<span class="text-[#d4af37]">.ID</span></span>
+                    </div>
+                    <p class="text-gray-500 max-w-md leading-relaxed text-lg font-medium mx-auto md:mx-0 italic">Standardisasi baru dalam fashion kustom premium sejak 2021.</p>
                 </div>
-                <a href="https://maps.google.com/?q=Komplek+Margaasih+Permai" target="_blank" 
-                   class="inline-flex items-center text-yellow-500 hover:text-yellow-400 text-sm font-bold transition-colors mt-2 group">
-                    Lihat di Google Maps 
-                    <i data-lucide="arrow-up-right" class="w-4 h-4 ml-1 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"></i>
-                </a>
-            </div>
-
-            <div class="space-y-4">
-                <h3 class="font-bold text-white text-lg">Ikuti Kami</h3>
-                <p class="text-sm text-gray-400">Dapatkan info promo dan desain terbaru.</p>
-                <div class="flex justify-center md:justify-start gap-3">
-                    <a href="#" class="w-10 h-10 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center text-gray-400 hover:bg-yellow-500 hover:text-black hover:border-yellow-500 transition-all duration-300">
-                        <i data-lucide="instagram" class="w-5 h-5"></i>
-                    </a>
-                    <a href="#" class="w-10 h-10 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center text-gray-400 hover:bg-yellow-500 hover:text-black hover:border-yellow-500 transition-all duration-300">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-2.43.03-4.83-.95-6.46-2.9-1.6-1.92-2.3-4.43-1.8-6.83.47-2.31 1.98-4.25 3.98-5.46 2.02-1.2 4.54-1.42 6.74-1.02.01 2.38-.01 4.75.02 7.12-.52-.15-1.03-.3-1.52-.47-1.42-.48-2.9-.8-4.27-1.15.28-2.26.88-4.4 2.15-6.19C10.22 2.12 11.33.91 12.525.02z"></path></svg>
-                    </a>
-                    <a href="#" class="w-10 h-10 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center text-gray-400 hover:bg-yellow-500 hover:text-black hover:border-yellow-500 transition-all duration-300">
-                        <i data-lucide="shopping-cart" class="w-5 h-5"></i>
-                    </a>
+                <div>
+                    <h4 class="text-white font-black mb-10 uppercase tracking-[0.2em] text-xs">Navigasi</h4>
+                    <ul class="space-y-6 text-gray-500 font-bold text-sm">
+                        <li><a href="#koleksi" class="hover:text-[#d4af37] transition-all">KATALOG PRODUK</a></li>
+                        <li><a href="#cara-order" class="hover:text-[#d4af37] transition-all">CARA ORDER</a></li>
+                        <li><a href="#tentang-kami" class="hover:text-[#d4af37] transition-all">TENTANG KESTORE</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-black mb-10 uppercase tracking-[0.2em] text-xs">Media Sosial</h4>
+                    <ul class="space-y-6 text-gray-500 font-bold text-sm mb-10">
+                        <li class="flex items-center gap-4 group justify-center md:justify-start">
+                            <div class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-[#d4af37] transition-all duration-500"><i data-lucide="instagram" class="w-5 h-5 text-[#d4af37] group-hover:text-black"></i></div>
+                            <a href="https://instagram.com/kestore.id" target="_blank" class="group-hover:text-white uppercase transition-colors">Instagram</a>
+                        </li>
+                        <li class="flex items-center gap-4 group justify-center md:justify-start">
+                            <div class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-[#d4af37] transition-all duration-500">
+                                <svg class="w-5 h-5 text-[#d4af37] group-hover:text-black" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-2.43.03-4.83-.95-6.46-2.9-1.6-1.92-2.3-4.43-1.8-6.83.47-2.31 1.98-4.25 3.98-5.46 2.02-1.2 4.54-1.42 6.74-1.02.01 2.38-.01 4.75.02 7.12-.52-.15-1.03-.3-1.52-.47-1.42-.48-2.9-.8-4.27-1.15.28-2.26.88-4.4 2.15-6.19C10.22 2.12 11.33.91 12.525.02z"></path></svg>
+                            </div>
+                            <a href="https://tiktok.com/@kestore.id" target="_blank" class="group-hover:text-white uppercase transition-colors">TikTok</a>
+                        </li>
+                    </ul>
+                    <a href="mailto:cs@kestore.id" class="text-[#d4af37] font-black text-sm hover:underline uppercase tracking-widest">CS@KESTORE.ID</a>
                 </div>
             </div>
+            <div class="pt-12 border-t border-white/5 text-center">
+                <p class="text-[10px] font-black text-gray-600 tracking-[0.5em] uppercase">© 2026 Kestore.id • Premium Apparel Division. All Rights Reserved.</p>
+            </div>
         </div>
+    </footer>
 
-        <div class="border-t border-white/10 pt-8 text-center">
-            <p class="text-sm text-zinc-500">
-                &copy; {{ date('Y') }} <span class="text-white font-semibold">Kestore.id</span>. All Rights Reserved.
-            </p>
-        </div>
-    </div>
-</footer>
-
-    {{-- Script untuk Icon dan Scroll Animation --}}
     <script>
         lucide.createIcons();
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const intersectionObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, {
-                threshold: 0.1
-            });
-
-            document.querySelectorAll('.reveal-card').forEach(card => {
-                intersectionObserver.observe(card);
-            });
-        });
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal-card').forEach(card => observer.observe(card));
     </script>
 </body>
 </html>

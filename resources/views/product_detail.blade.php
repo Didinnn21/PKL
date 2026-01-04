@@ -3,220 +3,225 @@
 @section('title', $product->name)
 
 @push('styles')
-    {{-- Font Awesome untuk ikon --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <style>
-        .product-container {
-            max-width: 800px;
-            margin: auto;
-        }
-
-        .product-card {
-            background-color: var(--dark-surface-2);
-            border: 1px solid var(--dark-border);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .product-image-wrapper {
+        /* Dasar Halaman */
+        .main-wrapper {
             background-color: #000;
-            padding: 1rem;
-        }
-
-        .product-image {
-            width: 100%;
-            max-height: 500px;
-            object-fit: contain;
-            border-radius: 10px;
-        }
-
-        .product-info {
-            padding: 2rem;
-        }
-
-        .product-title {
-            font-size: 2.25rem;
-            font-weight: 700;
+            min-height: 100vh;
+            padding: 40px 0;
             color: #fff;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Container Produk */
+        .product-card-custom {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex; /* Menggunakan Flexbox untuk memisahkan kolom */
+            flex-wrap: wrap;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Bagian Kiri: Area Gambar */
+        .img-area {
+            flex: 1;
+            min-width: 350px;
+            background-color: #080808;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid #333;
+            max-height: 600px; /* Batas tinggi kolom gambar */
+        }
+
+        .img-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Memaksa gambar mengecil dalam bingkai */
+            border-radius: 12px;
+        }
+
+        /* Bagian Kanan: Area Informasi */
+        .info-area {
+            flex: 1.2;
+            min-width: 350px;
+            padding: 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: #1a1a1a; /* Memastikan latar belakang teks solid */
+        }
+
+        .badge-status {
+            background: rgba(212, 175, 55, 0.15);
+            color: #d4af37;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .product-name {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            line-height: 1.1;
         }
 
         .product-price {
-            font-size: 1.75rem;
-            font-weight: 600;
-            color: var(--primary-gold);
+            font-size: 2.2rem;
+            color: #d4af37;
+            font-weight: 700;
+            margin-bottom: 30px;
         }
 
-        .stock-badge {
-            background-color: rgba(40, 167, 69, 0.2);
-            color: #28a745;
-            font-size: 0.8rem;
-            font-weight: 600;
-            padding: 0.4em 0.8em;
-            border-radius: 20px;
+        .section-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #d4af37;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
         }
 
-        .product-description {
-            color: var(--text-muted);
+        .description-text {
+            color: #bbb;
             line-height: 1.8;
-        }
-
-        .spec-list {
-            list-style: none;
-            padding-left: 0;
-            color: var(--text-muted);
-        }
-
-        .spec-list li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid var(--dark-border);
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .spec-list li strong {
-            color: var(--text-light);
-        }
-
-        /* PERBAIKAN: Form Pemesanan dibungkus card gold */
-        .order-form-container {
-            background: linear-gradient(145deg, #e6b438, #c8a02a);
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 1px solid #d4af37;
-            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.25);
-        }
-
-        .order-form-container .form-label {
-            color: #2c2c2c;
-            /* Warna gelap agar kontras dengan background gold */
-        }
-
-        .quantity-selector button {
-            background-color: #fff;
-            color: #2c2c2c;
-            border: 1px solid #c8a02a;
-        }
-
-        .quantity-selector button:hover {
-            background-color: #f0f0f0;
-            color: #000;
-        }
-
-        .quantity-selector input {
-            text-align: center;
-            border-top: 1px solid #c8a02a;
-            border-bottom: 1px solid #c8a02a;
-            border-left: none;
-            border-right: none;
-            background-color: #fff;
-            color: #1a1a1a;
-            /* PERBAIKAN: Warna font jumlah menjadi gelap */
-            font-weight: 700;
-            -moz-appearance: textfield;
-        }
-
-        .btn-order {
-            background-color: #2c2c2c;
-            border-color: #2c2c2c;
-            color: #fff;
-            font-weight: 700;
             font-size: 1rem;
-            padding: 0.75rem 1.5rem;
-            transition: all 0.3s ease;
+            margin-bottom: 30px;
         }
 
-        .btn-order:hover {
-            background-color: #1a1a1a;
-            border-color: #1a1a1a;
+        /* Area Form Pembelian */
+        .purchase-box {
+            background-color: #000;
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid #d4af37;
+        }
+
+        .qty-wrapper {
+            display: flex;
+            align-items: center;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            width: fit-content;
+        }
+
+        .qty-btn {
+            background: #d4af37;
+            color: #000;
+            border: none;
+            width: 40px;
+            height: 40px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .qty-input {
+            background: transparent;
+            border: none;
             color: #fff;
-            transform: translateY(-2px);
+            text-align: center;
+            width: 60px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .btn-submit {
+            background-color: #d4af37;
+            color: #000;
+            border: none;
+            padding: 15px;
+            font-weight: 800;
+            border-radius: 10px;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #fff;
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 768px) {
+            .img-area { border-right: none; border-bottom: 1px solid #333; }
+            .product-name { font-size: 2rem; }
         }
     </style>
 @endpush
 
 @section('content')
-    <div class="container product-container my-5">
-        <div class="product-card">
-            {{-- Bagian Gambar --}}
-            <div class="product-image-wrapper d-flex justify-content-center">
-                <img src="{{ asset($product->image_url ?? 'https://placehold.co/800x600/000000/FFFFFF/png?text=Gambar+Produk') }}"
-                    class="product-image" alt="{{ $product->name }}" width="50%">
+<div class="main-wrapper">
+    <div class="container">
+        <div class="product-card-custom">
+
+            <div class="img-area">
+                <img src="{{ asset($product->image_url ?? 'storage/products/default.jpg') }}" alt="{{ $product->name }}">
             </div>
 
-            {{-- Bagian Informasi & Form --}}
-            <div class="product-info">
-                {{-- Nama & Stok --}}
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h1 class="product-title">{{ $product->name }}</h1>
-                    <span class="stock-badge mt-2">Stok: {{ $product->stock }}</span>
+            <div class="info-area">
+                <div class="badge-status">
+                    <i class="fas fa-check-circle me-1"></i> Stok: {{ $product->stock }} Unit Tersedia
                 </div>
 
-                {{-- Harga --}}
-                <p class="product-price mb-4">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                <h1 class="product-name">{{ $product->name }}</h1>
+                <div class="product-price">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
 
-                {{-- Deskripsi --}}
-                <h5 class="text-white fw-bold">Deskripsi</h5>
-                <p class="product-description">{{ $product->description }}</p>
+                <div class="section-label">Deskripsi Produk</div>
+                <p class="description-text">{{ $product->description }}</p>
 
-                <hr class="my-4" style="border-color: var(--dark-border);">
-
-                {{-- Spesifikasi --}}
-                <h5 class="text-white fw-bold">Spesifikasi</h5>
-                <ul class="spec-list">
-                    <li><span>Bahan</span> <strong>Cotton Fleece 280gsm (Hoodie/Crewneck), Cotton Combed 24s (Kaos)</strong>
-                    </li>
-                    <li><span>Sablon Satuan</span> <strong>DTF (Direct to Film)</strong></li>
-                    <li><span>Sablon Lusinan</span> <strong>Plastisol (Min. 12 pcs)</strong></li>
-                    <li><span>Kualitas</span> <strong>Premium & Tahan Lama</strong></li>
-                </ul>
-
-                {{-- Form Pemesanan --}}
-                <div class="order-form-container mt-4">
+                <div class="purchase-box">
                     <form action="{{ route('member.cart.store') }}" method="POST">
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $product->id }}">
-                        <div class="row align-items-center g-3">
-                            <div class="col-md-5">
-                                <label class="form-label fw-bold small">JUMLAH</label>
-                                <div class="input-group quantity-selector">
-                                    <button class="btn" type="button" onclick="decreaseQuantity()">-</button>
-                                    <input type="number" name="quantity" id="quantity" class="form-control text-center"
-                                        value="1" min="1" max="{{ $product->stock }}" required readonly>
-                                    <button class="btn" type="button" onclick="increaseQuantity()">+</button>
+
+                        <div class="row align-items-center">
+                            <div class="col-md-5 mb-3 mb-md-0">
+                                <label class="small fw-bold text-warning mb-2 d-block text-uppercase">Tentukan Jumlah</label>
+                                <div class="qty-wrapper">
+                                    <button type="button" class="qty-btn" onclick="modifyQty(-1)">-</button>
+                                    <input type="number" name="quantity" id="p_qty" class="qty-input" value="1" min="1" max="{{ $product->stock }}" readonly>
+                                    <button type="button" class="qty-btn" onclick="modifyQty(1)">+</button>
                                 </div>
                             </div>
                             <div class="col-md-7">
-                                <label class="form-label fw-bold small">&nbsp;</label>
-                                <button type="submit" class="btn btn-order w-100">
-                                    <i class="fas fa-shopping-cart me-2"></i> Tambahkan ke Keranjang
+                                <button type="submit" class="btn-submit">
+                                    <i class="fas fa-cart-plus me-2"></i> Tambahkan ke Keranjang
                                 </button>
                             </div>
                         </div>
                     </form>
                 </div>
+
+                <div class="mt-4 text-center">
+                    <small class="text-muted"><i class="fas fa-shield-alt text-warning me-1"></i> Produk Original & Kualitas Premium Kestore.id</small>
+                </div>
             </div>
         </div>
     </div>
+</div>
 @endsection
 
 @push('scripts')
-    <script>
-        const quantityInput = document.getElementById('quantity');
-        const maxStock = parseInt(quantityInput.max);
-
-        function decreaseQuantity() {
-            let currentValue = parseInt(quantityInput.value);
-            if (currentValue > 1) {
-                quantityInput.value = currentValue - 1;
-            }
+<script>
+    function modifyQty(n) {
+        const field = document.getElementById('p_qty');
+        let current = parseInt(field.value) + n;
+        if (current >= 1 && current <= parseInt(field.max)) {
+            field.value = current;
         }
-
-        function increaseQuantity() {
-            let currentValue = parseInt(quantityInput.value);
-            if (currentValue < maxStock) {
-                quantityInput.value = currentValue + 1;
-            }
-        }
-    </script>
+    }
+</script>
 @endpush

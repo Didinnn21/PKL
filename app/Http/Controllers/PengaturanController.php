@@ -6,24 +6,29 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
-use App\Models\Setting; // Tambahkan ini
+use App\Models\Setting;
 
 class PengaturanController extends Controller
 {
     public function index()
     {
-        // Ambil semua data pengaturan dari database dan ubah menjadi array asosiatif
+        // Mengambil semua data pengaturan menjadi array ['key' => 'value']
+        // Contoh akses: $settings['store_name']
         $settings = Setting::all()->pluck('value', 'key')->toArray();
-        return view('admin.pengaturan.index', compact('settings'));
+
+        return view('Admin.Setings.index', compact('settings'));
     }
 
+    /**
+     * Update Profil Admin (User Table)
+     */
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'password' => ['nullable', 'string', 'confirmed', Password::min(8)->mixedCase()->numbers()],
+            'password' => ['nullable', 'string', 'confirmed', 'min:8'],
         ]);
 
         $user->name = $request->name;
@@ -37,27 +42,47 @@ class PengaturanController extends Controller
         return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
     }
 
-    // TAMBAHKAN METHOD BARU INI
+    /**
+     * Update Informasi Toko (Settings Table)
+     */
     public function updateStore(Request $request)
     {
-        $validatedData = $request->validate([
+        $data = $request->validate([
             'store_name' => 'required|string|max:255',
-            'store_tagline' => 'nullable|string|max:255',
-            'store_address' => 'nullable|string',
             'store_phone' => 'nullable|string|max:20',
-            'store_email' => 'nullable|email|max:255',
-            'payment_info' => 'nullable|string',
-            'shipping_info' => 'nullable|string',
+            'store_address' => 'nullable|string',
         ]);
 
-        // Looping dan simpan setiap pengaturan ke database
-        foreach ($validatedData as $key => $value) {
-            Setting::updateOrCreate(
-                ['key' => $key],
-                ['value' => $value]
-            );
+        // Simpan ke database (Looping key-value)
+        foreach ($data as $key => $value) {
+            Setting::updateOrCreate(['key' => $key], ['value' => $value]);
         }
 
-        return redirect()->back()->with('success', 'Pengaturan toko berhasil diperbarui!');
+        return redirect()->back()->with('success', 'Informasi toko berhasil diperbarui!');
+    }
+
+    /**
+     * Update Rekening Pembayaran (Settings Table)
+     */
+    public function updatePayment(Request $request)
+    {
+        $request->validate([
+            'payment_bank_name' => 'required|string',
+            'payment_account_number' => 'required|numeric',
+            'payment_account_holder' => 'required|string',
+        ]);
+
+        // Data yang akan disimpan dengan key khusus
+        $paymentData = [
+            'payment_bank_name' => $request->payment_bank_name,
+            'payment_account_number' => $request->payment_account_number,
+            'payment_account_holder' => $request->payment_account_holder,
+        ];
+
+        foreach ($paymentData as $key => $value) {
+            Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+        }
+
+        return redirect()->back()->with('success', 'Rekening pembayaran berhasil disimpan.');
     }
 }

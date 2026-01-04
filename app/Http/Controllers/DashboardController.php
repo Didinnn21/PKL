@@ -3,97 +3,84 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    /**
-     * Menampilkan dashboard untuk admin dengan data lengkap.
-     */
     public function admin()
     {
-        // Data Statistik
-        $stats = [
-            'total_products' => Product::count(),
-            'total_orders' => Order::count(),
-            'total_customers' => User::where('role', 'member')->count(),
-            'total_revenue' => Order::where('status', 'Completed')->sum('total_price'),
-        ];
+        Carbon::setLocale('id');
+        $today = Carbon::today();
 
-        // Chart Data (Sales Overview)
-        $salesData = Order::select(
-            DB::raw('YEAR(created_at) as year'),
-            DB::raw('MONTH(created_at) as month'),
-            DB::raw('SUM(total_price) as total')
-        )
-            ->where('created_at', '>=', Carbon::now()->subMonths(7))
-            ->groupBy('year', 'month')
-            ->orderBy('year', 'asc')
-            ->orderBy('month', 'asc')
-            ->get();
+        $todays_earnings = Order::whereDate('created_at', $today)
+            ->whereIn('status', ['Selesai', 'Dikirim', 'Diproses'])
+            ->sum('total_price');
 
-        $salesLabels = $salesData->map(fn($item) => Carbon::createFromDate($item->year, $item->month)->format('M'));
-        $salesValues = $salesData->map(fn($item) => ($item->total) ? $item->total / 1000000 : 0); // dalam jutaan
+        $new_orders = Order::whereDate('created_at', $today)->count();
+        $total_products = Product::count();
+        $total_customers = User::where('role', 'member')->count();
 
-        $salesChartData = [
-            'labels' => $salesLabels,
-            'data' => $salesValues,
-        ];
+        $chartLabels = [];
+        $chartValues = [];
+        $dummyTrend = [1500000, 2300000, 1800000, 3500000, 2900000, 4100000, $todays_earnings > 0 ? $todays_earnings : 5000000];
 
-        // Top Selling Products
-        $top_products_data = Order::select('product_id', DB::raw('SUM(quantity) as total_sold'), DB::raw('SUM(total_price) as total_revenue'))
-            ->whereNotNull('product_id')
-            ->groupBy('product_id')
-            ->orderBy('total_sold', 'desc')
-            ->take(5)
-            ->with('product')
-            ->get();
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i);
+            $chartLabels[] = $date->translatedFormat('D, d M');
+            $chartValues[] = $dummyTrend[6 - $i];
+        }
 
-        $top_products = $top_products_data->map(function ($item) {
-            return [
-                'name' => $item->product->name ?? 'Produk Tidak Ditemukan',
-                'sold' => $item->total_sold,
-                'revenue' => $item->total_revenue,
-                'icon' => 'fa-box',
-            ];
-        });
+        $chartData = ['labels' => $chartLabels, 'data' => $chartValues];
 
-        return view('layouts.dashboard.index', compact('stats', 'salesChartData', 'top_products'));
+        $recent_orders = Order::with('user')->latest()->take(5)->get();
+
+        return view('Admin.dashboard', compact(
+            'todays_earnings',
+            'new_orders',
+            'total_products',
+            'total_customers',
+            'chartData',
+            'recent_orders'
+        ));
     }
 
     /**
-     * PERBAIKAN: Menampilkan dashboard untuk member dengan data visualisasi yang lebih kaya.
+     * Menampilkan Dashboard untuk Member
      */
     public function member()
     {
-        $user = Auth::user();
+        $user_id = Auth::id();
 
-        // 1. Hitung statistik dasar untuk kartu
-        $totalPesanan = Order::where('user_id', $user->id)->count();
-        $pesananAktif = Order::where('user_id', $user->id)->whereNotIn('status', ['Selesai', 'Dibatalkan'])->count();
-        $pesananSelesai = Order::where('user_id', $user->id)->where('status', 'Selesai')->count();
+        // 1. STATISTIK UNTUK KARTU (Sesuai Desain Blade Anda)
+        $total_orders = Order::where('user_id', $user_id)->count();
+        $pending_orders = Order::where('user_id', $user_id)
+            ->whereIn('status', ['Menunggu Pembayaran', 'Menunggu Verifikasi', 'Diproses', 'Dikirim'])
+            ->count();
+        $total_spent = Order::where('user_id', $user_id)
+            ->whereNotIn('status', ['Dibatalkan', 'Menunggu Pembayaran'])
+            ->sum('total_price');
 
-        // 2. Ambil 5 pesanan terbaru untuk tabel ringkasan
-        $orders = Order::where('user_id', $user->id)->with('product')->latest()->take(5)->get();
+        // 2. DATA PESANAN TERAKHIR (recent_orders)
+        $recent_orders = Order::where('user_id', $user_id)
+            ->latest()
+            ->take(5)
+            ->get();
 
-        // 3. Siapkan data untuk grafik donat status pesanan
-        $orderStatusData = Order::where('user_id', $user->id)
-            ->select('status', DB::raw('count(*) as total'))
-            ->groupBy('status')
-            ->pluck('total', 'status');
+        // 3. DATA REKOMENDASI PRODUK (products)
+        $products = Product::latest()->take(4)->get();
 
-        // 4. Kirim semua data yang sudah dihitung ke view
+        // Pastikan semua variabel ini dikirim ke view
         return view('Member.dashboard', compact(
-            'totalPesanan',
-            'pesananAktif',
-            'pesananSelesai',
-            'orders',
-            'orderStatusData'
+            'total_orders',
+            'pending_orders',
+            'total_spent',
+            'recent_orders',
+            'products'
         ));
     }
 }

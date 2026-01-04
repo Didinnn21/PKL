@@ -1,189 +1,163 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Dashboard Overview')
-
-@push('styles')
-<style>
-    /* Card Statistik */
-    .stat-card {
-        background-color: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 1.5rem;
-        position: relative;
-        overflow: hidden;
-        transition: all 0.3s ease;
-        height: 100%;
-    }
-
-    .stat-card:hover {
-        border-color: var(--gold-primary);
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-
-    .stat-card::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; width: 4px; height: 100%;
-        background-color: var(--gold-primary);
-        opacity: 0;
-        transition: opacity 0.3s;
-    }
-
-    .stat-card:hover::before {
-        opacity: 1;
-    }
-
-    .stat-icon {
-        position: absolute;
-        right: 1.5rem;
-        top: 1.5rem;
-        font-size: 2.5rem;
-        color: var(--gold-primary);
-        opacity: 0.1;
-        transition: all 0.3s;
-    }
-
-    .stat-card:hover .stat-icon {
-        transform: scale(1.1) rotate(10deg);
-        opacity: 0.2;
-    }
-
-    .stat-label {
-        font-size: 0.85rem;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 0.5rem;
-    }
-
-    .stat-value {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #fff;
-    }
-
-    /* Badge Status */
-    .badge-status {
-        padding: 0.4em 0.8em;
-        font-size: 0.75rem;
-        font-weight: 600;
-        border-radius: 6px;
-        text-transform: uppercase;
-    }
-    .badge-pending { background: rgba(255, 193, 7, 0.1); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.2); }
-    .badge-success { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
-    .badge-cancel  { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
-</style>
-@endpush
+@section('title', 'Dashboard Admin')
 
 @section('content')
-<div class="container-fluid p-0">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="h4 fw-bold text-white mb-0">Dashboard Overview</h2>
-            <p class="text-secondary mb-0 small">Ringkasan aktivitas toko Anda hari ini.</p>
-        </div>
-        <div>
-            <span class="badge bg-dark border border-secondary text-light px-3 py-2">
-                <i class="far fa-calendar-alt me-2"></i> {{ now()->isoFormat('dddd, D MMMM Y') }}
-            </span>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom border-secondary">
+        <h1 class="h2 text-white">Dashboard</h1>
+
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group me-2">
+                <button type="button" class="btn btn-sm btn-outline-warning text-white">
+                    <i class="fas fa-share-alt me-1"></i> Bagikan
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-warning text-white">
+                    <i class="fas fa-download me-1"></i> Ekspor
+                </button>
+            </div>
         </div>
     </div>
 
-    <div class="row g-4 mb-5">
-        <div class="col-12 col-md-6 col-xl-3">
-            <div class="stat-card">
-                <div class="stat-label">Pendapatan Hari Ini</div>
-                <div class="stat-value">Rp {{ number_format($stats['pendapatan_hari_ini'] ?? 0, 0, ',', '.') }}</div>
-                <i class="fas fa-wallet stat-icon"></i>
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-warning border-4 h-100 shadow-sm py-2" style="background-color: #1a1a1a;">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">
+                                Pendapatan (Hari Ini)</div>
+                            <div class="h5 mb-0 fw-bold text-white">
+                                Rp {{ number_format($todays_earnings, 0, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-white-50"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="col-12 col-md-6 col-xl-3">
-            <div class="stat-card">
-                <div class="stat-label">Pesanan Baru</div>
-                <div class="stat-value">{{ $stats['pesanan_baru'] ?? 0 }}</div>
-                <i class="fas fa-shopping-bag stat-icon"></i>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-info border-4 h-100 shadow-sm py-2" style="background-color: #1a1a1a;">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-info text-uppercase mb-1">
+                                Pesanan Baru (Hari Ini)</div>
+                            <div class="h5 mb-0 fw-bold text-white">{{ $new_orders }} Pesanan</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-white-50"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="col-12 col-md-6 col-xl-3">
-            <div class="stat-card">
-                <div class="stat-label">Total Produk</div>
-                <div class="stat-value">{{ $stats['total_produk'] ?? 0 }}</div>
-                <i class="fas fa-box-open stat-icon"></i>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-success border-4 h-100 shadow-sm py-2" style="background-color: #1a1a1a;">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-success text-uppercase mb-1">
+                                Total Produk</div>
+                            <div class="h5 mb-0 fw-bold text-white">{{ $total_products }} Item</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-box-open fa-2x text-white-50"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="col-12 col-md-6 col-xl-3">
-            <div class="stat-card">
-                <div class="stat-label">Pelanggan Baru</div>
-                <div class="stat-value">{{ $stats['pelanggan_baru'] ?? 0 }}</div>
-                <i class="fas fa-users stat-icon"></i>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-start border-primary border-4 h-100 shadow-sm py-2" style="background-color: #1a1a1a;">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">
+                                Total Pelanggan</div>
+                            <div class="h5 mb-0 fw-bold text-white">{{ $total_customers }} Orang</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-white-50"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="row">
         <div class="col-lg-8 mb-4">
-            <div class="card h-100">
-                <div class="card-header">
-                    <span><i class="fas fa-chart-line me-2 text-warning"></i> Grafik Penjualan</span>
-                    <div class="btn-group btn-group-sm">
-                        <a href="?filter=weekly" class="btn btn-outline-secondary {{ $filter === 'weekly' ? 'active' : '' }}">Minggu</a>
-                        <a href="?filter=monthly" class="btn btn-outline-secondary {{ $filter === 'monthly' ? 'active' : '' }}">Bulan</a>
-                    </div>
+            <div class="card h-100 border-secondary" style="background-color: #1a1a1a;">
+                <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 fw-bold text-warning">
+                        <i class="fas fa-chart-area me-1"></i> Tren Penjualan (7 Hari Terakhir)
+                    </h6>
                 </div>
                 <div class="card-body">
-                    <canvas id="salesChart" style="max-height: 320px;"></canvas>
+                    <div class="chart-area" style="height: 350px; position: relative;">
+                        <canvas id="dashboardSalesChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="col-lg-4 mb-4">
-            <div class="card h-100">
-                <div class="card-header">
-                    <span><i class="fas fa-history me-2 text-warning"></i> Pesanan Terbaru</span>
-                    <a href="{{ route('admin.orders.index') }}" class="text-decoration-none text-warning small">Lihat Semua</a>
+            <div class="card h-100 border-secondary" style="background-color: #1a1a1a;">
+                <div class="card-header border-secondary">
+                    <h6 class="m-0 fw-bold text-warning">
+                        <i class="fas fa-receipt me-1"></i> Pesanan Terbaru
+                    </h6>
                 </div>
                 <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <tbody>
-                                @forelse($pesanan_terbaru as $order)
-                                <tr>
-                                    <td class="ps-4">
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-secondary bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px;">
-                                                <i class="fas fa-shopping-bag small"></i>
-                                            </div>
-                                            <div>
-                                                <span class="d-block text-white fw-bold">{{ $order->user->name ?? 'Guest' }}</span>
-                                                <small class="text-muted">#ORD-{{ str_pad($order->id, 4, '0', STR_PAD_LEFT) }}</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="text-end pe-4">
-                                        <div class="text-white fw-bold">Rp {{ number_format($order->total_price, 0, ',', '.') }}</div>
-                                        @if($order->status == 'pending')
-                                            <span class="badge-status badge-pending">Pending</span>
-                                        @elseif($order->status == 'paid' || $order->status == 'completed')
-                                            <span class="badge-status badge-success">Selesai</span>
-                                        @else
-                                            <span class="badge-status badge-cancel">{{ $order->status }}</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="2" class="text-center py-4 text-muted">Belum ada transaksi.</td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                    <div class="list-group list-group-flush">
+                        @forelse($recent_orders as $order)
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-3 py-3"
+                                 style="background-color: transparent; color: #fff; border-bottom: 1px solid #333;">
+                                <div>
+                                    <div class="fw-bold text-white">#ORD-{{ $order->id }}</div>
+                                    <small class="text-white-50">
+                                        {{ $order->user->name ?? 'Tamu' }} &bull; {{ $order->created_at->translatedFormat('d M H:i') }}
+                                    </small>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold text-warning" style="font-size: 0.9rem;">
+                                        Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                                    </div>
+
+                                    @php
+                                        $statusColor = 'secondary';
+                                        $statusText = $order->status;
+
+                                        if($order->status == 'Menunggu Pembayaran') { $statusColor = 'warning text-dark'; $statusText = 'Menunggu'; }
+                                        elseif($order->status == 'Menunggu Verifikasi') { $statusColor = 'info text-dark'; $statusText = 'Verifikasi'; }
+                                        elseif($order->status == 'Diproses') { $statusColor = 'primary'; }
+                                        elseif($order->status == 'Dikirim') { $statusColor = 'info'; }
+                                        elseif($order->status == 'Selesai') { $statusColor = 'success'; }
+                                        elseif($order->status == 'Dibatalkan') { $statusColor = 'danger'; }
+                                    @endphp
+
+                                    <span class="badge bg-{{ $statusColor }} rounded-pill" style="font-size: 0.7rem;">
+                                        {{ $statusText }}
+                                    </span>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-4 text-muted">
+                                Belum ada pesanan masuk.
+                            </div>
+                        @endforelse
                     </div>
+                </div>
+                <div class="card-footer border-secondary text-center bg-transparent">
+                    <a href="{{ route('admin.orders.index') }}" class="text-decoration-none text-warning small fw-bold">
+                        Lihat Semua Pesanan <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -194,28 +168,36 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const salesCtx = document.getElementById('salesChart').getContext('2d');
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('dashboardSalesChart').getContext('2d');
 
-        // Gradient untuk chart agar terlihat mewah
-        let gradient = salesCtx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, 'rgba(212, 175, 55, 0.3)'); // Emas transparan
-        gradient.addColorStop(1, 'rgba(212, 175, 55, 0)');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(212, 175, 55, 0.5)');
+        gradient.addColorStop(1, 'rgba(212, 175, 55, 0.0)');
 
-        const salesChart = new Chart(salesCtx, {
+        const rawData = @json($chartData['data']);
+        const labelsData = @json($chartData['labels']);
+
+        const formatRupiah = (value) => {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency', currency: 'IDR', minimumFractionDigits: 0
+            }).format(value);
+        };
+
+        new Chart(ctx, {
             type: 'line',
             data: {
-                labels: @json($salesChartData['labels']),
+                labels: labelsData,
                 datasets: [{
-                    label: 'Pendapatan (Rp)',
-                    data: @json($salesChartData['data']),
+                    label: 'Pendapatan',
+                    data: rawData,
                     backgroundColor: gradient,
-                    borderColor: '#D4AF37', // Emas solid
+                    borderColor: '#d4af37',
                     borderWidth: 2,
-                    pointBackgroundColor: '#D4AF37',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: '#D4AF37',
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#d4af37',
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
                     fill: true,
                     tension: 0.4
                 }]
@@ -226,24 +208,37 @@
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        backgroundColor: '#1f1f1f',
-                        titleColor: '#fff',
-                        bodyColor: '#a3a3a3',
-                        borderColor: '#333',
-                        borderWidth: 1
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleColor: '#d4af37',
+                        bodyColor: '#fff',
+                        borderColor: '#444',
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: {
+                            label: function(context) {
+                                return ' ' + formatRupiah(context.parsed.y);
+                            }
+                        }
                     }
                 },
                 scales: {
+                    x: {
+                        ticks: { color: '#b0b0b0', font: {size: 11} },
+                        grid: { display: false }
+                    },
                     y: {
                         beginAtZero: true,
-                        grid: { color: '#262626' },
-                        ticks: { color: '#a3a3a3' }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { color: '#a3a3a3' }
+                        ticks: {
+                            color: '#b0b0b0',
+                            font: {size: 11},
+                            callback: function(value) {
+                                if(value >= 1000000) return (value/1000000) + 'jt';
+                                if(value >= 1000) return (value/1000) + 'rb';
+                                return value;
+                            }
+                        },
+                        grid: { color: 'rgba(255,255,255,0.05)', borderDash: [5,5] },
+                        border: { display: false }
                     }
                 }
             }
