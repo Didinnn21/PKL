@@ -39,14 +39,14 @@ Auth::routes();
 
 /*
 |--------------------------------------------------------------------------
-| 2. RUTE REDIRECT DASHBOARD
+| 2. RUTE REDIRECT DASHBOARD (Perbaikan Logika Redirect)
 |--------------------------------------------------------------------------
 */
 Route::get('/dashboard', function () {
     if (Auth::user()->role === 'admin') {
-        return redirect()->route('admin.dashboard');
+        return redirect()->to('/admin/dashboard');
     }
-    return redirect()->route('member.dashboard');
+    return redirect()->to('/member/dashboard');
 })->middleware('auth')->name('dashboard');
 
 /*
@@ -57,7 +57,7 @@ Route::get('/dashboard', function () {
 Route::middleware(['auth'])->group(function () {
 
     // ==========================================
-    // A. RUTE ADMIN (Middleware: is_admin)
+    // A. RUTE ADMIN (Middleware: pastikan is_admin sudah terdaftar)
     // ==========================================
     Route::middleware('is_admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
@@ -81,14 +81,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'member'])->name('dashboard');
         Route::get('/products', [MemberProductController::class, 'index'])->name('products.index');
 
-        // Mengaktifkan rute resource penuh untuk pesanan
-        Route::resource('orders', MemberOrderController::class);
-
-        // Pembayaran
-        Route::get('/orders/{order}/payment', [MemberOrderController::class, 'payment'])->name('orders.payment');
-        Route::put('/orders/{order}/payment', [MemberOrderController::class, 'updatePayment'])->name('orders.update_payment');
-
-        // PERBAIKAN: Resource Orders mencakup edit, update, dan destroy
+        // Resource Orders (Hanya satu kali deklarasi)
         Route::resource('orders', MemberOrderController::class);
 
         // Pembayaran
@@ -103,12 +96,9 @@ Route::middleware(['auth'])->group(function () {
 
         // Checkout & Order
         Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-        Route::post('/checkout/direct', [CheckoutController::class, 'directCheckout'])->name('checkout.direct');
-        Route::post('/order', [OrderController::class, 'store'])->name('order.store');
         Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
-        Route::post('/member/checkout/direct', [CheckoutController::class, 'directCheckout'])->name('member.checkout.direct');
-        // Di dalam group middleware auth member:
         Route::match(['get', 'post'], '/checkout/direct', [CheckoutController::class, 'directCheckout'])->name('member.checkout.direct');
+        Route::post('/checkout/direct', [CheckoutController::class, 'directCheckout'])->name('checkout.direct');
 
         // Custom Order
         Route::get('/custom-order', [OrderController::class, 'createCustom'])->name('custom.create');

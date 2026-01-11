@@ -31,33 +31,67 @@
                     <div class="table-responsive">
                         <table class="table table-dark table-borderless align-middle mb-0">
                             <tbody>
-                                @foreach($order->orderItems as $item)
+                                {{-- 1. LOGIKA UNTUK PESANAN CUSTOM --}}
+                                @if($order->order_type === 'custom')
                                     <tr style="border-bottom: 1px solid #333;">
                                         <td style="width: 80px;" class="py-3">
-                                            <img src="{{ $item->product->image_url ?: 'https://placehold.co/80x80/2c2c2c/FFFFFF/png?text=IMG' }}"
-                                                 alt="{{ $item->product->name }}"
-                                                 class="rounded border border-secondary"
-                                                 style="width: 70px; height: 70px; object-fit: cover;">
+                                            {{-- Menampilkan Desain yang diunggah Member --}}
+                                            <img src="{{ asset('storage/' . $order->design_file) }}"
+                                                alt="Desain Custom"
+                                                class="rounded border border-secondary"
+                                                style="width: 70px; height: 70px; object-fit: cover;"
+                                                onerror="this.src='https://placehold.co/80x80/2c2c2c/FFFFFF/png?text=Custom'">
                                         </td>
 
                                         <td class="py-3">
-                                            <h6 class="text-white fw-bold mb-1">{{ $item->product->name }}</h6>
-                                            <div class="text-white-50 small mb-1">
-                                                Jumlah: <span class="text-white">{{ $item->quantity }} pcs</span>
+                                            <h6 class="text-white fw-bold mb-1">Pesanan Custom: {{ $order->product_type }}</h6>
+                                            <div class="text-warning small mb-1">
+                                                <i class="fas fa-ruler-combined me-1"></i> Rincian: {{ $order->size }}
                                             </div>
-                                            @if($order->notes)
-                                                <div class="text-warning small fst-italic">
-                                                    <i class="fas fa-sticky-note me-1"></i> Catatan: "{{ $order->notes }}"
-                                                </div>
-                                            @endif
+                                            <div class="text-white-50 small">
+                                                Total Kuantitas: <span class="text-white">{{ $order->quantity }} pcs</span>
+                                            </div>
+                                            {{-- Tombol Lihat Desain Ukuran Besar --}}
+                                            <div class="mt-2">
+                                                <a href="{{ asset('storage/' . $order->design_file) }}" target="_blank" class="btn btn-dark btn-sm border-secondary text-warning">
+                                                    <i class="fas fa-search-plus me-1"></i> Lihat Desain Full
+                                                </a>
+                                            </div>
                                         </td>
 
                                         <td class="text-end py-3">
-                                            <div class="text-white-50 small">Harga Satuan</div>
-                                            <div class="text-white">Rp {{ number_format($item->price, 0, ',', '.') }}</div>
+                                            <div class="text-white-50 small">Harga Penawaran</div>
+                                            <div class="text-white fw-bold">
+                                                {{ $order->total_price > 0 ? 'Rp ' . number_format($order->total_price, 0, ',', '.') : 'Belum Ditentukan' }}
+                                            </div>
                                         </td>
                                     </tr>
-                                @endforeach
+
+                                {{-- 2. LOGIKA UNTUK PESANAN REGULER (KATALOG) --}}
+                                @else
+                                    @foreach($order->orderItems as $item)
+                                        <tr style="border-bottom: 1px solid #333;">
+                                            <td style="width: 80px;" class="py-3">
+                                                <img src="{{ $item->product->image_url ?: 'https://placehold.co/80x80/2c2c2c/FFFFFF/png?text=IMG' }}"
+                                                    alt="{{ $item->product->name }}"
+                                                    class="rounded border border-secondary"
+                                                    style="width: 70px; height: 70px; object-fit: cover;">
+                                            </td>
+
+                                            <td class="py-3">
+                                                <h6 class="text-white fw-bold mb-1">{{ $item->product->name }}</h6>
+                                                <div class="text-white-50 small mb-1">
+                                                    Jumlah: <span class="text-white">{{ $item->quantity }} pcs</span>
+                                                </div>
+                                            </td>
+
+                                            <td class="text-end py-3">
+                                                <div class="text-white-50 small">Harga Satuan</div>
+                                                <div class="text-white">Rp {{ number_format($item->price, 0, ',', '.') }}</div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
                             </tbody>
                         </table>
                     </div>
@@ -164,20 +198,58 @@
                         @csrf
                         @method('PUT')
 
+                        {{-- BAGIAN BARU: Input Harga Khusus Pesanan Custom --}}
+                        @if($order->order_type === 'custom')
+                        <div class="mb-4 p-3 border border-warning rounded" style="background-color: rgba(255, 193, 7, 0.05);">
+                            <label for="total_price" class="form-label text-warning fw-bold mb-1">
+                                <i class="fas fa-tag me-1"></i> Input Total Harga Penawaran
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-white">Rp</span>
+                                <input type="number" name="total_price" id="total_price"
+                                    class="form-control bg-dark text-white border-secondary"
+                                    value="{{ $order->total_price }}"
+                                    placeholder="Masukkan harga akhir (termasuk untung)">
+                            </div>
+                            <small class="text-white-50 mt-1 d-block">
+                                * Isi nominal ini agar member mengetahui biaya produksi yang harus dibayar.
+                            </small>
+                        </div>
+                        @endif
+
                         <div class="mb-3">
                             <label class="form-label text-white-50 small mb-1">Status Saat Ini:</label>
                             <div class="d-block">
                                 @php
+                                    // Logika konversi status ke Bahasa Indonesia dan penentuan warna
+                                    $statusLabel = $order->status;
                                     $statusColor = 'secondary';
-                                    if($order->status == 'Menunggu Pembayaran') $statusColor = 'warning text-dark';
-                                    elseif($order->status == 'Menunggu Verifikasi') $statusColor = 'info text-dark';
-                                    elseif($order->status == 'Diproses') $statusColor = 'primary';
-                                    elseif($order->status == 'Dikirim') $statusColor = 'info';
-                                    elseif($order->status == 'Selesai') $statusColor = 'success';
-                                    elseif($order->status == 'Dibatalkan') $statusColor = 'danger';
+
+                                    if($order->status == 'pending_quote' || $order->status == 'Menunggu Penawaran') {
+                                        $statusLabel = 'Menunggu Penawaran Harga';
+                                        $statusColor = 'warning text-dark';
+                                    } elseif($order->status == 'Menunggu Pembayaran' || $order->status == 'unpaid') {
+                                        $statusLabel = 'Menunggu Pembayaran';
+                                        $statusColor = 'warning text-dark';
+                                    } elseif($order->status == 'Menunggu Verifikasi') {
+                                        $statusLabel = 'Menunggu Verifikasi';
+                                        $statusColor = 'info text-dark';
+                                    } elseif($order->status == 'Diproses') {
+                                        $statusLabel = 'Diproses';
+                                        $statusColor = 'primary';
+                                    } elseif($order->status == 'Dikirim') {
+                                        $statusLabel = 'Dikirim';
+                                        $statusColor = 'info';
+                                    } elseif($order->status == 'Selesai') {
+                                        $statusLabel = 'Selesai';
+                                        $statusColor = 'success';
+                                    } elseif($order->status == 'Dibatalkan') {
+                                        $statusLabel = 'Dibatalkan';
+                                        $statusColor = 'danger';
+                                    }
                                 @endphp
                                 <span class="badge bg-{{ $statusColor }} px-3 py-2 rounded-pill fs-6">
-                                    {{ $order->status }}
+                                    <i class="fas fa-info-circle me-1"></i> {{ $statusLabel }}
                                 </span>
                             </div>
                         </div>
@@ -189,7 +261,11 @@
                                     <i class="fas fa-tasks"></i>
                                 </span>
                                 <select name="status" id="status" class="form-select bg-dark text-white border-secondary">
-                                    <option value="Menunggu Pembayaran" {{ $order->status == 'Menunggu Pembayaran' ? 'selected' : '' }}>Menunggu Pembayaran</option>
+                                    {{-- Tambahkan opsi khusus jika masih pending_quote --}}
+                                    @if($order->status == 'pending_quote')
+                                        <option value="pending_quote" selected>Tetap Menunggu Penawaran</option>
+                                    @endif
+                                    <option value="Menunggu Pembayaran" {{ $order->status == 'Menunggu Pembayaran' ? 'selected' : '' }}>Kirim Harga (Menunggu Pembayaran)</option>
                                     <option value="Menunggu Verifikasi" {{ $order->status == 'Menunggu Verifikasi' ? 'selected' : '' }}>Menunggu Verifikasi</option>
                                     <option value="Diproses" {{ $order->status == 'Diproses' ? 'selected' : '' }}>Diproses</option>
                                     <option value="Dikirim" {{ $order->status == 'Dikirim' ? 'selected' : '' }}>Dikirim</option>
@@ -200,7 +276,7 @@
                         </div>
 
                         <button type="submit" class="btn btn-warning w-100 fw-bold shadow-sm">
-                            <i class="fas fa-save me-2"></i> Simpan Perubahan
+                            <i class="fas fa-save me-2"></i> {{ $order->status == 'pending_quote' ? 'KIRIM PENAWARAN HARGA' : 'SIMPAN PERUBAHAN' }}
                         </button>
                     </form>
                 </div>

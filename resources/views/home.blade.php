@@ -86,7 +86,7 @@
                     </div>
                     <div class="reveal-card">
                         <div class="glass-card p-4">
-                            <img src="{{ asset('images/Brand-Story.jpg') }}" alt="Brand Story" class="rounded-[1.5rem] w-full shadow-2xl filter contrast-125 grayscale hover:grayscale-0 transition-all duration-700">
+                            <img src="{{ asset('images/HOODIE.png') }}" alt="Brand Story" class="rounded-[1.5rem] w-full shadow-2xl filter contrast-125 grayscale hover:grayscale-0 transition-all duration-700">
                         </div>
                     </div>
                 </div>
@@ -113,7 +113,7 @@
                     </div>
                     <div class="reveal-card glass-card overflow-hidden group">
                         <div class="relative h-[450px] overflow-hidden">
-                            <img src="{{ asset('images/Slide-2.png') }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <img src="{{ asset('images/KAOS-2.JPG') }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             <div class="absolute top-6 right-6 bg-[#d4af37] force-black font-black px-4 py-2 rounded-full text-[10px] shadow-xl">MULAI Rp 115rb</div>
                         </div>
                         <div class="p-8">
@@ -123,7 +123,7 @@
                     </div>
                     <div class="reveal-card glass-card overflow-hidden group">
                         <div class="relative h-[450px] overflow-hidden">
-                            <img src="{{ asset('images/HOODIE.png') }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <img src="{{ asset('images/Slide-2.png') }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             <div class="absolute top-6 right-6 bg-[#d4af37] force-black font-black px-4 py-2 rounded-full text-[10px] shadow-xl">Rp 185.000</div>
                         </div>
                         <div class="p-8">

@@ -53,6 +53,14 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+    /**
+     * Relasi ke model OrderItem
+     * Satu pesanan bisa memiliki banyak item produk
+     */
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
     protected $casts = [
         'total_price' => 'integer', // atau 'decimal:2'
         'shipping_cost' => 'integer',

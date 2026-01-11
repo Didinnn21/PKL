@@ -10,19 +10,23 @@ use Illuminate\Support\Facades\Auth;
 class IsAdmin
 {
     /**
-     * Handle an incoming request.
+     * Menangani permintaan yang masuk.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Cek apakah user login dan punya role 'admin'
+        // 1. Pastikan pengguna sudah terautentikasi (Login)
+        // 2. Pastikan pengguna memiliki kolom 'role' dengan nilai 'admin'
         if (Auth::check() && Auth::user()->role === 'admin') {
             return $next($request);
         }
 
-        // Kalau bukan admin, tendang balik ke dashboard member
+        // Jika validasi gagal (bukan admin), pengguna diarahkan kembali
+        // ke dashboard member dengan pesan peringatan.
         return redirect()->route('member.dashboard')
-            ->with('error', 'Akses ditolak! Anda bukan admin.');
+            ->with('error', 'Akses Ditolak! Anda tidak memiliki otoritas sebagai Administrator.');
     }
 }

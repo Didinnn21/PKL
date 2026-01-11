@@ -36,17 +36,20 @@
                         <td class="ps-4 fw-bold text-white-50">#{{ $order->order_number ?? $order->id }}</td>
                         <td>
                             <div class="d-flex align-items-center">
-                                {{-- PERBAIKAN LOGIKA: Mendeteksi produk dari tabel Order (Direct) atau OrderItems (Cart) --}}
+                                {{-- PERBAIKAN LOGIKA GAMBAR & NAMA --}}
                                 @php
-                                    $product = $order->product ?? ($order->items->first() ? $order->items->first()->product : null);
-
-                                    $imagePath = ($product && $product->image)
-                                        ? asset('storage/products/' . $product->image)
-                                        : asset('images/Slide-2.png');
-
-                                    $productName = $product
-                                        ? $product->name
-                                        : ($order->order_type == 'custom' ? 'Custom: ' . $order->product_type : 'Produk Kestore');
+                                    if ($order->order_type === 'custom') {
+                                        // Jika Custom: Ambil file desain yang diupload
+                                        $imagePath = asset('storage/' . $order->design_file);
+                                        $productName = 'Custom: ' . $order->product_type;
+                                    } else {
+                                        // Jika Regular: Ambil dari relasi produk
+                                        $product = $order->product ?? ($order->orderItems->first() ? $order->orderItems->first()->product : null);
+                                        $imagePath = ($product && $product->image)
+                                            ? asset('storage/products/' . $product->image)
+                                            : asset('images/Slide-2.png');
+                                        $productName = $product ? $product->name : 'Produk Kestore';
+                                    }
                                 @endphp
 
                                 <img src="{{ $imagePath }}"
@@ -54,50 +57,53 @@
                                      style="width: 50px; height: 50px; object-fit: cover;"
                                      onerror="this.src='{{ asset('images/Slide-2.png') }}'">
                                 <div>
-                                    <div class="text-white fw-bold small uppercase">{{ $productName }}</div>
+                                    <div class="text-white fw-bold small text-uppercase">{{ $productName }}</div>
                                     <small class="text-white-50">
-                                        {{ $order->quantity ?? ($order->items->sum('quantity') ?: 1) }} Item
+                                        {{ $order->quantity ?? ($order->orderItems->sum('quantity') ?: 1) }} Item
                                     </small>
                                 </div>
                             </div>
                         </td>
                         <td class="text-warning fw-bold text-nowrap text-center">
-                            Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                            @if($order->total_price > 0)
+                                Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                            @else
+                                <span class="text-white-50 small fst-italic">Menunggu Harga</span>
+                            @endif
                         </td>
                         <td class="text-center">
                             @php
+                                // Pemetaan Status ke Bahasa Indonesia (Admin & Member sinkron)
                                 $statusMap = [
-                                    'unpaid' => 'BELUM DIBAYAR',
-                                    'pending' => 'BELUM DIBAYAR',
-                                    'pending_quote' => 'MENUNGGU QUOTE',
+                                    'pending_quote' => 'MENUNGGU PENAWARAN',
+                                    'Menunggu Penawaran' => 'MENUNGGU PENAWARAN',
+                                    'unpaid' => 'MENUNGGU PEMBAYARAN',
+                                    'Menunggu Pembayaran' => 'MENUNGGU PEMBAYARAN',
                                     'Menunggu Verifikasi' => 'PROSES VERIFIKASI',
-                                    'processing' => 'DIPROSES',
-                                    'completed' => 'SELESAI',
+                                    'Diproses' => 'SEDANG DIPROSES',
+                                    'Dikirim' => 'DALAM PENGIRIMAN',
                                     'Selesai' => 'SELESAI',
-                                    'cancelled' => 'DIBATALKAN'
+                                    'Dibatalkan' => 'DIBATALKAN'
                                 ];
 
                                 $displayStatus = $statusMap[$order->status] ?? strtoupper($order->status);
-                                $isUnpaid = in_array($order->status, ['unpaid', 'pending', 'Belum Dibayar', 'pending_quote']);
+
+                                // Penentuan Warna Badge
+                                $badgeClass = 'bg-secondary';
+                                if (in_array($order->status, ['pending_quote', 'Menunggu Penawaran', 'unpaid', 'Menunggu Pembayaran'])) {
+                                    $badgeClass = 'bg-dark text-warning border border-warning';
+                                } elseif ($order->status == 'Menunggu Verifikasi') {
+                                    $badgeClass = 'bg-info text-dark';
+                                } elseif ($order->status == 'Selesai') {
+                                    $badgeClass = 'bg-success';
+                                } elseif ($order->status == 'Dibatalkan') {
+                                    $badgeClass = 'bg-danger';
+                                }
                             @endphp
 
-                            @if($isUnpaid)
-                                <span class="badge rounded-pill bg-dark text-danger border border-danger px-3 py-2 small">
-                                    {{ $displayStatus }}
-                                </span>
-                            @elseif($order->status == 'Menunggu Verifikasi')
-                                <span class="badge rounded-pill bg-primary px-3 py-2 small">
-                                    {{ $displayStatus }}
-                                </span>
-                            @elseif(in_array($order->status, ['completed', 'Selesai']))
-                                <span class="badge rounded-pill bg-success px-3 py-2 small">
-                                    {{ $displayStatus }}
-                                </span>
-                            @else
-                                <span class="badge rounded-pill bg-secondary px-3 py-2 small">
-                                    {{ $displayStatus }}
-                                </span>
-                            @endif
+                            <span class="badge rounded-pill {{ $badgeClass }} px-3 py-2 small">
+                                {{ $displayStatus }}
+                            </span>
                         </td>
                         <td class="text-center">
                             <div class="d-flex justify-content-center gap-2">
@@ -105,7 +111,8 @@
                                     <i class="fas fa-eye"></i>
                                 </a>
 
-                                @if($isUnpaid)
+                                {{-- Tombol Aksi berdasarkan status --}}
+                                @if(in_array($order->status, ['pending_quote', 'Menunggu Penawaran', 'Menunggu Pembayaran', 'unpaid']))
                                     <form action="{{ route('member.orders.destroy', $order->id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
@@ -115,10 +122,11 @@
                                         </button>
                                     </form>
 
-                                    @if($order->status != 'pending_quote')
-                                    <a href="{{ route('member.orders.payment', $order->id) }}" class="btn btn-warning btn-sm fw-bold text-dark px-3 shadow-sm">
-                                        BAYAR
-                                    </a>
+                                    {{-- Tombol Bayar hanya muncul jika harga sudah ditentukan dan bukan status penawaran --}}
+                                    @if(!in_array($order->status, ['pending_quote', 'Menunggu Penawaran']) && $order->total_price > 0)
+                                        <a href="{{ route('member.orders.payment', $order->id) }}" class="btn btn-warning btn-sm fw-bold text-dark px-3 shadow-sm">
+                                            BAYAR
+                                        </a>
                                     @endif
                                 @endif
                             </div>

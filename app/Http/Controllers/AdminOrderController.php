@@ -35,19 +35,23 @@ class AdminOrderController extends Controller
     /**
      * Update status pesanan (Fitur Baru)
      */
+    // app/Http/Controllers/AdminOrderController.php
+
     public function update(Request $request, Order $order)
     {
-        // Validasi input status
         $request->validate([
-            'status' => 'required|string|in:Menunggu Pembayaran,Menunggu Verifikasi,Diproses,Dikirim,Selesai,Dibatalkan',
+            'status'      => 'required|string|in:Menunggu Penawaran,Menunggu Pembayaran,Menunggu Verifikasi,Diproses,Dikirim,Selesai,Dibatalkan',
+            'total_price' => 'nullable|integer|min:0',
         ]);
 
-        // Update database
-        $order->update([
-            'status' => $request->status
-        ]);
+        $data = ['status' => $request->status];
 
-        // Kembali ke halaman detail dengan pesan sukses
-        return redirect()->back()->with('success', 'Status pesanan berhasil diperbarui menjadi: ' . $request->status);
+        if ($order->order_type === 'custom' && $request->has('total_price')) {
+            $data['total_price'] = $request->total_price;
+        }
+
+        $order->update($data);
+
+        return redirect()->route('admin.orders.index')->with('success', 'Status pesanan berhasil diperbarui.');
     }
 }
